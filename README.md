@@ -54,14 +54,7 @@ ERD 명세
 
 API Specs
 ---------
-* 잔액 조회 API
-* 잔액 충전 API
-* 상품 조회 API
-* 상위 상품 조회 API
-* 주문 API
-* 결제 API
-* 장바구니 추가 API
-* 장바구니 삭제 API
+[E-commerce API 명세서](https://yj16.notion.site/E-commerce-API-68acc56110924827bbd26273a9ba84a2)
 
 think-about
 ---
