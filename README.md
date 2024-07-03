@@ -37,14 +37,12 @@ Requirements
 - **Test**
     - JUnit + AssertJ
 
-Gantt chart
+Milestone
 ----------
+[E-commerce 마일스]([https://yj16.notion.site/E-commerce-API-68acc56110924827bbd26273a9ba84a2](https://github.com/users/yjchoigit/projects/4/views/1))
 
 Sequence Diagram
 ------------
-
-Flow Chart
------------
 
 
 ERD 명세
