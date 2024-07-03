@@ -49,6 +49,7 @@ Flow Chart
 
 ERD 명세
 ------
+![E-commerce 구축 프로젝트 ERD](https://github.com/yjchoigit/hhplus_week3/assets/71246526/566fba4f-0675-484a-a25c-d26ceabb5d07)
 
 
 API Specs
@@ -59,6 +60,8 @@ API Specs
 * 상위 상품 조회 API
 * 주문 API
 * 결제 API
+* 장바구니 추가 API
+* 장바구니 삭제 API
 
 think-about
 ---
