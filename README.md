@@ -44,11 +44,125 @@ Milestone
 
 Sequence Diagram
 ------------
+- **잔액 충전**
+```mermaid
+  sequenceDiagram
+  ACTOR  사용자
+  participant 잔액
 
+  사용자->>잔액: 1.충전할 포인트 요청
+  잔액-->>사용자: 2.충전 결과를 응답
+  alt 포인트가 0보다 같거나 작으면
+    잔액-->>사용자: 3-1.실패 응답 반환
+  else 포인트가 0보다 크면
+    잔액-->>사용자: 3-2.성공 응답 반환
+  end
+```
+----
+- **상품 조회**
+```mermaid
+sequenceDiagram
+    actor 사용자
+    participant 상품
+    participant 상품옵션
+
+    사용자->>상품: 1.상품 ID로 상품 조회
+    상품-->>사용자: 2.상품 정보 반환 (대기)
+
+    alt 옵션 상품 있음
+        상품->>상품옵션: 3-1-1.상품 옵션 정보 조회
+        상품옵션-->>상품: 3-1-2.상품 옵션 정보 반환
+        상품-->>사용자: 3-1-3.상품 정보와 옵션 정보 반환
+    else 옵션 상품 없음
+        상품-->>사용자: 3-2.상품 정보만 반환
+    end
+```
+----
+- **상위 상품 조회**
+```mermaid
+sequenceDiagram
+    actor 사용자
+    participant 상품랭킹
+
+    사용자->>상품랭킹: 1. 랭킹타입 요청
+    상품랭킹-->>사용자: 2. 랭킹정보 반환 (대기)
+
+    alt 랭킹정보 리스트 수 > 3개
+        상품랭킹-->>사용자: 3-1.상위 3개 랭킹정보 반환
+    else 랭킹정보 리스트 수 <= 3개
+        상품랭킹-->>사용자: 3-2.전체 랭킹정보 반환
+    end
+```
+---- 
+- **주문 생성**
+```mermaid
+sequenceDiagram
+  actor 사용자
+  participant 주문
+  participant 상품
+  participant 재고
+  participant 잔액
+
+  사용자->>주문: 1. 주문 요청
+
+  alt 상품 조회
+    주문->>상품: 2. 상품 조회
+    alt 상품 정보 없음 or 사용 안함
+      상품-->>사용자: 2-1. 실패 응답
+    else 상품 정보 있음
+      상품->>재고: 3. 상품 재고 조회
+      opt 재고 확인
+        재고-->>사용자: 3-1. 재고 부족 실패 응답
+      end
+    end
+  end
+
+  재고->>잔액: 4. 잔액 조회
+  alt 잔액 확인
+    잔액-->>사용자: 4-1. 잔액 부족 실패 응답
+  else 잔액 충분
+    잔액-->>주문: 4-2. 주문 생성 및 ID 반환
+  end
+  주문-->>사용자: 5. 생성된 주문 ID 반환
+```
+----
+- **결제 요청**
+```mermaid
+sequenceDiagram
+  actor 사용자
+  participant 결제
+  participant 주문
+  participant 상품
+  participant 재고
+  participant 잔액
+  participant 주문결제
+  participant 상품랭킹
+
+  사용자->>결제: 1.주문 ID로 결제 요청
+  결제->>주문: 2.주문 ID로 주문 조회
+  주문->>상품: 3.주문 내역의 상품 정보 조회
+  상품->>재고: 4.상품 재고 조회
+
+  alt 상품 재고 부족
+    상품-->>사용자: 4-1.결제 실패 (재고 부족)
+  else 재고 충분
+    상품->>재고: 4-2.재고 차감
+  end
+  결제->>잔액: 5.사용자 잔액 조회
+
+  alt 잔액 부족
+    결제-->>사용자: 5-1.결제 실패 (잔액 부족)
+  else 잔액 충분
+    결제->>잔액: 5-2.잔액 차감
+    주문->>주문결제: 5-3.주문 결제 내역 생성
+    상품->>상품랭킹: 5-4.결제한 상품 정보 랭킹 등록 (인기순)
+    주문결제-->>사용자: 6.결제 성공 여부 반환
+  end
+```
 
 ERD 명세
 ------
-![E-commerce 구축 프로젝트 ERD](https://github.com/yjchoigit/hhplus_week3/assets/71246526/566fba4f-0675-484a-a25c-d26ceabb5d07)
+![E-commerce 구축 프로젝트 ERD (1)](https://github.com/yjchoigit/hhplus_week3/assets/71246526/012f85fc-0723-4e4a-a3ab-9680a6283d6d)
 
 
 API Specs
