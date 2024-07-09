@@ -2,6 +2,12 @@ package com.hhplus.hhplus_week3_4_5.application.controllers.order;
 
 import com.hhplus.hhplus_week3_4_5.application.controllers.order.dto.GetOrderApiResDto;
 import com.hhplus.hhplus_week3_4_5.application.domain.payment.PaymentEnums;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,34 +16,24 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Tag(name = "/orders", description = "주문 API")
 @RestController
 @RequiredArgsConstructor
 public class OrderController {
 
-    // 주문 생성 API
+    @Operation(summary = "주문 생성")
+    @ApiResponse(responseCode = "200", description = "성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Long.class)))
     @PostMapping(value = "/orders/{buyerId}")
-    public Long orders(@PathVariable(name = "buyerId") Long buyerId, @RequestParam(name = "cartIdList") List<Long> cartIdList){
+    public Long orders(@PathVariable(name = "buyerId") @Schema(description = "회원 ID") @NotNull Long buyerId,
+                       @RequestParam(name = "cartIdList") @Schema(description = "장바구니 ID 리스트") @NotNull List<Long> cartIdList){
         return 1L;
     }
 
-    // 주문 조회 API
+    @Operation(summary = "주문 조회")
+    @ApiResponse(responseCode = "200", description = "성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GetOrderApiResDto.class)))
     @GetMapping(value = "/orders/{buyerId}")
-    public GetOrderApiResDto orders(@PathVariable(name = "buyerId") Long buyerId, @RequestParam(name = "orderId") Long orderId){
-        // 주문 상세
-        List<GetOrderApiResDto.GetOrderItemApiResDto> items = new ArrayList<>();
-        items.add(new GetOrderApiResDto.GetOrderItemApiResDto(
-                1L, 1L, 1L, 3
-        ));
-        // 주문 결제
-        List<GetOrderApiResDto.GetOrderPaymentApiResDto> payment = new ArrayList<>();
-        payment.add(new GetOrderApiResDto.GetOrderPaymentApiResDto(
-                1L, PaymentEnums.Type.PAYMENT, BigDecimal.valueOf(1000), LocalDateTime.now()
-        ));
-
-        // 주문
-        return new GetOrderApiResDto(
-                1L, "202407040001", 3,
-                LocalDateTime.now(), items, payment
-        );
+    public GetOrderApiResDto orders(@PathVariable(name = "buyerId") @Schema(description = "회원 ID") @NotNull Long buyerId,
+                                    @RequestParam(name = "orderId") @Schema(description = "주문 ID") @NotNull Long orderId){
+        return null;
     }
 }

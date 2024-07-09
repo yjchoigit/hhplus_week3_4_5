@@ -5,6 +5,14 @@ import com.hhplus.hhplus_week3_4_5.application.controllers.product.dto.GetProduc
 import com.hhplus.hhplus_week3_4_5.application.controllers.product.dto.GetProductRankingApiResDto;
 import com.hhplus.hhplus_week3_4_5.application.controllers.product.dto.PutProductApiReqDto;
 import com.hhplus.hhplus_week3_4_5.application.domain.product.ProductEnums;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,13 +20,15 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+@Tag(name = "/products", description = "상품 API")
 @RestController
 @RequiredArgsConstructor
 public class ProductController {
 
-    // 상품 조회 API
+    @Operation(summary = "상품 조회")
+    @ApiResponse(responseCode = "200", description = "성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GetProductApiResDto.class)))
     @GetMapping(value = "/products/{productId}")
-    public GetProductApiResDto product(@PathVariable(name = "productId") Long productId) {
+    public GetProductApiResDto product(@PathVariable(name = "productId") @Schema(description = "상품 ID") @NotNull Long productId) {
         List<GetProductApiResDto.GetProductOptionApiResDto.GetProductOptionValueApiResDto> list = new ArrayList<>();
         list.add(new GetProductApiResDto.GetProductOptionApiResDto.GetProductOptionValueApiResDto(1L, "빨강", BigDecimal.valueOf(200)));
 
@@ -26,9 +36,12 @@ public class ProductController {
         return new GetProductApiResDto(1L, "A 운동화", ProductEnums.Type.OPTION, BigDecimal.valueOf(1000), option);
     }
 
-    // 상위 상품 조회 API
-    @GetMapping(value = "/products/ranking")
-    public List<GetProductRankingApiResDto> productRanking(@RequestParam(name = "type") ProductEnums.Ranking type) {
+    @Operation(summary = "상위 상품 조회")
+    @ApiResponse(responseCode = "200", description = "성공", content = {@Content(
+            mediaType = "application/json",
+            array = @ArraySchema(schema = @Schema(implementation = GetProductRankingApiResDto.class))
+    )})    @GetMapping(value = "/products/ranking")
+    public List<GetProductRankingApiResDto> productRanking(@RequestParam(name = "type") @Schema(description = "상품 랭킹 타입 Enum") ProductEnums.Ranking type) {
         List<GetProductRankingApiResDto> list = new ArrayList<>();
         list.add(new GetProductRankingApiResDto(1L, "A 운동화"));
         list.add(new GetProductRankingApiResDto(2L, "B 시계"));
@@ -36,21 +49,25 @@ public class ProductController {
         return list;
     }
 
-    // 상품 등록 API
+    @Operation(summary = "상품 등록")
+    @ApiResponse(responseCode = "200", description = "성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Long.class)))
     @PostMapping(value = "/products")
-    public Long addProduct(@RequestBody AddProductApiReqDto reqDto) {
+    public Long addProduct(@RequestBody @Valid AddProductApiReqDto reqDto) {
         return 1L;
     }
 
-    // 상품 수정 API
+    @Operation(summary = "상품 수정")
+    @ApiResponse(responseCode = "200", description = "성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Boolean.class)))
     @PatchMapping(value = "/products/{productId}")
-    public boolean putProduct(@PathVariable(name = "productId") Long productId, @RequestBody PutProductApiReqDto reqDto) {
+    public boolean putProduct(@PathVariable(name = "productId") @Schema(description = "상품 ID") @NotNull Long productId,
+                              @RequestBody @Valid PutProductApiReqDto reqDto) {
         return true;
     }
 
-    // 상품 삭제 API
+    @Operation(summary = "상품 삭제")
+    @ApiResponse(responseCode = "200", description = "성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Boolean.class)))
     @DeleteMapping(value = "/products/{productId}")
-    public boolean deleteProduct(@PathVariable(name = "productId") Long productId) {
+    public boolean deleteProduct(@PathVariable(name = "productId") @Schema(description = "상품 ID") @NotNull Long productId) {
         return true;
     }
 
