@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class PaymentController {
 
     // 결제 API
-    @PostMapping(value = "/payments/{memberOrderId}")
-    public boolean payment(@PathVariable("memberOrderId") String memberOrderId) {
+    @PostMapping(value = "/payments/{orderId}")
+    public boolean payment(@PathVariable("orderId") String orderId) {
         return true;
     }
 

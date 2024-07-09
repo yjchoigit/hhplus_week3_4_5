@@ -9,17 +9,17 @@ import java.util.List;
 
 public record GetOrderApiResDto(
 
-    Long memberOrderId,
+    Long orderId,
     String orderNumber,
     int allBuyCnt,
     LocalDateTime createDatetime,
-    List<GetOrderDetailApiResDto> detail,
+    List<GetOrderItemApiResDto> items,
     List<GetOrderPaymentApiResDto> payment
 
 ) implements Serializable {
 
-    public record GetOrderDetailApiResDto(
-            Long memberOrderDetailId,
+    public record GetOrderItemApiResDto(
+            Long orderItemId,
             Long productId,
             Long productOptionId,
             int buyCnt
@@ -28,7 +28,7 @@ public record GetOrderApiResDto(
     }
 
     public record GetOrderPaymentApiResDto(
-            Long memberOrderPaymentId,
+            Long orderPaymentId,
             PaymentEnums.Type type,
             BigDecimal paymentPrice,
             LocalDateTime createDatetime

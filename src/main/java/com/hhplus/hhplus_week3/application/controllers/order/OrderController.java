@@ -15,17 +15,17 @@ import java.util.List;
 public class OrderController {
 
     // 주문 생성 API
-    @PostMapping(value = "/orders/{memberId}")
-    public Long orders(@PathVariable(name = "memberId") Long memberId, @RequestParam(name = "cartIdList") List<Long> cartIdList){
+    @PostMapping(value = "/orders/{buyerId}")
+    public Long orders(@PathVariable(name = "buyerId") Long buyerId, @RequestParam(name = "cartIdList") List<Long> cartIdList){
         return 1L;
     }
 
     // 주문 조회 API
-    @GetMapping(value = "/orders/{memberId}")
-    public GetOrderApiResDto orders(@PathVariable(name = "memberId") Long memberId, @RequestParam(name = "memberOrderId") Long memberOrderId){
+    @GetMapping(value = "/orders/{buyerId}")
+    public GetOrderApiResDto orders(@PathVariable(name = "buyerId") Long buyerId, @RequestParam(name = "orderId") Long orderId){
         // 주문 상세
-        List<GetOrderApiResDto.GetOrderDetailApiResDto> detail = new ArrayList<>();
-        detail.add(new GetOrderApiResDto.GetOrderDetailApiResDto(
+        List<GetOrderApiResDto.GetOrderItemApiResDto> items = new ArrayList<>();
+        items.add(new GetOrderApiResDto.GetOrderItemApiResDto(
                 1L, 1L, 1L, 3
         ));
         // 주문 결제
@@ -37,7 +37,7 @@ public class OrderController {
         // 주문
         return new GetOrderApiResDto(
                 1L, "202407040001", 3,
-                LocalDateTime.now(), detail, payment
+                LocalDateTime.now(), items, payment
         );
     }
 }
