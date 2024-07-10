@@ -3,6 +3,18 @@
 
 > 우리는 적절한 아키텍처 패턴, 클린 코드, 테스트 등을 준수하며 유지, 성장 가능한 애플리케이션을 만들어야 합니다.
 
+목차
+----
+1. [Service Scenario](#Service-Scenario)
+2. [Requirements](#Requirements)
+3. [개발 환경 준비](#개발-환경-준비)
+4. [Milestone](#Milestone)
+5. [Sequence Diagram](#Sequence-Diagram)
+6. [ERD 명세](#ERD-명세)
+7. [API Specs](#API-Specs)
+8. [API Swagger](#API-Swagger)
+9. [think-about](#think-about)
+---- 
 Service Scenario
 ----------------
 **e-커머스 서비스**
@@ -171,6 +183,11 @@ ERD 명세
 API Specs
 ---------
 [E-commerce API 명세서](https://yj16.notion.site/E-commerce-API-68acc56110924827bbd26273a9ba84a2)
+
+
+API Swagger
+---------
+[API Swagger 캡쳐본](img_1.png)
 
 think-about
 ---
