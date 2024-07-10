@@ -166,8 +166,7 @@ sequenceDiagram
 
 ERD 명세
 ------
-![E-commerce 구축 프로젝트 ERD (1)](https://github.com/yjchoigit/hhplus_week3_4_5/assets/71246526/2d842893-1520-40de-8f13-f60e68f62342)
-
+![img.png](img.png)
 
 API Specs
 ---------
