@@ -7,6 +7,6 @@ public class PointEnums {
     @Getter
     @RequiredArgsConstructor
     public enum Type {
-        USE, CHARGE
+        DEDUCT, CHARGE
     }
 }

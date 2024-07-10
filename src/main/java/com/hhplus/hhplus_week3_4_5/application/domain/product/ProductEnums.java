@@ -21,4 +21,10 @@ public class ProductEnums {
     public enum Ranking {
         POPULAR, RECENT, HIGH, LOW
     }
+
+    @Getter
+    @RequiredArgsConstructor
+    public enum StockType {
+        SINGLE, OPTION, ADD
+    }
 }
