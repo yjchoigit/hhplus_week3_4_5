@@ -1,7 +1,7 @@
 package com.hhplus.hhplus_week3_4_5.application.controllers.cart;
 
-import com.hhplus.hhplus_week3_4_5.application.controllers.cart.dto.AddCartApiReqDto;
-import com.hhplus.hhplus_week3_4_5.application.controllers.cart.dto.GetCartApiResDto;
+import com.hhplus.hhplus_week3_4_5.application.controllers.cart.dtos.AddCartApiReqDto;
+import com.hhplus.hhplus_week3_4_5.application.controllers.cart.dtos.GetCartApiResDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;

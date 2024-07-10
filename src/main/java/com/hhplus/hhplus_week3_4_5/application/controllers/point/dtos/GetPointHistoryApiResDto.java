@@ -1,4 +1,4 @@
-package com.hhplus.hhplus_week3_4_5.application.controllers.point.dto;
+package com.hhplus.hhplus_week3_4_5.application.controllers.point.dtos;
 
 import com.hhplus.hhplus_week3_4_5.application.domain.point.PointEnums;
 import io.swagger.v3.oas.annotations.media.Schema;

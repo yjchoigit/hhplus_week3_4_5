@@ -1,4 +1,4 @@
-package com.hhplus.hhplus_week3_4_5.application.controllers.product.dto;
+package com.hhplus.hhplus_week3_4_5.application.controllers.product.dtos;
 
 import com.hhplus.hhplus_week3_4_5.application.domain.product.ProductEnums;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
-public record AddProductApiReqDto(
+public record PutProductApiReqDto(
         @Schema(description = "상품 명")
         String name,
         @Schema(description = "상품 타입 Enum")
@@ -17,20 +17,22 @@ public record AddProductApiReqDto(
         @Schema(description = "사용 여부")
         boolean useYn,
         @Schema(description = "상품 옵션 리스트")
-        AddProductOptionApiReqDto option
+        PutProductOptionApiReqDto option
 
 ) implements Serializable {
 
-    public record AddProductOptionApiReqDto(
+    public record PutProductOptionApiReqDto(
         @Schema(description = "상품 옵션 타입 Enum")
         ProductEnums.OptionType optionType,
         @Schema(description = "상품 옵션 명")
         String name,
         @Schema(description = "상품 옵션 값 리스트")
-        List<AddProductOptionValueApiReqDto> list
+        List<PutProductOptionValueApiReqDto> list
     ) implements Serializable {
 
-        public record AddProductOptionValueApiReqDto(
+        public record PutProductOptionValueApiReqDto(
+                @Schema(description = "상품 옵션 ID")
+                Long productOptionId,
                 @Schema(description = "상품 옵션 값")
                 String value,
                 @Schema(description = "상품 옵션 가격")

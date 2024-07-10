@@ -1,9 +1,9 @@
 package com.hhplus.hhplus_week3_4_5.application.controllers.product;
 
-import com.hhplus.hhplus_week3_4_5.application.controllers.product.dto.AddProductApiReqDto;
-import com.hhplus.hhplus_week3_4_5.application.controllers.product.dto.GetProductApiResDto;
-import com.hhplus.hhplus_week3_4_5.application.controllers.product.dto.GetProductRankingApiResDto;
-import com.hhplus.hhplus_week3_4_5.application.controllers.product.dto.PutProductApiReqDto;
+import com.hhplus.hhplus_week3_4_5.application.controllers.product.dtos.AddProductApiReqDto;
+import com.hhplus.hhplus_week3_4_5.application.controllers.product.dtos.GetProductApiResDto;
+import com.hhplus.hhplus_week3_4_5.application.controllers.product.dtos.GetProductRankingApiResDto;
+import com.hhplus.hhplus_week3_4_5.application.controllers.product.dtos.PutProductApiReqDto;
 import com.hhplus.hhplus_week3_4_5.application.domain.product.ProductEnums;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;

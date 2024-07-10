@@ -1,7 +1,6 @@
 package com.hhplus.hhplus_week3_4_5.application.controllers.point;
 
-import com.hhplus.hhplus_week3_4_5.application.controllers.cart.dto.GetCartApiResDto;
-import com.hhplus.hhplus_week3_4_5.application.controllers.point.dto.GetPointHistoryApiResDto;
+import com.hhplus.hhplus_week3_4_5.application.controllers.point.dtos.GetPointHistoryApiResDto;
 import com.hhplus.hhplus_week3_4_5.application.domain.point.PointEnums;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;

@@ -1,7 +1,6 @@
 package com.hhplus.hhplus_week3_4_5.application.controllers.order;
 
-import com.hhplus.hhplus_week3_4_5.application.controllers.order.dto.GetOrderApiResDto;
-import com.hhplus.hhplus_week3_4_5.application.domain.payment.PaymentEnums;
+import com.hhplus.hhplus_week3_4_5.application.controllers.order.dtos.GetOrderApiResDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -11,9 +10,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Tag(name = "/orders", description = "주문 API")

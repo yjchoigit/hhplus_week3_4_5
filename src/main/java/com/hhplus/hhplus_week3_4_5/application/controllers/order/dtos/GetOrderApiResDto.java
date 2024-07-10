@@ -1,4 +1,4 @@
-package com.hhplus.hhplus_week3_4_5.application.controllers.order.dto;
+package com.hhplus.hhplus_week3_4_5.application.controllers.order.dtos;
 
 import com.hhplus.hhplus_week3_4_5.application.domain.payment.PaymentEnums;
 import io.swagger.v3.oas.annotations.media.Schema;

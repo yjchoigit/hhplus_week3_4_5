@@ -1,4 +1,4 @@
-package com.hhplus.hhplus_week3_4_5.application.controllers.product.dto;
+package com.hhplus.hhplus_week3_4_5.application.controllers.product.dtos;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
