@@ -1,10 +1,12 @@
 package com.hhplus.hhplus_week3_4_5.ecommerce.infrastructure.apiClient.order;
 
 import com.hhplus.hhplus_week3_4_5.ecommerce.infrastructure.apiClient.order.dto.SendOrderToCollectionDto;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 @Component
+@Slf4j
 public class OrderCollectApiClient {
     private final RestTemplate restTemplate;
 
@@ -13,7 +15,8 @@ public class OrderCollectApiClient {
     }
 
     public void sendOrderToCollectionPlatform(SendOrderToCollectionDto dto) {
-        String url = "http://mockapi/order-collection";
+        log.info("주문 데이터 수집 >> 외부 데이터 플랫폼 전달");
+        String url = "http://mock-api/order-to-collect";
         restTemplate.postForObject(url, dto, SendOrderToCollectionDto.class);
     }
 }

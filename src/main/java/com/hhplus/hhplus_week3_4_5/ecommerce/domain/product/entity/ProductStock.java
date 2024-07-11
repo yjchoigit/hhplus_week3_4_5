@@ -48,6 +48,12 @@ public class ProductStock extends CreateModifyDateTimeEntity {
         this.stock = stock;
     }
 
+    public ProductStock(Product product, ProductOption productOption, ProductEnums.StockType type, int stock) {
+        this.product = product;
+        this.productOption = productOption;
+        this.type = type;
+        this.stock = stock;
+    }
 
     @Override
     public boolean equals(Object o) {

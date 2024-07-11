@@ -1,6 +1,7 @@
 package com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.entity;
 
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.base.entity.CreateModifyDateTimeEntity;
+import com.hhplus.hhplus_week3_4_5.ecommerce.domain.base.entity.converter.BooleanToCharConverter;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.ProductEnums;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -42,7 +43,8 @@ public class ProductOption extends CreateModifyDateTimeEntity {
     @Comment("옵션 가격")
     private int price;
 
-    @Column(nullable = false, columnDefinition = "char(1)")
+    @Convert(converter = BooleanToCharConverter.class)
+    @Column(nullable = false)
     @Comment("사용 여부")
     private boolean useYn;
 

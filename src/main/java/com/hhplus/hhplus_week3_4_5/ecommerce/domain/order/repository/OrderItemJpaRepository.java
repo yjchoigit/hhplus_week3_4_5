@@ -1,6 +1,8 @@
 package com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.repository;
 
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.entity.OrderItem;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -15,5 +17,5 @@ public interface OrderItemJpaRepository extends JpaRepository<OrderItem, Long> {
             "WHERE oi.createDatetime BETWEEN :startDatetime AND :endDatetime " +
             "GROUP BY oi.productId " +
             "ORDER BY totalBuyCnt DESC")
-    List<Object[]> findTopProductsByBuyCnt(LocalDateTime startDatetime, LocalDateTime endDatetime);
+    Page<Object[]> findTopProductsByBuyCnt(LocalDateTime startDatetime, LocalDateTime endDatetime, Pageable pageable);
 }

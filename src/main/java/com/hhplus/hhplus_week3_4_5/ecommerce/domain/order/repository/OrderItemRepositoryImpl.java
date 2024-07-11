@@ -1,6 +1,8 @@
 package com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.repository;
 
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.entity.OrderItem;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -26,6 +28,7 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
 
     @Override
     public List<Object[]> findTopProductsByBuyCnt(LocalDateTime startDatetime, LocalDateTime endDatetime) {
-        return orderItemJpaRepository.findTopProductsByBuyCnt(startDatetime, endDatetime);
+        Page<Object[]> page = orderItemJpaRepository.findTopProductsByBuyCnt(startDatetime, endDatetime, PageRequest.of(0, 5));
+        return page.getContent();
     }
 }

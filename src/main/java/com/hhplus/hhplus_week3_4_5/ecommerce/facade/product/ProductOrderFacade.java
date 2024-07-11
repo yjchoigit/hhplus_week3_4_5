@@ -35,12 +35,12 @@ public class ProductOrderFacade {
             // 상품 id
             Long productId = (Long) row[0];
             // 총 주문 구매수량
-            int totalBuyCnt = (int) row[1];
+            Long totalBuyCnt = (Long) row[1];
 
             // 상품 정보 조회
             Product product = productService.findProductByProductId(productId);
             // 리스트 추가
-            rankingList.add(FindProductRankingApiResDto.from(product, totalBuyCnt));
+            rankingList.add(FindProductRankingApiResDto.from(product, totalBuyCnt.intValue()));
         }
 
         return rankingList;

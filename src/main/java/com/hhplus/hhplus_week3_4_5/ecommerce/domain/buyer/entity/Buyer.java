@@ -29,6 +29,10 @@ public class Buyer extends CreateModifyDateTimeEntity {
         this.name = name;
     }
 
+    public Buyer(String name) {
+        this.name = name;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

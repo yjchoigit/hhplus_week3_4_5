@@ -31,6 +31,11 @@ public class Point extends CreateModifyDateTimeEntity {
         this.allPoint = allPoint;
     }
 
+    public Point(Long buyerId, int allPoint) {
+        this.buyerId = buyerId;
+        this.allPoint = allPoint;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

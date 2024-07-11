@@ -1,6 +1,7 @@
 package com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.entity;
 
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.base.entity.CreateModifyDateTimeEntity;
+import com.hhplus.hhplus_week3_4_5.ecommerce.domain.base.entity.converter.BooleanToCharConverter;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.ProductEnums;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -8,6 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
+import org.hibernate.annotations.Type;
 
 import java.util.Objects;
 
@@ -34,16 +36,26 @@ public class Product extends CreateModifyDateTimeEntity {
     @Comment("상품 가격")
     private int price;
 
-    @Column(nullable = false, columnDefinition = "char")
+    @Convert(converter = BooleanToCharConverter.class)
+    @Column(nullable = false)
     @Comment("사용 여부")
     private boolean useYn;
 
-    @Column(nullable = false, columnDefinition = "char")
+    @Convert(converter = BooleanToCharConverter.class)
+    @Column(nullable = false)
     @Comment("삭제 여부")
     private boolean delYn;
 
     public Product(Long productId, String name, ProductEnums.Type type, int price, boolean useYn, boolean delYn) {
         this.productId = productId;
+        this.name = name;
+        this.type = type;
+        this.price = price;
+        this.useYn = useYn;
+        this.delYn = delYn;
+    }
+
+    public Product(String name, ProductEnums.Type type, int price, boolean useYn, boolean delYn) {
         this.name = name;
         this.type = type;
         this.price = price;

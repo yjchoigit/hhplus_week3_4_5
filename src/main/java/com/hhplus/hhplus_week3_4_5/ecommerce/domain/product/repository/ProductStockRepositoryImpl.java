@@ -18,4 +18,9 @@ public class ProductStockRepositoryImpl implements ProductStockRepository {
         }
         return productStockJpaRepository.findByProduct_ProductId(productId);
     }
+
+    @Override
+    public ProductStock save(ProductStock productStock) {
+        return productStockJpaRepository.save(productStock);
+    }
 }
