@@ -4,12 +4,10 @@ import com.hhplus.hhplus_week3_4_5.ecommerce.domain.base.entity.CreateModifyDate
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.ProductEnums;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 
-import java.math.BigDecimal;
 import java.util.Objects;
 
 @Getter
@@ -41,22 +39,11 @@ public class ProductOption extends CreateModifyDateTimeEntity {
 
     @Column(nullable = false)
     @Comment("옵션 가격")
-    private BigDecimal price;
+    private int price;
 
     @Column(nullable = false, columnDefinition = "char(1)")
     @Comment("사용 여부")
     private boolean useYn;
-
-    @Builder
-    public ProductOption(Long productOptionId, Product product, ProductEnums.OptionType type, String optionName, String optionValue, BigDecimal price, boolean useYn) {
-        this.productOptionId = productOptionId;
-        this.product = product;
-        this.type = type;
-        this.optionName = optionName;
-        this.optionValue = optionValue;
-        this.price = price;
-        this.useYn = useYn;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -69,5 +56,11 @@ public class ProductOption extends CreateModifyDateTimeEntity {
     @Override
     public int hashCode() {
         return Objects.hashCode(getProductOptionId());
+    }
+
+    public void validate() {
+        if(!this.isUseYn()) {
+            throw new IllegalArgumentException("사용하지 않는 상품 옵션입니다.");
+        }
     }
 }

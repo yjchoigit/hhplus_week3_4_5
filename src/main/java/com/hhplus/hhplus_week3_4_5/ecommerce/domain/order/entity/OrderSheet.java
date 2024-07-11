@@ -1,6 +1,6 @@
 package com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.entity;
 
-import com.hhplus.hhplus_week3_4_5.ecommerce.domain.base.entity.CreateDateTimeEntity;
+import com.hhplus.hhplus_week3_4_5.ecommerce.domain.base.entity.CreateModifyDateTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -13,7 +13,7 @@ import java.util.Objects;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class OrderSheet extends CreateDateTimeEntity {
+public class OrderSheet extends CreateModifyDateTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Comment("주문서 id")
@@ -30,6 +30,10 @@ public class OrderSheet extends CreateDateTimeEntity {
     @Column(nullable = false)
     @Comment("총 구매 수량")
     private int allBuyCnt;
+
+    @Column(nullable = false)
+    @Comment("총 상품 가격")
+    private int totalPrice;
 
     @Comment("주문서 만료일")
     private LocalDateTime expireDatetime;

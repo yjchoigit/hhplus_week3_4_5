@@ -41,6 +41,12 @@ public class PointHistory extends CreateDateTimeEntity {
         this.usePoint = usePoint;
     }
 
+    public PointHistory(Point point, PointEnums.Type type, int usePoint) {
+        this.point = point;
+        this.type = type;
+        this.usePoint = usePoint;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

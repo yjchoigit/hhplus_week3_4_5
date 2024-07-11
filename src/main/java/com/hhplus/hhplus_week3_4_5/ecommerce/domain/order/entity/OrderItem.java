@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 
-import java.math.BigDecimal;
 import java.util.Objects;
 
 @Getter
@@ -23,7 +22,7 @@ public class OrderItem extends CreateModifyDateTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
     @Comment("주문 id")
-    private Orders orders;
+    private Order order;
 
     @Column(nullable = false)
     @Comment("상품 id")
@@ -41,7 +40,7 @@ public class OrderItem extends CreateModifyDateTimeEntity {
 
     @Column(nullable = false)
     @Comment("상품 가격")
-    private BigDecimal productPrice;
+    private int productPrice;
 
     @Column(nullable = false)
     @Comment("구매 수량")

@@ -1,5 +1,6 @@
-package com.hhplus.hhplus_week3_4_5.ecommerce.infrastructure.apiClient;
+package com.hhplus.hhplus_week3_4_5.ecommerce.infrastructure.apiClient.order;
 
+import com.hhplus.hhplus_week3_4_5.ecommerce.infrastructure.apiClient.order.dto.SendOrderToCollectionDto;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -11,8 +12,8 @@ public class OrderCollectApiClient {
         this.restTemplate = new RestTemplate();
     }
 
-    public void sendOrderToCollectionPlatform(String json) {
+    public void sendOrderToCollectionPlatform(SendOrderToCollectionDto dto) {
         String url = "http://mockapi/order-collection";
-        restTemplate.postForObject(url, json, String.class);
+        restTemplate.postForObject(url, dto, SendOrderToCollectionDto.class);
     }
 }

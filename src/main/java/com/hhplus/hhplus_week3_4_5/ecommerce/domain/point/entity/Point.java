@@ -37,4 +37,14 @@ public class Point extends CreateModifyDateTimeEntity {
     public int hashCode() {
         return Objects.hashCode(getPointId());
     }
+
+    // 잔액 충전
+    public void charge(int point) {
+        this.allPoint += point;
+    }
+
+    // 잔액 사용
+    public void use(int point) {
+        this.allPoint -= point;
+    }
 }

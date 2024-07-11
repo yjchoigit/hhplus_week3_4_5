@@ -1,13 +1,13 @@
 package com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.entity;
 
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.base.entity.CreateModifyDateTimeEntity;
+import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.OrderEnums;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 
-import java.math.BigDecimal;
 import java.util.Objects;
 
 @Getter
@@ -40,11 +40,16 @@ public class OrderItemSheet extends CreateModifyDateTimeEntity {
 
     @Column(nullable = false)
     @Comment("상품 가격")
-    private BigDecimal productPrice;
+    private int productPrice;
 
     @Column(nullable = false)
     @Comment("구매 수량")
     private int buyCnt;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @Comment("주문 상태 Enum")
+    private OrderEnums.Status status;
 
     @Override
     public boolean equals(Object o) {

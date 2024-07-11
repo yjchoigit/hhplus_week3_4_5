@@ -3,7 +3,6 @@ package com.hhplus.hhplus_week3_4_5.ecommerce.controller.order.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -14,10 +13,12 @@ public record GetOrderApiResDto(
     String orderNumber,
     @Schema(description = "총 구매 수량")
     int allBuyCnt,
+    @Schema(description = "총 상품 금액")
+    int totalPrice,
     @Schema(description = "주문 일시")
     LocalDateTime createDatetime,
     @Schema(description = "주문 품목 리스트")
-    List<GetOrderItemApiResDto> items
+    List<GetOrderItemApiResDto> orderItemList
 
 ) implements Serializable {
     
@@ -33,7 +34,7 @@ public record GetOrderApiResDto(
             @Schema(description = "상품 옵션 명")
             Long productOptionName,
             @Schema(description = "상품 금액")
-            BigDecimal productPrice,
+            int productPrice,
             @Schema(description = "구매 수량")
             int buyCnt
             ) implements Serializable {

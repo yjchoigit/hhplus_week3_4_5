@@ -4,12 +4,10 @@ import com.hhplus.hhplus_week3_4_5.ecommerce.domain.base.entity.CreateModifyDate
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.ProductEnums;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 
-import java.math.BigDecimal;
 import java.util.Objects;
 
 @Getter
@@ -32,7 +30,7 @@ public class Product extends CreateModifyDateTimeEntity {
 
     @Column(nullable = false)
     @Comment("상품 가격")
-    private BigDecimal price;
+    private int price;
 
     @Column(nullable = false, columnDefinition = "char")
     @Comment("사용 여부")
@@ -41,16 +39,6 @@ public class Product extends CreateModifyDateTimeEntity {
     @Column(nullable = false, columnDefinition = "char")
     @Comment("삭제 여부")
     private boolean delYn;
-
-    @Builder
-    public Product(Long productId, String name, ProductEnums.Type type, BigDecimal price, boolean useYn, boolean delYn) {
-        this.productId = productId;
-        this.name = name;
-        this.type = type;
-        this.price = price;
-        this.useYn = useYn;
-        this.delYn = delYn;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -63,5 +51,14 @@ public class Product extends CreateModifyDateTimeEntity {
     @Override
     public int hashCode() {
         return Objects.hashCode(getProductId());
+    }
+
+    public void validate(){
+        if(this.isDelYn()){
+            throw new IllegalArgumentException("삭제된 상품입니다.");
+        }
+        if(!this.isUseYn()) {
+            throw new IllegalArgumentException("사용하지 않는 상품입니다.");
+        }
     }
 }

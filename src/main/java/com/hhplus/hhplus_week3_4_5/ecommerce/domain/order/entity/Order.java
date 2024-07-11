@@ -13,7 +13,7 @@ import java.util.Objects;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "`order`")
-public class Orders extends CreateModifyDateTimeEntity {
+public class Order extends CreateModifyDateTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Comment("주문 id")
@@ -35,12 +35,16 @@ public class Orders extends CreateModifyDateTimeEntity {
     @Comment("총 구매 수량")
     private int allBuyCnt;
 
+    @Column(nullable = false)
+    @Comment("총 상품 가격")
+    private int totalPrice;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Orders orders = (Orders) o;
-        return Objects.equals(getOrderId(), orders.getOrderId());
+        Order order = (Order) o;
+        return Objects.equals(getOrderId(), order.getOrderId());
     }
 
     @Override

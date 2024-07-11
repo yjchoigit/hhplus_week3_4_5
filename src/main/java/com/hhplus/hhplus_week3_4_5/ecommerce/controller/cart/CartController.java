@@ -21,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CartController {
 
+    // TODO 장바구니 조회 API
     @Operation(summary = "장바구니 조회")
     @ApiResponse(responseCode = "200", description = "성공", content = {@Content(
             mediaType = "application/json",
@@ -33,6 +34,7 @@ public class CartController {
         return list;
     }
 
+    // TODO 장바구니 추가 API
     @Operation(summary = "장바구니 추가")
     @ApiResponse(responseCode = "200", description = "성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Long.class)))
     @PostMapping(value = "/carts/{buyerId}")
@@ -41,6 +43,7 @@ public class CartController {
         return 1L;
     }
 
+    // TODO 장바구니 삭제 API
     @Operation(summary = "장바구니 삭제")
     @ApiResponse(responseCode = "200", description = "성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Boolean.class)))
     @DeleteMapping(value = "/carts/{buyerId}")

@@ -60,4 +60,19 @@ public class ProductStock extends CreateModifyDateTimeEntity {
     public int hashCode() {
         return Objects.hashCode(getProductStockId());
     }
+
+    public void validate(int buyCnt) {
+        // 재고가 0일 때
+        if(this.stock == 0){
+            throw new IllegalArgumentException("재고가 없습니다.");
+        }
+        // 재고가 구매수량보다 적은 경우
+        if(this.stock < buyCnt) {
+            throw new IllegalArgumentException("재고가 부족합니다.");
+        }
+    }
+
+    public void deduct(int buyCnt){
+        this.stock -= buyCnt;
+    }
 }

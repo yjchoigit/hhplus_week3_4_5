@@ -4,7 +4,7 @@ import com.hhplus.hhplus_week3_4_5.ecommerce.controller.product.dto.AddProductAp
 import com.hhplus.hhplus_week3_4_5.ecommerce.controller.product.dto.GetProductApiResDto;
 import com.hhplus.hhplus_week3_4_5.ecommerce.controller.product.dto.GetProductRankingApiResDto;
 import com.hhplus.hhplus_week3_4_5.ecommerce.controller.product.dto.PutProductApiReqDto;
-import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.ProductEnums;
+import com.hhplus.hhplus_week3_4_5.ecommerce.facade.product.ProductStockFacade;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -14,26 +14,25 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 @Tag(name = "/products", description = "상품 API")
 @RestController
 @RequiredArgsConstructor
+@Validated
 public class ProductController {
+
+    private final ProductStockFacade productStockFacade;
 
     @Operation(summary = "상품 조회")
     @ApiResponse(responseCode = "200", description = "성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GetProductApiResDto.class)))
     @GetMapping(value = "/products/{productId}")
     public GetProductApiResDto product(@PathVariable(name = "productId") @Schema(description = "상품 ID") @NotNull Long productId) {
-        List<GetProductApiResDto.GetProductOptionApiResDto.GetProductOptionValueApiResDto> list = new ArrayList<>();
-        list.add(new GetProductApiResDto.GetProductOptionApiResDto.GetProductOptionValueApiResDto(1L, "빨강", BigDecimal.valueOf(200)));
-
-        GetProductApiResDto.GetProductOptionApiResDto option = new GetProductApiResDto.GetProductOptionApiResDto(ProductEnums.OptionType.BASIC, "색깔", list);
-        return new GetProductApiResDto(1L, "A 운동화", ProductEnums.Type.OPTION, BigDecimal.valueOf(1000), option);
+        return productStockFacade.findProductInfo(productId);
     }
 
     @Operation(summary = "상위 상품 조회")
@@ -41,14 +40,15 @@ public class ProductController {
             mediaType = "application/json",
             array = @ArraySchema(schema = @Schema(implementation = GetProductRankingApiResDto.class))
     )})    @GetMapping(value = "/products/ranking")
-    public List<GetProductRankingApiResDto> productRanking(@RequestParam(name = "type") @Schema(description = "상품 랭킹 타입 Enum") ProductEnums.Ranking type) {
+    public List<GetProductRankingApiResDto> productRanking() {
         List<GetProductRankingApiResDto> list = new ArrayList<>();
         list.add(new GetProductRankingApiResDto(1L, "A 운동화"));
         list.add(new GetProductRankingApiResDto(2L, "B 시계"));
         list.add(new GetProductRankingApiResDto(3L, "C 가방"));
         return list;
     }
-
+    
+    // TODO 상품 등록 API
     @Operation(summary = "상품 등록")
     @ApiResponse(responseCode = "200", description = "성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Long.class)))
     @PostMapping(value = "/products")
@@ -56,6 +56,7 @@ public class ProductController {
         return 1L;
     }
 
+    // TODO 상품 수정 API
     @Operation(summary = "상품 수정")
     @ApiResponse(responseCode = "200", description = "성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Boolean.class)))
     @PatchMapping(value = "/products/{productId}")
@@ -64,6 +65,7 @@ public class ProductController {
         return true;
     }
 
+    // TODO 상품 삭제 API
     @Operation(summary = "상품 삭제")
     @ApiResponse(responseCode = "200", description = "성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Boolean.class)))
     @DeleteMapping(value = "/products/{productId}")
