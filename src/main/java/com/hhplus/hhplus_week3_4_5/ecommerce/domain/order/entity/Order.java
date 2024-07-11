@@ -3,6 +3,7 @@ package com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.entity;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.base.entity.CreateModifyDateTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
@@ -38,6 +39,15 @@ public class Order extends CreateModifyDateTimeEntity {
     @Column(nullable = false)
     @Comment("총 상품 가격")
     private int totalPrice;
+
+    @Builder
+    public Order(String orderNumber, Long buyerId, String buyerName, int allBuyCnt, int totalPrice) {
+        this.orderNumber = orderNumber;
+        this.buyerId = buyerId;
+        this.buyerName = buyerName;
+        this.allBuyCnt = allBuyCnt;
+        this.totalPrice = totalPrice;
+    }
 
     @Override
     public boolean equals(Object o) {

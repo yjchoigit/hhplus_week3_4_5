@@ -4,6 +4,7 @@ import com.hhplus.hhplus_week3_4_5.ecommerce.domain.base.entity.CreateModifyDate
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.ProductEnums;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
@@ -39,6 +40,15 @@ public class Product extends CreateModifyDateTimeEntity {
     @Column(nullable = false, columnDefinition = "char")
     @Comment("삭제 여부")
     private boolean delYn;
+
+    @Builder
+    public Product(String name, ProductEnums.Type type, int price, boolean useYn, boolean delYn) {
+        this.name = name;
+        this.type = type;
+        this.price = price;
+        this.useYn = useYn;
+        this.delYn = delYn;
+    }
 
     @Override
     public boolean equals(Object o) {

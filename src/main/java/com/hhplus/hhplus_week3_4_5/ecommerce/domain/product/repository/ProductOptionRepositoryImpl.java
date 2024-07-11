@@ -22,4 +22,9 @@ public class ProductOptionRepositoryImpl implements ProductOptionRepository {
     public ProductOption findProductOptionByProductIdAndProductOptionId(Long productId, Long productOptionId) {
         return productOptionJpaRepository.findProductOptionByProduct_productIdAndProductOptionId(productId, productOptionId);
     }
+
+    @Override
+    public ProductOption save(ProductOption productOption) {
+        return productOptionJpaRepository.save(productOption);
+    }
 }

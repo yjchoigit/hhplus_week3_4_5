@@ -2,7 +2,7 @@ package com.hhplus.hhplus_week3_4_5.ecommerce.controller.order;
 
 import com.hhplus.hhplus_week3_4_5.ecommerce.controller.order.dto.CreateOrderApiReqDto;
 import com.hhplus.hhplus_week3_4_5.ecommerce.controller.order.dto.CreateOrderSheetApiReqDto;
-import com.hhplus.hhplus_week3_4_5.ecommerce.controller.order.dto.GetOrderApiResDto;
+import com.hhplus.hhplus_week3_4_5.ecommerce.controller.order.dto.FindOrderApiResDto;
 import com.hhplus.hhplus_week3_4_5.ecommerce.facade.order.OrderPaymentFacade;
 import com.hhplus.hhplus_week3_4_5.ecommerce.service.order.OrderService;
 import com.hhplus.hhplus_week3_4_5.ecommerce.service.order.OrderSheetService;
@@ -42,10 +42,10 @@ public class OrderController {
     }
     
     @Operation(summary = "주문 조회")
-    @ApiResponse(responseCode = "200", description = "성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GetOrderApiResDto.class)))
+    @ApiResponse(responseCode = "200", description = "성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = FindOrderApiResDto.class)))
     @GetMapping(value = "/orders/{buyerId}")
-    public GetOrderApiResDto findOrder(@PathVariable(name = "buyerId") @Schema(description = "회원 ID") @NotNull Long buyerId,
-                                    @RequestParam(name = "orderId") @Schema(description = "주문 ID") @NotNull Long orderId){
+    public FindOrderApiResDto findOrder(@PathVariable(name = "buyerId") @Schema(description = "회원 ID") @NotNull Long buyerId,
+                                        @RequestParam(name = "orderId") @Schema(description = "주문 ID") @NotNull Long orderId){
         return orderService.findOrder(buyerId, orderId);
     }
 }

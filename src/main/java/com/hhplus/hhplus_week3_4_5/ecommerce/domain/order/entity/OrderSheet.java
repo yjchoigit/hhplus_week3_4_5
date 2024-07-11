@@ -3,6 +3,7 @@ package com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.entity;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.base.entity.CreateModifyDateTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
@@ -37,6 +38,15 @@ public class OrderSheet extends CreateModifyDateTimeEntity {
 
     @Comment("주문서 만료일")
     private LocalDateTime expireDatetime;
+
+    @Builder
+    public OrderSheet(Long buyerId, String buyerName, int allBuyCnt, int totalPrice, LocalDateTime expireDatetime) {
+        this.buyerId = buyerId;
+        this.buyerName = buyerName;
+        this.allBuyCnt = allBuyCnt;
+        this.totalPrice = totalPrice;
+        this.expireDatetime = expireDatetime;
+    }
 
     @Override
     public boolean equals(Object o) {

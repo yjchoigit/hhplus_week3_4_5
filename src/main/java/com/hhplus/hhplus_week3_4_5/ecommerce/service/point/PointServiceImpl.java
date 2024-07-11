@@ -1,6 +1,6 @@
 package com.hhplus.hhplus_week3_4_5.ecommerce.service.point;
 
-import com.hhplus.hhplus_week3_4_5.ecommerce.controller.point.dto.GetPointHistoryApiResDto;
+import com.hhplus.hhplus_week3_4_5.ecommerce.controller.point.dto.FindPointHistoryApiResDto;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.point.PointEnums;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.point.entity.Point;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.point.entity.PointHistory;
@@ -56,7 +56,7 @@ public class PointServiceImpl implements PointService {
     }
 
     @Override
-    public List<GetPointHistoryApiResDto> findPointHistoryList(Long buyerId) {
+    public List<FindPointHistoryApiResDto> findPointHistoryList(Long buyerId) {
         // 회원 id로 잔액 정보 조회
         Point pointInfo = pointRepository.findByBuyerId(buyerId);
         // 잔액 id로 내역 조회
@@ -64,6 +64,6 @@ public class PointServiceImpl implements PointService {
         if(pointHistoryList.isEmpty()){
             return new ArrayList<>();
         }
-        return pointHistoryList.stream().map(GetPointHistoryApiResDto::from).toList();
+        return pointHistoryList.stream().map(FindPointHistoryApiResDto::from).toList();
     }
 }

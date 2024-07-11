@@ -1,6 +1,6 @@
 package com.hhplus.hhplus_week3_4_5.ecommerce.controller.point;
 
-import com.hhplus.hhplus_week3_4_5.ecommerce.controller.point.dto.GetPointHistoryApiResDto;
+import com.hhplus.hhplus_week3_4_5.ecommerce.controller.point.dto.FindPointHistoryApiResDto;
 import com.hhplus.hhplus_week3_4_5.ecommerce.service.point.PointService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -41,10 +41,10 @@ public class PointController {
     @Operation(summary = "잔액 내역 조회")
     @ApiResponse(responseCode = "200", description = "성공", content = {@Content(
             mediaType = "application/json",
-            array = @ArraySchema(schema = @Schema(implementation = GetPointHistoryApiResDto.class))
+            array = @ArraySchema(schema = @Schema(implementation = FindPointHistoryApiResDto.class))
     )})
     @GetMapping(value = "/points/history/{buyerId}")
-    public List<GetPointHistoryApiResDto> findPointHistoryList(@PathVariable(name = "buyerId") @Schema(description = "회원 ID") @NotNull Long buyerId) {
+    public List<FindPointHistoryApiResDto> findPointHistoryList(@PathVariable(name = "buyerId") @Schema(description = "회원 ID") @NotNull Long buyerId) {
         return pointService.findPointHistoryList(buyerId);
     }
 }

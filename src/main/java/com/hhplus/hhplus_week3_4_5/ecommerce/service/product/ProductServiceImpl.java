@@ -1,5 +1,6 @@
 package com.hhplus.hhplus_week3_4_5.ecommerce.service.product;
 
+import com.hhplus.hhplus_week3_4_5.ecommerce.controller.product.dto.AddProductApiReqDto;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.entity.Product;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.entity.ProductOption;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.repository.ProductOptionRepository;
@@ -51,6 +52,30 @@ public class ProductServiceImpl implements ProductService {
             return new ArrayList<>();
         }
         return productOptionList;
+    }
+
+    @Override
+    public Long addProduct(AddProductApiReqDto reqDto) {
+        // 상품 등록
+        Product product = productRepository.save(Product.builder()
+                        .name(reqDto.name())
+                        .type(reqDto.type())
+                        .price(reqDto.price())
+                        .useYn(reqDto.useYn())
+                        .delYn(false)
+                .build());
+        // 상품 옵션 등록
+        for(AddProductApiReqDto.AddProductOptionApiReqDto dto : reqDto.optionList()){
+            productOptionRepository.save(ProductOption.builder()
+                            .product(product)
+                            .type(dto.optionType())
+                            .optionName(dto.name())
+                            .optionValue(dto.value())
+                            .price(dto.price())
+                            .useYn(dto.useYn())
+                    .build());
+        }
+        return product.getProductId();
     }
 
 

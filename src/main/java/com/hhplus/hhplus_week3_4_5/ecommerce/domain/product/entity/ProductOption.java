@@ -4,6 +4,7 @@ import com.hhplus.hhplus_week3_4_5.ecommerce.domain.base.entity.CreateModifyDate
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.ProductEnums;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
@@ -44,6 +45,16 @@ public class ProductOption extends CreateModifyDateTimeEntity {
     @Column(nullable = false, columnDefinition = "char(1)")
     @Comment("사용 여부")
     private boolean useYn;
+
+    @Builder
+    public ProductOption(Product product, ProductEnums.OptionType type, String optionName, String optionValue, int price, boolean useYn) {
+        this.product = product;
+        this.type = type;
+        this.optionName = optionName;
+        this.optionValue = optionValue;
+        this.price = price;
+        this.useYn = useYn;
+    }
 
     @Override
     public boolean equals(Object o) {

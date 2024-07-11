@@ -25,7 +25,7 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
     }
 
     @Override
-    public List<Object[]> findTop5ProductsBySales(LocalDateTime startDatetime, LocalDateTime endDatetime) {
-        return null;
+    public List<Object[]> findTopProductsByBuyCnt(LocalDateTime startDatetime, LocalDateTime endDatetime) {
+        return orderItemJpaRepository.findTopProductsByBuyCnt(startDatetime, endDatetime);
     }
 }

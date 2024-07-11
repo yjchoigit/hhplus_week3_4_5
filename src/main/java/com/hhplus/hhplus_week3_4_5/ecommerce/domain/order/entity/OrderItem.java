@@ -4,6 +4,7 @@ import com.hhplus.hhplus_week3_4_5.ecommerce.domain.base.entity.CreateModifyDate
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.OrderEnums;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
@@ -50,6 +51,18 @@ public class OrderItem extends CreateModifyDateTimeEntity {
     @Column(nullable = false)
     @Comment("주문 상태 Enum")
     private OrderEnums.Status status;
+
+    @Builder
+    public OrderItem(Order order, Long productId, String productName, Long productOptionId, String productOptionName, int productPrice, int buyCnt, OrderEnums.Status status) {
+        this.order = order;
+        this.productId = productId;
+        this.productName = productName;
+        this.productOptionId = productOptionId;
+        this.productOptionName = productOptionName;
+        this.productPrice = productPrice;
+        this.buyCnt = buyCnt;
+        this.status = status;
+    }
 
     @Override
     public boolean equals(Object o) {

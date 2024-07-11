@@ -9,5 +9,5 @@ public interface OrderItemRepository {
     void save(OrderItem orderItem);
     List<OrderItem> findByOrderId(Long orderId);
 
-    List<Object[]> findTop5ProductsBySales(LocalDateTime startDatetime, LocalDateTime endDatetime);
+    List<Object[]> findTopProductsByBuyCnt(LocalDateTime startDatetime, LocalDateTime endDatetime);
 }

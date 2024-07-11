@@ -21,25 +21,19 @@ public record PutProductApiReqDto(
 ) implements Serializable {
 
     public record PutProductOptionApiReqDto(
+        @Schema(description = "상품 옵션 ID")
+        Long productOptionId,
         @Schema(description = "상품 옵션 타입 Enum")
         ProductEnums.OptionType optionType,
         @Schema(description = "상품 옵션 명")
         String name,
-        @Schema(description = "상품 옵션 값 리스트")
-        List<PutProductOptionValueApiReqDto> list
+        @Schema(description = "상품 옵션 값")
+        String value,
+        @Schema(description = "상품 옵션 가격")
+        int price,
+        @Schema(description = "사용 여부")
+        boolean useYn
     ) implements Serializable {
 
-        public record PutProductOptionValueApiReqDto(
-                @Schema(description = "상품 옵션 ID")
-                Long productOptionId,
-                @Schema(description = "상품 옵션 값")
-                String value,
-                @Schema(description = "상품 옵션 가격")
-                int price,
-                @Schema(description = "사용 여부")
-                boolean useYn
-        ) implements Serializable {
-            
-        }
     }
 }

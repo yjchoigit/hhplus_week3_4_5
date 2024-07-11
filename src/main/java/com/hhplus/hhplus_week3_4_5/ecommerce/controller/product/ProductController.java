@@ -1,10 +1,12 @@
 package com.hhplus.hhplus_week3_4_5.ecommerce.controller.product;
 
 import com.hhplus.hhplus_week3_4_5.ecommerce.controller.product.dto.AddProductApiReqDto;
-import com.hhplus.hhplus_week3_4_5.ecommerce.controller.product.dto.GetProductApiResDto;
-import com.hhplus.hhplus_week3_4_5.ecommerce.controller.product.dto.GetProductRankingApiResDto;
+import com.hhplus.hhplus_week3_4_5.ecommerce.controller.product.dto.FindProductApiResDto;
+import com.hhplus.hhplus_week3_4_5.ecommerce.controller.product.dto.FindProductRankingApiResDto;
 import com.hhplus.hhplus_week3_4_5.ecommerce.controller.product.dto.PutProductApiReqDto;
+import com.hhplus.hhplus_week3_4_5.ecommerce.facade.product.ProductOrderFacade;
 import com.hhplus.hhplus_week3_4_5.ecommerce.facade.product.ProductStockFacade;
+import com.hhplus.hhplus_week3_4_5.ecommerce.service.product.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -27,33 +29,31 @@ import java.util.List;
 public class ProductController {
 
     private final ProductStockFacade productStockFacade;
+    private final ProductOrderFacade productOrderFacade;
+    private final ProductService productService;
 
     @Operation(summary = "상품 조회")
-    @ApiResponse(responseCode = "200", description = "성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GetProductApiResDto.class)))
+    @ApiResponse(responseCode = "200", description = "성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = FindProductApiResDto.class)))
     @GetMapping(value = "/products/{productId}")
-    public GetProductApiResDto product(@PathVariable(name = "productId") @Schema(description = "상품 ID") @NotNull Long productId) {
-        return productStockFacade.findProductInfo(productId);
+    public FindProductApiResDto findProduct(@PathVariable(name = "productId") @Schema(description = "상품 ID") @NotNull Long productId) {
+        return productStockFacade.findProduct(productId);
     }
 
     @Operation(summary = "상위 상품 조회")
     @ApiResponse(responseCode = "200", description = "성공", content = {@Content(
             mediaType = "application/json",
-            array = @ArraySchema(schema = @Schema(implementation = GetProductRankingApiResDto.class))
+            array = @ArraySchema(schema = @Schema(implementation = FindProductRankingApiResDto.class))
     )})    @GetMapping(value = "/products/ranking")
-    public List<GetProductRankingApiResDto> productRanking() {
-        List<GetProductRankingApiResDto> list = new ArrayList<>();
-        list.add(new GetProductRankingApiResDto(1L, "A 운동화"));
-        list.add(new GetProductRankingApiResDto(2L, "B 시계"));
-        list.add(new GetProductRankingApiResDto(3L, "C 가방"));
-        return list;
+    public List<FindProductRankingApiResDto> findProductRanking() {
+        return productOrderFacade.findProductRanking();
     }
-    
-    // TODO 상품 등록 API
+
+
     @Operation(summary = "상품 등록")
     @ApiResponse(responseCode = "200", description = "성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Long.class)))
     @PostMapping(value = "/products")
     public Long addProduct(@RequestBody @Valid AddProductApiReqDto reqDto) {
-        return 1L;
+        return productService.addProduct(reqDto);
     }
 
     // TODO 상품 수정 API

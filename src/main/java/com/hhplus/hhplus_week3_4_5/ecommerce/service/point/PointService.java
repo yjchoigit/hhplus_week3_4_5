@@ -1,6 +1,6 @@
 package com.hhplus.hhplus_week3_4_5.ecommerce.service.point;
 
-import com.hhplus.hhplus_week3_4_5.ecommerce.controller.point.dto.GetPointHistoryApiResDto;
+import com.hhplus.hhplus_week3_4_5.ecommerce.controller.point.dto.FindPointHistoryApiResDto;
 
 import java.util.List;
 
@@ -13,5 +13,5 @@ public interface PointService {
     boolean chargePoint(Long buyerId, int point);
 
     boolean usePoint(Long buyerId, int point);
-    List<GetPointHistoryApiResDto> findPointHistoryList(Long buyerId);
+    List<FindPointHistoryApiResDto> findPointHistoryList(Long buyerId);
 }

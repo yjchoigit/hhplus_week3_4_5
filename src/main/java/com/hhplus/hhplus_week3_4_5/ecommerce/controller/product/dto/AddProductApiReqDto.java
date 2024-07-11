@@ -16,7 +16,7 @@ public record AddProductApiReqDto(
         @Schema(description = "사용 여부")
         boolean useYn,
         @Schema(description = "상품 옵션 리스트")
-        AddProductOptionApiReqDto option
+        List<AddProductOptionApiReqDto> optionList
 
 ) implements Serializable {
 
@@ -25,19 +25,12 @@ public record AddProductApiReqDto(
         ProductEnums.OptionType optionType,
         @Schema(description = "상품 옵션 명")
         String name,
-        @Schema(description = "상품 옵션 값 리스트")
-        List<AddProductOptionValueApiReqDto> list
+        @Schema(description = "상품 옵션 값")
+        String value,
+        @Schema(description = "상품 옵션 가격")
+        int price,
+        @Schema(description = "사용 여부")
+        boolean useYn
     ) implements Serializable {
-
-        public record AddProductOptionValueApiReqDto(
-                @Schema(description = "상품 옵션 값")
-                String value,
-                @Schema(description = "상품 옵션 가격")
-                int price,
-                @Schema(description = "사용 여부")
-                boolean useYn
-        ) implements Serializable {
-            
-        }
     }
 }

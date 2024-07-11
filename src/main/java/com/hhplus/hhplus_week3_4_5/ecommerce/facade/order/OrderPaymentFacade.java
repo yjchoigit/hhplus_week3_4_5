@@ -1,7 +1,7 @@
 package com.hhplus.hhplus_week3_4_5.ecommerce.facade.order;
 
 import com.hhplus.hhplus_week3_4_5.ecommerce.controller.order.dto.CreateOrderApiReqDto;
-import com.hhplus.hhplus_week3_4_5.ecommerce.controller.order.dto.GetOrderApiResDto;
+import com.hhplus.hhplus_week3_4_5.ecommerce.controller.order.dto.FindOrderApiResDto;
 import com.hhplus.hhplus_week3_4_5.ecommerce.infrastructure.apiClient.order.OrderCollectApiClient;
 import com.hhplus.hhplus_week3_4_5.ecommerce.infrastructure.apiClient.order.dto.SendOrderToCollectionDto;
 import com.hhplus.hhplus_week3_4_5.ecommerce.service.order.OrderService;
@@ -33,7 +33,7 @@ public class OrderPaymentFacade {
         // 주문 생성 진행
         Long orderId = orderService.createOrder(reqDto);
         // 주문 정보 조회
-        GetOrderApiResDto orderInfo = orderService.findOrder(reqDto.buyerId(), orderId);
+        FindOrderApiResDto orderInfo = orderService.findOrder(reqDto.buyerId(), orderId);
 
         // 주문 데이터 수집 외부 데이터 플랫폼 전달
         sendOrderToCollection(new SendOrderToCollectionDto(orderInfo.orderNumber(), orderInfo.totalPrice(), orderInfo.createDatetime()));

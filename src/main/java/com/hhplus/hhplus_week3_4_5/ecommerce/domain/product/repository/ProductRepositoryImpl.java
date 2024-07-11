@@ -16,4 +16,9 @@ public class ProductRepositoryImpl implements ProductRepository {
     public Product findByProductId(Long productId) {
         return productJpaRepository.findById(productId).orElseThrow(EntityNotFoundException::new);
     }
+
+    @Override
+    public Product save(Product product) {
+        return productJpaRepository.save(product);
+    }
 }

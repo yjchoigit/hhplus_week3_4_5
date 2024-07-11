@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public record GetPointHistoryApiResDto(
+public record FindPointHistoryApiResDto(
         @Schema(description = "잔액 내역 ID")
         Long pointHistoryId,
         @Schema(description = "잔액 타입 Enum")
@@ -17,7 +17,7 @@ public record GetPointHistoryApiResDto(
         @Schema(description = "잔액 내역 등록일")
         LocalDateTime createDatetime
 ) implements Serializable {
-        public static GetPointHistoryApiResDto from(PointHistory pointHistory){
-                return new GetPointHistoryApiResDto(pointHistory.getPointHistoryId(), pointHistory.getType(), pointHistory.getUsePoint(), pointHistory.getCreateDatetime());
+        public static FindPointHistoryApiResDto from(PointHistory pointHistory){
+                return new FindPointHistoryApiResDto(pointHistory.getPointHistoryId(), pointHistory.getType(), pointHistory.getUsePoint(), pointHistory.getCreateDatetime());
         }
 }
