@@ -7,12 +7,14 @@ import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.repository.ProductRe
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.repository.ProductStockRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @AllArgsConstructor
+@Transactional(rollbackFor = {Exception.class}, readOnly = true)
 public class ProductServiceImpl implements ProductService {
     private ProductRepository productRepository;
     private ProductOptionRepository productOptionRepository;

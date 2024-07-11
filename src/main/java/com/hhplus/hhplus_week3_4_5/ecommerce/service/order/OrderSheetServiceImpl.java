@@ -6,6 +6,7 @@ import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.repository.OrderItemSh
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.repository.OrderSheetRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
@@ -14,6 +15,7 @@ public class OrderSheetServiceImpl implements OrderSheetService {
     private OrderItemSheetRepository orderItemSheetRepository;
 
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public Long createOrderSheet(CreateOrderSheetApiReqDto reqDto) {
         // 주문서 등록
         OrderSheet orderSheet = orderSheetRepository.save(null);

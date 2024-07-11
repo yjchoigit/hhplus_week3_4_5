@@ -8,6 +8,7 @@ import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.repository.OrderItemRe
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.repository.OrderRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,11 +16,13 @@ import java.util.List;
 
 @Service
 @AllArgsConstructor
+@Transactional(rollbackFor = {Exception.class}, readOnly = true)
 public class OrderServiceImpl implements OrderService {
     private OrderRepository orderRepository;
     private OrderItemRepository orderItemRepository;
 
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public Long createOrder(CreateOrderApiReqDto reqDto) {
         // 주문 등록
         Order order = orderRepository.save(null);

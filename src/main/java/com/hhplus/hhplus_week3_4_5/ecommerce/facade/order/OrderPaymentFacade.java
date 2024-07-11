@@ -8,9 +8,9 @@ import com.hhplus.hhplus_week3_4_5.ecommerce.service.order.OrderService;
 import com.hhplus.hhplus_week3_4_5.ecommerce.service.point.PointService;
 import com.hhplus.hhplus_week3_4_5.ecommerce.service.product.ProductService;
 import com.hhplus.hhplus_week3_4_5.ecommerce.service.product.ProductStockService;
-import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @AllArgsConstructor
@@ -21,7 +21,7 @@ public class OrderPaymentFacade {
     private ProductStockService productStockService;
     private OrderCollectApiClient orderCollectApiClient;
 
-    @Transactional
+    @Transactional(rollbackFor = {Exception.class})
     public Long createOrder(CreateOrderApiReqDto reqDto){
         // 상품 프로세스 진행 (상품 valid)
         productProcess(reqDto);

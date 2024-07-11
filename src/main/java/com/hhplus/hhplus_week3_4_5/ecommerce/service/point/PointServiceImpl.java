@@ -8,12 +8,14 @@ import com.hhplus.hhplus_week3_4_5.ecommerce.domain.point.repository.PointHistor
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.point.repository.PointRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @AllArgsConstructor
+@Transactional(rollbackFor = {Exception.class}, readOnly = true)
 public class PointServiceImpl implements PointService {
     private PointRepository pointRepository;
     private PointHistoryRepository pointHistoryRepository;
@@ -29,6 +31,7 @@ public class PointServiceImpl implements PointService {
 
     // 잔액 충전
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public boolean chargePoint(Long buyerId, int point){
         // 회원 id로 잔액 정보 조회
         Point pointInfo = pointRepository.findByBuyerId(buyerId);
@@ -38,8 +41,10 @@ public class PointServiceImpl implements PointService {
         pointHistoryRepository.save(new PointHistory(pointInfo, PointEnums.Type.CHARGE, point));
         return true;
     }
+
     // 잔액 사용
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public boolean usePoint(Long buyerId, int point) {
         // 회원 id로 잔액 정보 조회
         Point pointInfo = pointRepository.findByBuyerId(buyerId);

@@ -4,9 +4,11 @@ import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.entity.ProductStock;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.repository.ProductStockRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
+@Transactional(rollbackFor = {Exception.class}, readOnly = true)
 public class ProductStockServiceImpl implements ProductStockService {
     private ProductStockRepository productStockRepository;
 
@@ -21,6 +23,7 @@ public class ProductStockServiceImpl implements ProductStockService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public boolean deductProductStock(Long productId, Long productOptionId, int buyCnt) {
         // 상품 재고 조회
         ProductStock productStock = productStockRepository.findProductStockByProductIdAndProductOptionId(productId, productOptionId);

@@ -9,11 +9,13 @@ import com.hhplus.hhplus_week3_4_5.ecommerce.service.product.ProductService;
 import com.hhplus.hhplus_week3_4_5.ecommerce.service.product.ProductStockService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Component
 @AllArgsConstructor
+@Transactional(rollbackFor = {Exception.class}, readOnly = true)
 public class ProductStockFacade {
     private final ProductService productService;
     private final ProductStockService productStockService;
