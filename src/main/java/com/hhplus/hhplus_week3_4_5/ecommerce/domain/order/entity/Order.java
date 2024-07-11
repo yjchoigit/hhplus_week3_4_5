@@ -40,6 +40,15 @@ public class Order extends CreateModifyDateTimeEntity {
     @Comment("총 상품 가격")
     private int totalPrice;
 
+    public Order(Long orderId, String orderNumber, Long buyerId, String buyerName, int allBuyCnt, int totalPrice) {
+        this.orderId = orderId;
+        this.orderNumber = orderNumber;
+        this.buyerId = buyerId;
+        this.buyerName = buyerName;
+        this.allBuyCnt = allBuyCnt;
+        this.totalPrice = totalPrice;
+    }
+
     @Builder
     public Order(String orderNumber, Long buyerId, String buyerName, int allBuyCnt, int totalPrice) {
         this.orderNumber = orderNumber;

@@ -48,6 +48,15 @@ public class OrderSheet extends CreateModifyDateTimeEntity {
         this.expireDatetime = expireDatetime;
     }
 
+    public OrderSheet(Long orderSheetId, Long buyerId, String buyerName, int allBuyCnt, int totalPrice, LocalDateTime expireDatetime) {
+        this.orderSheetId = orderSheetId;
+        this.buyerId = buyerId;
+        this.buyerName = buyerName;
+        this.allBuyCnt = allBuyCnt;
+        this.totalPrice = totalPrice;
+        this.expireDatetime = expireDatetime;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

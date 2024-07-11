@@ -1,10 +1,12 @@
 package com.hhplus.hhplus_week3_4_5.ecommerce.controller.order.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 
 import java.io.Serializable;
 import java.util.List;
 
+@Builder
 public record CreateOrderApiReqDto(
     @Schema(description = "회원 ID")
     Long buyerId,
@@ -17,6 +19,8 @@ public record CreateOrderApiReqDto(
     @Schema(description = "주문 품목 리스트")
     List<CreateOrderItemApiReqDto> orderItemList
 ) implements Serializable {
+
+    @Builder
     public record CreateOrderItemApiReqDto(
             @Schema(description = "상품 ID")
             Long productId,

@@ -15,8 +15,8 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
     }
 
     @Override
-    public void save(OrderItem orderItem) {
-        orderItemJpaRepository.save(orderItem);
+    public OrderItem save(OrderItem orderItem) {
+        return orderItemJpaRepository.save(orderItem);
     }
 
     @Override

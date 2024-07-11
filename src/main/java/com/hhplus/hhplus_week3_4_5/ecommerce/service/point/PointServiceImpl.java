@@ -52,7 +52,7 @@ public class PointServiceImpl implements PointService {
         pointInfo.use(point);
         // 잔액 사용 내역 저장
         pointHistoryRepository.save(new PointHistory(pointInfo, PointEnums.Type.DEDUCT, point));
-        return false;
+        return true;
     }
 
     @Override
@@ -60,7 +60,7 @@ public class PointServiceImpl implements PointService {
         // 회원 id로 잔액 정보 조회
         Point pointInfo = pointRepository.findByBuyerId(buyerId);
         // 잔액 id로 내역 조회
-        List<PointHistory> pointHistoryList = pointHistoryRepository.findByPointId(1L);
+        List<PointHistory> pointHistoryList = pointHistoryRepository.findByPointId(pointInfo.getPointId());
         if(pointHistoryList.isEmpty()){
             return new ArrayList<>();
         }

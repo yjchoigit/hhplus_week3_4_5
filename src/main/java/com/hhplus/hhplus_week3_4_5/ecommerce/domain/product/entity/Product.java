@@ -14,6 +14,7 @@ import java.util.Objects;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
+@Builder
 public class Product extends CreateModifyDateTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,8 +42,8 @@ public class Product extends CreateModifyDateTimeEntity {
     @Comment("삭제 여부")
     private boolean delYn;
 
-    @Builder
-    public Product(String name, ProductEnums.Type type, int price, boolean useYn, boolean delYn) {
+    public Product(Long productId, String name, ProductEnums.Type type, int price, boolean useYn, boolean delYn) {
+        this.productId = productId;
         this.name = name;
         this.type = type;
         this.price = price;

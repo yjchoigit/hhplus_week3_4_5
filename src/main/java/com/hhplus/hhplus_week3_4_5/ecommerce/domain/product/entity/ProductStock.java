@@ -48,6 +48,7 @@ public class ProductStock extends CreateModifyDateTimeEntity {
         this.stock = stock;
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

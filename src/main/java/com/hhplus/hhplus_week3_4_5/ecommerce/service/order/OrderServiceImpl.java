@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +30,7 @@ public class OrderServiceImpl implements OrderService {
     public Long createOrder(CreateOrderApiReqDto reqDto) {
         // 주문 등록
         Order order = orderRepository.save(Order.builder()
-                        .orderNumber("202407110001")
+                        .orderNumber(generateOrderNumber())
                         .buyerId(reqDto.buyerId())
                         .buyerName(reqDto.buyerName())
                         .allBuyCnt(reqDto.allBuyCnt())
@@ -79,5 +80,10 @@ public class OrderServiceImpl implements OrderService {
             return new ArrayList<>();
         }
         return top5ProductList;
+    }
+
+    private static String generateOrderNumber() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS");
+        return LocalDateTime.now().format(formatter);
     }
 }

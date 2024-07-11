@@ -46,6 +46,16 @@ public class ProductOption extends CreateModifyDateTimeEntity {
     @Comment("사용 여부")
     private boolean useYn;
 
+    public ProductOption(Long productOptionId, Product product, ProductEnums.OptionType type, String optionName, String optionValue, int price, boolean useYn) {
+        this.productOptionId = productOptionId;
+        this.product = product;
+        this.type = type;
+        this.optionName = optionName;
+        this.optionValue = optionValue;
+        this.price = price;
+        this.useYn = useYn;
+    }
+
     @Builder
     public ProductOption(Product product, ProductEnums.OptionType type, String optionName, String optionValue, int price, boolean useYn) {
         this.product = product;

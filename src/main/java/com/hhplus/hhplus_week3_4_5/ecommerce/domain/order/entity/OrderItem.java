@@ -52,6 +52,18 @@ public class OrderItem extends CreateModifyDateTimeEntity {
     @Comment("주문 상태 Enum")
     private OrderEnums.Status status;
 
+    public OrderItem(Long orderItemId, Order order, Long productId, String productName, Long productOptionId, String productOptionName, int productPrice, int buyCnt, OrderEnums.Status status) {
+        this.orderItemId = orderItemId;
+        this.order = order;
+        this.productId = productId;
+        this.productName = productName;
+        this.productOptionId = productOptionId;
+        this.productOptionName = productOptionName;
+        this.productPrice = productPrice;
+        this.buyCnt = buyCnt;
+        this.status = status;
+    }
+
     @Builder
     public OrderItem(Order order, Long productId, String productName, Long productOptionId, String productOptionName, int productPrice, int buyCnt, OrderEnums.Status status) {
         this.order = order;

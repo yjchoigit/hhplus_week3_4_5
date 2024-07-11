@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface OrderItemRepository {
-    void save(OrderItem orderItem);
+    OrderItem save(OrderItem orderItem);
     List<OrderItem> findByOrderId(Long orderId);
 
     List<Object[]> findTopProductsByBuyCnt(LocalDateTime startDatetime, LocalDateTime endDatetime);

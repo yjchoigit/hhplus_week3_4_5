@@ -19,7 +19,6 @@ import java.util.List;
 public class ProductServiceImpl implements ProductService {
     private ProductRepository productRepository;
     private ProductOptionRepository productOptionRepository;
-    private ProductStockRepository productStockRepository;
 
     @Override
     public Product findProductByProductId(Long productId) {

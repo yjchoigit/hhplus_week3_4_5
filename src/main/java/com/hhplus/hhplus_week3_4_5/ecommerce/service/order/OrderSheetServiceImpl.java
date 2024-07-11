@@ -1,6 +1,7 @@
 package com.hhplus.hhplus_week3_4_5.ecommerce.service.order;
 
 import com.hhplus.hhplus_week3_4_5.ecommerce.controller.order.dto.CreateOrderSheetApiReqDto;
+import com.hhplus.hhplus_week3_4_5.ecommerce.controller.order.dto.CreateOrderSheetApiResDto;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.OrderEnums;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.entity.OrderItemSheet;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.entity.OrderSheet;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -20,7 +22,7 @@ public class OrderSheetServiceImpl implements OrderSheetService {
 
     @Override
     @Transactional(rollbackFor = {Exception.class})
-    public Long createOrderSheet(CreateOrderSheetApiReqDto reqDto) {
+    public CreateOrderSheetApiResDto createOrderSheet(CreateOrderSheetApiReqDto reqDto) {
         // 주문서 등록
         OrderSheet orderSheet = orderSheetRepository.save(OrderSheet.builder()
                         .buyerId(reqDto.buyerId())
@@ -43,7 +45,17 @@ public class OrderSheetServiceImpl implements OrderSheetService {
                             .status(OrderEnums.Status.WAIT)
                     .build());
         }
+        
+        // 주문서 조회
+        OrderSheet orderSheetInfo = orderSheetRepository.findByOrderSheetId(orderSheet.getOrderSheetId());
 
-        return orderSheet.getOrderSheetId();
+        // 주문서 품목 조회
+        List<OrderItemSheet> orderItemSheetList = orderItemSheetRepository.findByOrderSheetId(orderSheetInfo.getOrderSheetId());
+
+        List<CreateOrderSheetApiResDto.CreateOrderItemSheetApiResDto> list = orderItemSheetList.stream()
+                        .map(CreateOrderSheetApiResDto.CreateOrderItemSheetApiResDto::from)
+                                .toList();
+
+        return CreateOrderSheetApiResDto.from(orderSheetInfo, list);
     }
 }

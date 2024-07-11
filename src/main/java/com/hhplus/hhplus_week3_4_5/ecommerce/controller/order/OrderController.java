@@ -2,6 +2,7 @@ package com.hhplus.hhplus_week3_4_5.ecommerce.controller.order;
 
 import com.hhplus.hhplus_week3_4_5.ecommerce.controller.order.dto.CreateOrderApiReqDto;
 import com.hhplus.hhplus_week3_4_5.ecommerce.controller.order.dto.CreateOrderSheetApiReqDto;
+import com.hhplus.hhplus_week3_4_5.ecommerce.controller.order.dto.CreateOrderSheetApiResDto;
 import com.hhplus.hhplus_week3_4_5.ecommerce.controller.order.dto.FindOrderApiResDto;
 import com.hhplus.hhplus_week3_4_5.ecommerce.facade.order.OrderPaymentFacade;
 import com.hhplus.hhplus_week3_4_5.ecommerce.service.order.OrderService;
@@ -28,9 +29,9 @@ public class OrderController {
     private final OrderService orderService;
 
     @Operation(summary = "주문서 생성")
-    @ApiResponse(responseCode = "200", description = "성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Long.class)))
+    @ApiResponse(responseCode = "200", description = "성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = CreateOrderSheetApiResDto.class)))
     @PostMapping(value = "/orders/sheet")
-    public Long createOrderSheet(@RequestBody @Valid CreateOrderSheetApiReqDto reqDto){
+    public CreateOrderSheetApiResDto createOrderSheet(@RequestBody @Valid CreateOrderSheetApiReqDto reqDto){
         return orderSheetService.createOrderSheet(reqDto);
     }
 
@@ -40,7 +41,7 @@ public class OrderController {
     public Long createOrder(@RequestBody @Valid CreateOrderApiReqDto reqDto){
         return orderPaymentFacade.createOrder(reqDto);
     }
-    
+
     @Operation(summary = "주문 조회")
     @ApiResponse(responseCode = "200", description = "성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = FindOrderApiResDto.class)))
     @GetMapping(value = "/orders/{buyerId}")
