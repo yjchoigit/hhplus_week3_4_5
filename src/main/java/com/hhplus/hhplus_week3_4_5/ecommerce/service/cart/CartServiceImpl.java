@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -17,20 +18,13 @@ public class CartServiceImpl implements CartService {
     private CartRepository cartRepository;
 
     @Override
-    public List<GetCartApiResDto> findCartList(Long buyerId) {
-        List<Cart> cartList = cartRepository.findCartListByBuyerId(buyerId);
-        return cartList.stream().map(GetCartApiResDto::from).toList();
+    public List<Cart> findCartList(Long buyerId) {
+        return cartRepository.findCartListByBuyerId(buyerId);
     }
 
     @Override
-    public Long addCart(Long buyerId, AddCartApiReqDto reqDto) {
-        Cart cart = cartRepository.save(Cart.builder()
-                        .buyerId(buyerId)
-                        .productId(reqDto.productId())
-                        .productOptionId(reqDto.productOptionId())
-                        .buyCnt(reqDto.buyCnt())
-                .build());
-        return cart.getCartId();
+    public Cart addCart(Cart cart) {
+        return cartRepository.save(cart);
     }
 
     @Override
@@ -38,8 +32,7 @@ public class CartServiceImpl implements CartService {
         // 장바구니 존재 확인
         List<Cart> cartList = cartRepository.findCartListByBuyerIdAndCartIdList(buyerId, cartIdList);
         if(cartList.isEmpty()){
-            return false;
-        }
+            throw new IllegalArgumentException("장바구니 정보가 없습니다.");        }
         cartRepository.delete(cartIdList);
         return true;
     }

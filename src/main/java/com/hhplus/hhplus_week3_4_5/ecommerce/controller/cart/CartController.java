@@ -4,6 +4,7 @@ import com.hhplus.hhplus_week3_4_5.ecommerce.controller.base.reponse.dto.Respons
 import com.hhplus.hhplus_week3_4_5.ecommerce.controller.base.reponse.util.ResponseUtil;
 import com.hhplus.hhplus_week3_4_5.ecommerce.controller.cart.dto.AddCartApiReqDto;
 import com.hhplus.hhplus_week3_4_5.ecommerce.controller.cart.dto.GetCartApiResDto;
+import com.hhplus.hhplus_week3_4_5.ecommerce.facade.cart.CartProductFacade;
 import com.hhplus.hhplus_week3_4_5.ecommerce.service.cart.CartService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -25,6 +26,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Validated
 public class CartController {
+    private final CartProductFacade cartProductFacade;
     private final CartService cartService;
 
     @Operation(summary = "장바구니 목록 조회")
@@ -34,7 +36,7 @@ public class CartController {
     )})
     @GetMapping(value = "/carts/{buyerId}")
     public ResponseDto<List<GetCartApiResDto>> findCartList(@PathVariable(name = "buyerId") @Schema(description = "회원 ID") @NotNull Long buyerId){
-        return ResponseUtil.success(cartService.findCartList(buyerId));
+        return ResponseUtil.success(cartProductFacade.findCartList(buyerId));
     }
 
     @Operation(summary = "장바구니 추가")
@@ -42,7 +44,7 @@ public class CartController {
     @PostMapping(value = "/carts/{buyerId}")
     public ResponseDto<Long> addCart(@PathVariable(name = "buyerId") @Schema(description = "회원 ID") @NotNull Long buyerId,
                         @RequestBody @Valid AddCartApiReqDto reqDto){
-        Long cartId = cartService.addCart(buyerId, reqDto);
+        Long cartId = cartProductFacade.addCart(buyerId, reqDto);
         if(cartId == null) {
             return ResponseUtil.failure();
         }

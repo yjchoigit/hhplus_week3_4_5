@@ -34,6 +34,14 @@ public class Cart extends CreateModifyDateTimeEntity {
     @Comment("구매 수량")
     private int buyCnt;
 
+    public Cart(Long cartId, Long buyerId, Long productId, Long productOptionId, int buyCnt) {
+        this.cartId = cartId;
+        this.buyerId = buyerId;
+        this.productId = productId;
+        this.productOptionId = productOptionId;
+        this.buyCnt = buyCnt;
+    }
+
     @Builder
     public Cart(Long buyerId, Long productId, Long productOptionId, int buyCnt) {
         this.buyerId = buyerId;

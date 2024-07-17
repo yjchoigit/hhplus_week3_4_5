@@ -36,7 +36,7 @@ public class OrderFixture {
 
         for(ProductOption option : options){
             orderItemRepository.save(new OrderItem(order, product.getProductId(), product.getName(),
-                    option.getProductOptionId(), option.getOptionName()+"/"+option.getOptionValue(),
+                    option.getProductOptionId(), option.optionStr(),
                     1000, number, OrderEnums.Status.DEPOSIT_COMPLETE));
         }
     }
