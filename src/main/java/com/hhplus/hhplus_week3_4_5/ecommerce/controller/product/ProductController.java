@@ -1,9 +1,8 @@
 package com.hhplus.hhplus_week3_4_5.ecommerce.controller.product;
 
-import com.hhplus.hhplus_week3_4_5.ecommerce.controller.product.dto.AddProductApiReqDto;
-import com.hhplus.hhplus_week3_4_5.ecommerce.controller.product.dto.FindProductApiResDto;
-import com.hhplus.hhplus_week3_4_5.ecommerce.controller.product.dto.FindProductRankingApiResDto;
-import com.hhplus.hhplus_week3_4_5.ecommerce.controller.product.dto.PutProductApiReqDto;
+import com.hhplus.hhplus_week3_4_5.ecommerce.controller.base.reponse.dto.ResponseDto;
+import com.hhplus.hhplus_week3_4_5.ecommerce.controller.base.reponse.util.ResponseUtil;
+import com.hhplus.hhplus_week3_4_5.ecommerce.controller.product.dto.*;
 import com.hhplus.hhplus_week3_4_5.ecommerce.facade.product.ProductOrderFacade;
 import com.hhplus.hhplus_week3_4_5.ecommerce.facade.product.ProductStockFacade;
 import com.hhplus.hhplus_week3_4_5.ecommerce.service.product.ProductService;
@@ -19,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Tag(name = "/products", description = "상품 API")
@@ -32,7 +30,16 @@ public class ProductController {
     private final ProductOrderFacade productOrderFacade;
     private final ProductService productService;
 
-    @Operation(summary = "상품 조회")
+    @Operation(summary = "상품 목록 조회")
+    @ApiResponse(responseCode = "200", description = "성공", content = {@Content(
+            mediaType = "application/json",
+            array = @ArraySchema(schema = @Schema(implementation = FindProductListApiResDto.class))
+    )})@GetMapping(value = "/products")
+    public ResponseDto findProductList() {
+        return ResponseUtil.success(productService.findProductList());
+    }
+
+    @Operation(summary = "상품 상세 조회")
     @ApiResponse(responseCode = "200", description = "성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = FindProductApiResDto.class)))
     @GetMapping(value = "/products/{productId}")
     public FindProductApiResDto findProduct(@PathVariable(name = "productId") @Schema(description = "상품 ID") @NotNull Long productId) {
@@ -49,7 +56,7 @@ public class ProductController {
     }
 
 
-    @Operation(summary = "상품 등록")
+    @Operation(summary = "상ㄴ품 등록")
     @ApiResponse(responseCode = "200", description = "성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Long.class)))
     @PostMapping(value = "/products")
     public Long addProduct(@RequestBody @Valid AddProductApiReqDto reqDto) {

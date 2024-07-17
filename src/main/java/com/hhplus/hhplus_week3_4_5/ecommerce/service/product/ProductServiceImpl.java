@@ -1,6 +1,8 @@
 package com.hhplus.hhplus_week3_4_5.ecommerce.service.product;
 
 import com.hhplus.hhplus_week3_4_5.ecommerce.controller.product.dto.AddProductApiReqDto;
+import com.hhplus.hhplus_week3_4_5.ecommerce.controller.product.dto.FindProductApiResDto;
+import com.hhplus.hhplus_week3_4_5.ecommerce.controller.product.dto.FindProductListApiResDto;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.entity.Product;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.entity.ProductOption;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.repository.ProductOptionRepository;
@@ -19,6 +21,12 @@ import java.util.List;
 public class ProductServiceImpl implements ProductService {
     private ProductRepository productRepository;
     private ProductOptionRepository productOptionRepository;
+
+    @Override
+    public List<FindProductListApiResDto> findProductList() {
+        List<Product> list = productRepository.findProductList();
+        return list.stream().map(FindProductListApiResDto::from).toList();
+    }
 
     @Override
     public Product findProductByProductId(Long productId) {
