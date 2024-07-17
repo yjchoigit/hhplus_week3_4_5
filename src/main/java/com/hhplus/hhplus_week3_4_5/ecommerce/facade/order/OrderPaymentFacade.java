@@ -67,12 +67,6 @@ public class OrderPaymentFacade {
     }
 
     private void pointProcess(CreateOrderApiReqDto reqDto) {
-        // 잔액 확인
-        int allPoint = pointService.findPoint(reqDto.buyerId());
-        if(allPoint == 0 || allPoint < reqDto.totalPrice()) {
-            throw new IllegalArgumentException("잔액이 부족합니다.");
-        }
-
         // 잔액 사용처리
         pointService.usePoint(reqDto.buyerId(), reqDto.totalPrice());
     }

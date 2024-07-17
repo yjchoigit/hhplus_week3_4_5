@@ -56,6 +56,9 @@ public class Point extends CreateModifyDateTimeEntity {
 
     // 잔액 사용
     public void use(int point) {
+        if(allPoint == 0 || allPoint < point) {
+            throw new IllegalArgumentException("잔액이 부족합니다.");
+        }
         this.allPoint -= point;
     }
 }
