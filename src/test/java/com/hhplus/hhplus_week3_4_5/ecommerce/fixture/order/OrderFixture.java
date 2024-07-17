@@ -4,7 +4,6 @@ import com.hhplus.hhplus_week3_4_5.ecommerce.domain.buyer.entity.Buyer;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.OrderEnums;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.entity.Order;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.entity.OrderItem;
-import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.entity.OrderItemSheet;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.repository.OrderItemRepository;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.repository.OrderRepository;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.entity.Product;
@@ -27,13 +26,13 @@ public class OrderFixture {
     @Autowired
     private ProductFixture productFixture;
 
-    public void 주문_등록(Buyer buyer, int number){
+    public void add_order(Buyer buyer, int number){
 
         Order order = orderRepository.save(new Order("20240712000"+number, buyer.getBuyerId(),
                 buyer.getName(), number, 1000 * number));
 
-        Product product = productFixture.사용가능_상품_등록();
-        List<ProductOption> options = productFixture.사용가능_상품옵션_등록(product);
+        Product product = productFixture.add_usable_product();
+        List<ProductOption> options = productFixture.add_usable_product_option(product);
 
         for(ProductOption option : options){
             orderItemRepository.save(new OrderItem(order, product.getProductId(), product.getName(),

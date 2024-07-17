@@ -12,7 +12,7 @@ public class BuyerFixture {
     @Autowired
     private BuyerRepository buyerRepository;
 
-    public Buyer 회원_등록(){
+    public Buyer add_buyer(){
         return buyerRepository.save(new Buyer("홍길동"));
     }
 }
