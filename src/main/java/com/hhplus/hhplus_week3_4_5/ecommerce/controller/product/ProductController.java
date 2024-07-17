@@ -35,15 +35,15 @@ public class ProductController {
             mediaType = "application/json",
             array = @ArraySchema(schema = @Schema(implementation = FindProductListApiResDto.class))
     )})@GetMapping(value = "/products")
-    public ResponseDto findProductList() {
+    public ResponseDto<List<FindProductListApiResDto>> findProductList() {
         return ResponseUtil.success(productService.findProductList());
     }
 
     @Operation(summary = "상품 상세 조회")
     @ApiResponse(responseCode = "200", description = "성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = FindProductApiResDto.class)))
     @GetMapping(value = "/products/{productId}")
-    public FindProductApiResDto findProduct(@PathVariable(name = "productId") @Schema(description = "상품 ID") @NotNull Long productId) {
-        return productStockFacade.findProduct(productId);
+    public ResponseDto<FindProductApiResDto> findProduct(@PathVariable(name = "productId") @Schema(description = "상품 ID") @NotNull Long productId) {
+        return ResponseUtil.success(productStockFacade.findProduct(productId));
     }
 
     @Operation(summary = "상위 상품 조회")
@@ -51,16 +51,20 @@ public class ProductController {
             mediaType = "application/json",
             array = @ArraySchema(schema = @Schema(implementation = FindProductRankingApiResDto.class))
     )})    @GetMapping(value = "/products/ranking")
-    public List<FindProductRankingApiResDto> findProductRanking() {
-        return productOrderFacade.findProductRanking();
+    public ResponseDto<List<FindProductRankingApiResDto>> findProductRanking() {
+        return ResponseUtil.success(productOrderFacade.findProductRanking());
     }
 
 
-    @Operation(summary = "상ㄴ품 등록")
+    @Operation(summary = "상품 등록")
     @ApiResponse(responseCode = "200", description = "성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Long.class)))
     @PostMapping(value = "/products")
-    public Long addProduct(@RequestBody @Valid AddProductApiReqDto reqDto) {
-        return productService.addProduct(reqDto);
+    public ResponseDto<Long> addProduct(@RequestBody @Valid AddProductApiReqDto reqDto) {
+        Long productId = productService.addProduct(reqDto);
+        if(productId == null) {
+            ResponseUtil.failure(productId);
+        }
+        return ResponseUtil.success(productId);
     }
 
     // TODO 상품 수정 API

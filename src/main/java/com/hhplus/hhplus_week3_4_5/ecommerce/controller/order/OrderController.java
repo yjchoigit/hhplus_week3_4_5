@@ -1,5 +1,7 @@
 package com.hhplus.hhplus_week3_4_5.ecommerce.controller.order;
 
+import com.hhplus.hhplus_week3_4_5.ecommerce.controller.base.reponse.dto.ResponseDto;
+import com.hhplus.hhplus_week3_4_5.ecommerce.controller.base.reponse.util.ResponseUtil;
 import com.hhplus.hhplus_week3_4_5.ecommerce.controller.order.dto.CreateOrderApiReqDto;
 import com.hhplus.hhplus_week3_4_5.ecommerce.controller.order.dto.CreateOrderSheetApiReqDto;
 import com.hhplus.hhplus_week3_4_5.ecommerce.controller.order.dto.CreateOrderSheetApiResDto;
@@ -31,22 +33,26 @@ public class OrderController {
     @Operation(summary = "주문서 생성")
     @ApiResponse(responseCode = "200", description = "성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = CreateOrderSheetApiResDto.class)))
     @PostMapping(value = "/orders/sheet")
-    public CreateOrderSheetApiResDto createOrderSheet(@RequestBody @Valid CreateOrderSheetApiReqDto reqDto){
-        return orderSheetService.createOrderSheet(reqDto);
+    public ResponseDto<CreateOrderSheetApiResDto> createOrderSheet(@RequestBody @Valid CreateOrderSheetApiReqDto reqDto){
+        return ResponseUtil.success(orderSheetService.createOrderSheet(reqDto));
     }
 
     @Operation(summary = "주문 진행")
     @ApiResponse(responseCode = "200", description = "성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Long.class)))
     @PostMapping(value = "/orders")
-    public Long createOrder(@RequestBody @Valid CreateOrderApiReqDto reqDto){
-        return orderPaymentFacade.createOrder(reqDto);
+    public ResponseDto<Long> createOrder(@RequestBody @Valid CreateOrderApiReqDto reqDto){
+        Long orderId = orderPaymentFacade.createOrder(reqDto);
+        if(orderId == null){
+            return ResponseUtil.failure(orderId);
+        }
+        return ResponseUtil.success(orderId);
     }
 
     @Operation(summary = "주문 조회")
     @ApiResponse(responseCode = "200", description = "성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = FindOrderApiResDto.class)))
     @GetMapping(value = "/orders/{buyerId}")
-    public FindOrderApiResDto findOrder(@PathVariable(name = "buyerId") @Schema(description = "회원 ID") @NotNull Long buyerId,
-                                        @RequestParam(name = "orderId") @Schema(description = "주문 ID") @NotNull Long orderId){
-        return orderService.findOrder(buyerId, orderId);
+    public ResponseDto<FindOrderApiResDto> findOrder(@PathVariable(name = "buyerId") @Schema(description = "회원 ID") @NotNull Long buyerId,
+                                                     @RequestParam(name = "orderId") @Schema(description = "주문 ID") @NotNull Long orderId){
+        return ResponseUtil.success(orderService.findOrder(buyerId, orderId));
     }
 }
