@@ -36,9 +36,27 @@ public class Setting {
                 .then().log().all().extract();
     }
 
+    public static ExtractableResponse<Response> get(String path, String token) {
+        return RestAssured
+                .given().log().all()
+                .header("Authorization", "Bearer " + token)
+                .when().get(path)
+                .then().log().all().extract();
+    }
+
     public static <T> ExtractableResponse<Response> post(String path, T requestBody) {
         return RestAssured
                 .given().log().all()
+                .body(requestBody)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post(path)
+                .then().log().all().extract();
+    }
+
+    public static <T> ExtractableResponse<Response> post(String path, T requestBody, String token) {
+        return RestAssured
+                .given().log().all()
+                .header("Authorization", "Bearer " + token)
                 .body(requestBody)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post(path)
