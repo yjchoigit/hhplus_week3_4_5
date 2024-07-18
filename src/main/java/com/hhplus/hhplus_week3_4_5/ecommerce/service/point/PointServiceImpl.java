@@ -4,6 +4,7 @@ import com.hhplus.hhplus_week3_4_5.ecommerce.controller.point.dto.FindPointHisto
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.point.PointEnums;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.point.entity.Point;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.point.entity.PointHistory;
+import com.hhplus.hhplus_week3_4_5.ecommerce.domain.point.exception.PointCustomException;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.point.repository.PointHistoryRepository;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.point.repository.PointRepository;
 import lombok.AllArgsConstructor;
@@ -25,6 +26,9 @@ public class PointServiceImpl implements PointService {
     public int findPoint(Long buyerId){
         // 회원 id로 잔액 정보 조회
         Point pointInfo = pointRepository.findByBuyerId(buyerId);
+        if(pointInfo == null) {
+            throw new PointCustomException(PointEnums.Error.NO_POINT);
+        }
         // 총 포인트 반환
         return pointInfo.getAllPoint();
     }
