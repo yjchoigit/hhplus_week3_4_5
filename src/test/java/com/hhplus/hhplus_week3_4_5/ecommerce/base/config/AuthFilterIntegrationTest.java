@@ -19,7 +19,7 @@ class AuthFilterIntegrationTest {
     @Test
     @DisplayName("Filter token 조회 성공")
     void authorization_success() throws Exception {
-        String authToken = "Bearer your_mock_jwt_token_here";
+        String authToken = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0VXNlciIsImlhdCI6MTcyMTMwODgxNywiZXhwIjoxNzIxMzEyNDE3fQ.QcL4AwybByTug5jzfO5HuK-HEPs5MD-_C5MAi1j8r1Y";
 
         mockMvc.perform(MockMvcRequestBuilders.get("/url")
                         .header("Authorization", authToken))

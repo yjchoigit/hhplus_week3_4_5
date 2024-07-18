@@ -4,14 +4,27 @@ import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.Date;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.SignatureException;
 
 @Slf4j
 @WebFilter("/*")
 @Component
 public class AuthFilter implements Filter {
+
+    @Value("${jwt.secret}")
+    private String jwtSecret;
+
+    @Value("${jwt.expiration}")
+    private long jwtExpiration;
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -33,11 +46,27 @@ public class AuthFilter implements Filter {
         // Extract JWT token from Authorization header
         String jwt = authHeader.substring(7); // "Bearer " 다음의 토큰 문자열 추출
 
-        // Perform JWT validation (Example: using JWT library)
-        if (!isValidToken(jwt)) {
+        try {
+            if (!isValidToken(jwt)) {
+                httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                httpResponse.getWriter().write("Invalid JWT token");
+                log.error("Invalid JWT token");
+                return;
+            }
+        } catch (ExpiredJwtException e) {
             httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            httpResponse.getWriter().write("Invalid JWT token");
-            log.error("Invalid JWT token");
+            httpResponse.getWriter().write("Expired JWT token");
+            log.error("Expired JWT token");
+            return;
+        } catch (SignatureException e) {
+            httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            httpResponse.getWriter().write("Invalid JWT signature");
+            log.error("Invalid JWT signature");
+            return;
+        } catch (Exception e) {
+            httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            httpResponse.getWriter().write("JWT token validation error");
+            log.error("JWT token validation error");
             return;
         }
 
@@ -47,7 +76,12 @@ public class AuthFilter implements Filter {
 
     private boolean isValidToken(String jwt) {
         log.info("---- AuthFilter >>> isValidToken ----");
-        return !(jwt == null || jwt.isEmpty());
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(jwtSecret.getBytes())
+                .build()
+                .parseClaimsJws(jwt)
+                .getBody();
+        return !(claims == null || claims.getExpiration().before(new Date()));
     }
 
     @Override

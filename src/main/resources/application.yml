@@ -24,6 +24,10 @@ spring:
         format_sql: true
         show_sql: true
 
+jwt:
+  secret: your_strong_secret_key_which_is_32_bytes_long
+  expiration: 3600000 # 만료 시간 (밀리초 단위)
+
 # JPA 및 H2 데이터베이스 로그 출력
 #logging:
 #  level:
