@@ -9,4 +9,13 @@ public class PointEnums {
     public enum Type {
         DEDUCT, CHARGE
     }
+
+    @Getter
+    @RequiredArgsConstructor
+    public enum Error {
+        OUT_OF_POINT("OUT_OF_POINT","잔액이 부족합니다."),
+        ;
+        private final String code;
+        private final String message;
+    }
 }

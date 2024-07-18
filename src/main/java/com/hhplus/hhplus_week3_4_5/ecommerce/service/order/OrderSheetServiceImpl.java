@@ -5,6 +5,7 @@ import com.hhplus.hhplus_week3_4_5.ecommerce.controller.order.dto.CreateOrderShe
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.OrderEnums;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.entity.OrderItemSheet;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.entity.OrderSheet;
+import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.exception.OrderCustomException;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.repository.OrderItemSheetRepository;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.repository.OrderSheetRepository;
 import lombok.AllArgsConstructor;
@@ -68,6 +69,9 @@ public class OrderSheetServiceImpl implements OrderSheetService {
         
         // 주문서 조회
         OrderSheet orderSheetInfo = orderSheetRepository.findByOrderSheetId(orderSheet.getOrderSheetId());
+        if(orderSheetInfo == null){
+            throw new OrderCustomException(OrderEnums.Error.NO_ORDER_SHEET);
+        }
 
         // 주문서 품목 조회
         List<OrderItemSheet> orderItemSheetList = orderItemSheetRepository.findByOrderSheetId(orderSheetInfo.getOrderSheetId());
@@ -83,7 +87,7 @@ public class OrderSheetServiceImpl implements OrderSheetService {
     public OrderSheet findOrderSheet(Long orderSheetId){
         OrderSheet orderSheet = orderSheetRepository.findByOrderSheetId(orderSheetId);
         if(orderSheet == null){
-            throw new IllegalArgumentException("주문서 정보가 없습니다.");
+            throw new OrderCustomException(OrderEnums.Error.NO_ORDER_SHEET);
         }
         return orderSheet;
     }
@@ -92,7 +96,7 @@ public class OrderSheetServiceImpl implements OrderSheetService {
     public void completeOrderSheet(Long orderSheetId) {
         OrderSheet orderSheet = orderSheetRepository.findByOrderSheetId(orderSheetId);
         if(orderSheet == null){
-            throw new IllegalArgumentException("주문서 정보가 없습니다.");
+            throw new OrderCustomException(OrderEnums.Error.NO_ORDER_SHEET);
         }
 
         orderItemSheetRepository.deleteByOrderSheet(orderSheet);
