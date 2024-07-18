@@ -2,6 +2,7 @@ package com.hhplus.hhplus_week3_4_5.ecommerce.service.point;
 
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.point.entity.Point;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.point.entity.PointHistory;
+import com.hhplus.hhplus_week3_4_5.ecommerce.domain.point.exception.PointCustomException;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.point.repository.PointHistoryRepository;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.point.repository.PointRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -58,7 +59,7 @@ class PointServiceTest {
         when(pointRepository.findByBuyerId(buyerId)).thenReturn(null);
 
         // then
-        assertThrows(NullPointerException.class, ()-> {
+        assertThrows(PointCustomException.class, ()-> {
             pointServiceImpl.findPoint(buyerId);
         });
     }
@@ -89,7 +90,7 @@ class PointServiceTest {
         when(pointRepository.findByBuyerId(buyerId)).thenReturn(null);
 
         // then
-        assertThrows(NullPointerException.class, ()-> {
+        assertThrows(PointCustomException.class, ()-> {
             pointServiceImpl.chargePoint(buyerId, 100);
         });
     }

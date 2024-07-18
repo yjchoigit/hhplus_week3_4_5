@@ -4,6 +4,7 @@ import com.hhplus.hhplus_week3_4_5.ecommerce.domain.point.repository.PointReposi
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.ProductEnums;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.entity.Product;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.entity.ProductOption;
+import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.exception.ProductCustomException;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.repository.ProductOptionRepository;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.repository.ProductRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -67,7 +68,7 @@ class ProductServiceTest {
         when(productRepository.findByProductId(productId)).thenReturn(null);
 
         // then
-        assertThrows(IllegalArgumentException.class, ()-> {
+        assertThrows(ProductCustomException.class, ()-> {
             productServiceImpl.findProductByProductId(productId);
         });
     }
@@ -89,7 +90,7 @@ class ProductServiceTest {
         when(productRepository.findByProductId(productId)).thenReturn(product);
 
         // then
-        assertThrows(IllegalArgumentException.class, ()-> {
+        assertThrows(ProductCustomException.class, ()-> {
             productServiceImpl.findProductByProductId(productId);
         });
     }
@@ -111,7 +112,7 @@ class ProductServiceTest {
         when(productRepository.findByProductId(productId)).thenReturn(product);
 
         // then
-        assertThrows(IllegalArgumentException.class, ()-> {
+        assertThrows(ProductCustomException.class, ()-> {
             productServiceImpl.findProductByProductId(productId);
         });
     }
@@ -152,7 +153,7 @@ class ProductServiceTest {
         when(productOptionRepository.findProductOptionByProductIdAndProductOptionId(productId, productOptionId)).thenReturn(null);
 
         // then
-        assertThrows(IllegalArgumentException.class, ()-> {
+        assertThrows(ProductCustomException.class, ()-> {
             productServiceImpl.findProductOptionByProductIdAndProductOptionId(productId, productOptionId);
         });
     }
@@ -179,7 +180,7 @@ class ProductServiceTest {
         when(productOptionRepository.findProductOptionByProductIdAndProductOptionId(productId, productOptionId)).thenReturn(options.get(0));
 
         // then
-        assertThrows(IllegalArgumentException.class, ()-> {
+        assertThrows(ProductCustomException.class, ()-> {
             productServiceImpl.findProductOptionByProductIdAndProductOptionId(productId, productOptionId);
         });
     }
