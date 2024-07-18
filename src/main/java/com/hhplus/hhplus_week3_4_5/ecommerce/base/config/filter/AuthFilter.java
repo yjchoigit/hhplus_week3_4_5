@@ -47,7 +47,7 @@ public class AuthFilter implements Filter {
 
     private boolean isValidToken(String jwt) {
         log.info("---- AuthFilter >>> isValidToken ----");
-        return jwt != null;
+        return !(jwt == null || jwt.isEmpty());
     }
 
     @Override
