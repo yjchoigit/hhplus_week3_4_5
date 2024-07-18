@@ -3,7 +3,7 @@ spring:
     name: week-03
   datasource:
     driver-class-name: org.h2.Driver
-    url: 'jdbc:h2:mem:test'  # In-Memory Mode
+    url: 'jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;DATABASE_TO_UPPER=FALSE'  # In-Memory Mode
     # url: 'jdbc:h2:~/test'  # Embedded Mode
     username: test
     password: test1234
@@ -23,6 +23,7 @@ spring:
         use_new_id_generator_mappings: true
         format_sql: true
         show_sql: true
+
 # JPA 및 H2 데이터베이스 로그 출력
 #logging:
 #  level:
@@ -34,6 +35,17 @@ spring:
 #      zaxxer:
 #        hikari: debug
 #    h2: debug
+
+springdoc:
+  packages-to-scan: com.hhplus.hhplus_week3_4_5.ecommerce.controller
+  default-consumes-media-type: application/json;charset=UTF-8
+  default-produces-media-type: application/json;charset=UTF-8
+  swagger-ui:
+    path: /
+    disable-swagger-default-url: true
+    display-request-duration: true
+    operations-sorter: alpha
+
 
 server:
   port: 8080
