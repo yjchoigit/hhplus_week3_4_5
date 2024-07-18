@@ -1,7 +1,7 @@
 package com.hhplus.hhplus_week3_4_5.ecommerce.controller.point;
 
-import com.hhplus.hhplus_week3_4_5.ecommerce.controller.base.reponse.dto.ResponseDto;
-import com.hhplus.hhplus_week3_4_5.ecommerce.controller.base.reponse.util.ResponseUtil;
+import com.hhplus.hhplus_week3_4_5.ecommerce.base.exception.reponse.dto.ResponseDto;
+import com.hhplus.hhplus_week3_4_5.ecommerce.base.exception.reponse.util.ResponseUtil;
 import com.hhplus.hhplus_week3_4_5.ecommerce.controller.point.dto.FindPointHistoryApiResDto;
 import com.hhplus.hhplus_week3_4_5.ecommerce.service.point.PointService;
 import io.swagger.v3.oas.annotations.Operation;

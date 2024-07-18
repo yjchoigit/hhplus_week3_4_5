@@ -1,7 +1,7 @@
 package com.hhplus.hhplus_week3_4_5.ecommerce.controller.product;
 
-import com.hhplus.hhplus_week3_4_5.ecommerce.controller.base.reponse.dto.ResponseDto;
-import com.hhplus.hhplus_week3_4_5.ecommerce.controller.base.reponse.util.ResponseUtil;
+import com.hhplus.hhplus_week3_4_5.ecommerce.base.exception.reponse.dto.ResponseDto;
+import com.hhplus.hhplus_week3_4_5.ecommerce.base.exception.reponse.util.ResponseUtil;
 import com.hhplus.hhplus_week3_4_5.ecommerce.controller.product.dto.*;
 import com.hhplus.hhplus_week3_4_5.ecommerce.facade.product.ProductOrderFacade;
 import com.hhplus.hhplus_week3_4_5.ecommerce.facade.product.ProductStockFacade;

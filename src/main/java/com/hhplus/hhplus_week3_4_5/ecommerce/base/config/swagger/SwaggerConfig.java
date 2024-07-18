@@ -1,4 +1,4 @@
-package com.hhplus.hhplus_week3_4_5.ecommerce.config;
+package com.hhplus.hhplus_week3_4_5.ecommerce.base.config.swagger;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
