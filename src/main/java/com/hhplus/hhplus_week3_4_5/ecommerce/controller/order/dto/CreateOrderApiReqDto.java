@@ -8,6 +8,8 @@ import java.util.List;
 
 @Builder
 public record CreateOrderApiReqDto(
+    @Schema(description = "주문서 ID")
+    Long orderSheetId,
     @Schema(description = "회원 ID")
     Long buyerId,
     @Schema(description = "주문자명")

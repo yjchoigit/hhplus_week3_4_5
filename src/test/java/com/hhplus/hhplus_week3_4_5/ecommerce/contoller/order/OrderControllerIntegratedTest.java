@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
 import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -66,7 +67,7 @@ class OrderControllerIntegratedTest extends Setting {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertEquals((Long) response.jsonPath().get(), 1L);
+        assertEquals(response.jsonPath().getObject("data", Long.class), 1L);
     }
 
     @Test

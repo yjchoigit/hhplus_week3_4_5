@@ -18,7 +18,17 @@ public class OrderSheetRepositoryImpl implements OrderSheetRepository {
     }
 
     @Override
+    public void delete(OrderSheet orderSheet) {
+        orderSheetJpaRepository.delete(orderSheet);
+    }
+
+    @Override
     public OrderSheet findByOrderSheetId(Long orderSheetId) {
         return orderSheetJpaRepository.findById(orderSheetId).orElseThrow(EntityNotFoundException::new);
+    }
+
+    @Override
+    public OrderSheet findByBuyerId(Long buyerId) {
+        return orderSheetJpaRepository.findFirstByBuyerId(buyerId);
     }
 }
