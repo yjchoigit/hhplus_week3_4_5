@@ -86,4 +86,8 @@ public class ProductOption extends CreateModifyDateTimeEntity {
             throw new IllegalArgumentException("사용하지 않는 상품 옵션입니다.");
         }
     }
+
+    public String optionStr(){
+        return this.optionName + "/" + this.optionValue;
+    }
 }

@@ -26,21 +26,21 @@ public class ProductFixture {
     private ProductStockRepository productStockRepository;
 
 
-    public Product 사용가능_상품_등록(){
+    public Product add_usable_product(){
         return productRepository.save(new Product("운동화", ProductEnums.Type.OPTION, 1000, true, false));
     }
 
-    public Product 사용불가능_상품_등록(){
+    public Product add_unusable_product(){
         return productRepository.save(new Product("운동화", ProductEnums.Type.OPTION, 1000, false, false));
     }
 
-    public List<ProductOption> 사용가능_상품옵션_등록(Product product){
+    public List<ProductOption> add_usable_product_option(Product product){
         productOptionRepository.save(new ProductOption(product, ProductEnums.OptionType.BASIC, "색깔", "빨강", 1300, true));
 
         return productOptionRepository.findByProductId(product.getProductId());
     }
 
-    public ProductStock 상품재고_등록(Product product, ProductOption productOption, int stock){
+    public ProductStock add_product_stock(Product product, ProductOption productOption, int stock){
         return productStockRepository.save(new ProductStock(product, productOption, ProductEnums.StockType.OPTION, stock));
     }
 

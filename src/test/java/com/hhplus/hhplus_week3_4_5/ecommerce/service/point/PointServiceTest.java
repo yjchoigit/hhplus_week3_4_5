@@ -30,7 +30,7 @@ class PointServiceTest {
 
     @BeforeEach
     void setUp() {
-        // 회원 등록
+        // 잔액 등록
         point = new Point(1L, 1L, 1000);
     }
 

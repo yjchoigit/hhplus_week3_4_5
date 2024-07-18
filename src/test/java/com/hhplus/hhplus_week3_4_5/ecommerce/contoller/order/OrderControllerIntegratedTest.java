@@ -36,13 +36,13 @@ class OrderControllerIntegratedTest extends Setting {
     @DisplayName("주문 진행 성공")
     void createOrder_success(){
         // given
-        Buyer buyer = buyerFixture.회원_등록();
-        Point point = pointFixture.잔액_등록(buyer.getBuyerId(), 10000);
+        Buyer buyer = buyerFixture.add_buyer();
+        Point point = pointFixture.add_point(buyer.getBuyerId(), 10000);
 
-        Product product = productFixture.사용가능_상품_등록();
-        List<ProductOption> productOptionList = productFixture.사용가능_상품옵션_등록(product);
+        Product product = productFixture.add_usable_product();
+        List<ProductOption> productOptionList = productFixture.add_usable_product_option(product);
         for(ProductOption option : productOptionList){
-            productFixture.상품재고_등록(product, option, 100);
+            productFixture.add_product_stock(product, option, 100);
         }
 
         List<CreateOrderApiReqDto.CreateOrderItemApiReqDto> items = List.of(CreateOrderApiReqDto.CreateOrderItemApiReqDto.builder()
@@ -73,13 +73,13 @@ class OrderControllerIntegratedTest extends Setting {
     @DisplayName("주문 진행 실패 - 사용하지 않는 상품 정보일 때")
     void createOrder_product_valid_fail(){
         // given
-        Buyer buyer = buyerFixture.회원_등록();
-        Point point = pointFixture.잔액_등록(buyer.getBuyerId(), 10000);
+        Buyer buyer = buyerFixture.add_buyer();
+        Point point = pointFixture.add_point(buyer.getBuyerId(), 10000);
 
-        Product product = productFixture.사용불가능_상품_등록();
-        List<ProductOption> productOptionList = productFixture.사용가능_상품옵션_등록(product);
+        Product product = productFixture.add_unusable_product();
+        List<ProductOption> productOptionList = productFixture.add_usable_product_option(product);
         for(ProductOption option : productOptionList){
-            productFixture.상품재고_등록(product, option, 100);
+            productFixture.add_product_stock(product, option, 100);
         }
 
         List<CreateOrderApiReqDto.CreateOrderItemApiReqDto> items = List.of(CreateOrderApiReqDto.CreateOrderItemApiReqDto.builder()
@@ -109,13 +109,13 @@ class OrderControllerIntegratedTest extends Setting {
     @DisplayName("주문 진행 실패 - 재고가 부족할 때")
     void createOrder_stock_valid_fail(){
         // given
-        Buyer buyer = buyerFixture.회원_등록();
-        Point point = pointFixture.잔액_등록(buyer.getBuyerId(), 10000);
+        Buyer buyer = buyerFixture.add_buyer();
+        Point point = pointFixture.add_point(buyer.getBuyerId(), 10000);
 
-        Product product = productFixture.사용가능_상품_등록();
-        List<ProductOption> productOptionList = productFixture.사용가능_상품옵션_등록(product);
+        Product product = productFixture.add_usable_product();
+        List<ProductOption> productOptionList = productFixture.add_usable_product_option(product);
         for(ProductOption option : productOptionList){
-            productFixture.상품재고_등록(product, option, 1);
+            productFixture.add_product_stock(product, option, 1);
         }
 
         List<CreateOrderApiReqDto.CreateOrderItemApiReqDto> items = List.of(CreateOrderApiReqDto.CreateOrderItemApiReqDto.builder()
@@ -145,13 +145,13 @@ class OrderControllerIntegratedTest extends Setting {
     @DisplayName("주문 진행 실패 - 잔액이 부족할 때")
     void createOrder_point_valid_fail(){
         // given
-        Buyer buyer = buyerFixture.회원_등록();
-        Point point = pointFixture.잔액_등록(buyer.getBuyerId(), 100);
+        Buyer buyer = buyerFixture.add_buyer();
+        Point point = pointFixture.add_point(buyer.getBuyerId(), 100);
 
-        Product product = productFixture.사용가능_상품_등록();
-        List<ProductOption> productOptionList = productFixture.사용가능_상품옵션_등록(product);
+        Product product = productFixture.add_usable_product();
+        List<ProductOption> productOptionList = productFixture.add_usable_product_option(product);
         for(ProductOption option : productOptionList){
-            productFixture.상품재고_등록(product, option, 100);
+            productFixture.add_product_stock(product, option, 100);
         }
 
         List<CreateOrderApiReqDto.CreateOrderItemApiReqDto> items = List.of(CreateOrderApiReqDto.CreateOrderItemApiReqDto.builder()
