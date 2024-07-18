@@ -27,15 +27,6 @@ public class ApiExceptionHandler {
         return ResponseUtil.failure(e.getErrorCode(), e.getMessage());
     }
 
-//    /*
-//        애플리케이션에서 만든 에러처리 - data 포함 (RuntimeException)
-//     */
-//    @ExceptionHandler(BaseDataException.class)
-//    public ResponseDto<Object> baseExceptionHandler(BaseDataException e) {
-//        log.warn(LOG_FORMAT, e.getClass().getSimpleName(), e.getErrorCode(), e.getMessage());
-//        return ResponseUtil.failure(e.getErrorCode(), e.getMessage(), e.getData());
-//    }
-
     /*
         애플리케이션에서 만든 에러처리(RuntimeException)
     */
