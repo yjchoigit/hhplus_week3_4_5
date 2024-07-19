@@ -1,6 +1,8 @@
 package com.hhplus.hhplus_week3_4_5.ecommerce.domain.point.entity;
 
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.base.entity.CreateModifyDateTimeEntity;
+import com.hhplus.hhplus_week3_4_5.ecommerce.domain.point.PointEnums;
+import com.hhplus.hhplus_week3_4_5.ecommerce.domain.point.exception.PointCustomException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -57,7 +59,7 @@ public class Point extends CreateModifyDateTimeEntity {
     // 잔액 사용
     public void use(int point) {
         if(allPoint == 0 || allPoint < point) {
-            throw new IllegalArgumentException("잔액이 부족합니다.");
+            throw new PointCustomException(PointEnums.Error.OUT_OF_POINT);
         }
         this.allPoint -= point;
     }

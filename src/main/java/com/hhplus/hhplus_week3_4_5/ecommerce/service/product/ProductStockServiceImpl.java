@@ -1,6 +1,8 @@
 package com.hhplus.hhplus_week3_4_5.ecommerce.service.product;
 
+import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.ProductEnums;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.entity.ProductStock;
+import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.exception.ProductCustomException;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.repository.ProductStockRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,7 +18,7 @@ public class ProductStockServiceImpl implements ProductStockService {
     public ProductStock findProductStockByProductIdAndProductOptionId(Long productId, Long productOptionId) {
         ProductStock productStock = productStockRepository.findProductStockByProductIdAndProductOptionId(productId, productOptionId);
         if(productStock == null) {
-            throw new IllegalArgumentException("상품 재고 정보가 없습니다.");
+            throw new ProductCustomException(ProductEnums.Error.NO_PRODUCT_STOCK);
         }
 
         return productStock;
@@ -28,7 +30,7 @@ public class ProductStockServiceImpl implements ProductStockService {
         // 상품 재고 조회
         ProductStock productStock = productStockRepository.findProductStockByProductIdAndProductOptionId(productId, productOptionId);
         if(productStock == null) {
-            throw new IllegalArgumentException("상품 재고 정보가 없습니다.");
+            throw new ProductCustomException(ProductEnums.Error.NO_PRODUCT_STOCK);
         }
         // 상품 재고 valid
         productStock.validate(buyCnt);

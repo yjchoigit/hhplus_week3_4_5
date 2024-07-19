@@ -1,13 +1,13 @@
 package com.hhplus.hhplus_week3_4_5.ecommerce.service.product;
 
 import com.hhplus.hhplus_week3_4_5.ecommerce.controller.product.dto.AddProductApiReqDto;
-import com.hhplus.hhplus_week3_4_5.ecommerce.controller.product.dto.FindProductApiResDto;
 import com.hhplus.hhplus_week3_4_5.ecommerce.controller.product.dto.FindProductListApiResDto;
+import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.ProductEnums;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.entity.Product;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.entity.ProductOption;
+import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.exception.ProductCustomException;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.repository.ProductOptionRepository;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.repository.ProductRepository;
-import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.repository.ProductStockRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,7 +32,7 @@ public class ProductServiceImpl implements ProductService {
     public Product findProductByProductId(Long productId) {
         Product product = productRepository.findByProductId(productId);
         if(product == null){
-            throw new IllegalArgumentException("상품 정보가 없습니다.");
+            throw new ProductCustomException(ProductEnums.Error.NO_PRODUCT);
         }
         // 상품 valid
         product.validate();
@@ -43,7 +43,7 @@ public class ProductServiceImpl implements ProductService {
     public ProductOption findProductOptionByProductIdAndProductOptionId(Long productId, Long productOptionId) {
         ProductOption productOption = productOptionRepository.findProductOptionByProductIdAndProductOptionId(productId, productOptionId);
         if(productOption == null){
-            throw new IllegalArgumentException("상품 옵션 정보가 없습니다.");
+            throw new ProductCustomException(ProductEnums.Error.NO_PRODUCT_OPTION);
         }
 
         // 상품 옵션 valid

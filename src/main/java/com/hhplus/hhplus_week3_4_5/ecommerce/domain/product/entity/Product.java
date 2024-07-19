@@ -3,13 +3,13 @@ package com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.entity;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.base.entity.CreateModifyDateTimeEntity;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.base.entity.converter.BooleanToCharConverter;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.ProductEnums;
+import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.exception.ProductCustomException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
-import org.hibernate.annotations.Type;
 
 import java.util.Objects;
 
@@ -78,10 +78,10 @@ public class Product extends CreateModifyDateTimeEntity {
 
     public void validate(){
         if(this.isDelYn()){
-            throw new IllegalArgumentException("삭제된 상품입니다.");
+            throw new ProductCustomException(ProductEnums.Error.DELETE_PRODUCT);
         }
         if(!this.isUseYn()) {
-            throw new IllegalArgumentException("사용하지 않는 상품입니다.");
+            throw new ProductCustomException(ProductEnums.Error.UNUSABLE_PRODUCT);
         }
     }
 }

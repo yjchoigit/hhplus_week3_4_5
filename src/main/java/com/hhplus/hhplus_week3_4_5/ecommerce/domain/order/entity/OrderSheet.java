@@ -57,6 +57,10 @@ public class OrderSheet extends CreateModifyDateTimeEntity {
         this.expireDatetime = expireDatetime;
     }
 
+    public boolean isExpired(){
+        return this.expireDatetime.isBefore(LocalDateTime.now()) ;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -8,6 +8,7 @@ import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.entity.Order;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.entity.OrderItem;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.entity.OrderItemSheet;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.entity.OrderSheet;
+import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.exception.OrderCustomException;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.repository.OrderItemRepository;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.repository.OrderRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -115,7 +116,7 @@ class OrderServiceTest {
         when(orderItemRepository.findByOrderId(anyLong())).thenReturn(new ArrayList<>());
 
         // then
-        assertThrows(IllegalArgumentException.class, ()-> {
+        assertThrows(OrderCustomException.class, ()-> {
             orderServiceImpl.findOrder(buyerId, 1L);
         });
     }

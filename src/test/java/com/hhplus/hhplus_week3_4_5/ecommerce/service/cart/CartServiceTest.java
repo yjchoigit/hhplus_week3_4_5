@@ -2,6 +2,7 @@ package com.hhplus.hhplus_week3_4_5.ecommerce.service.cart;
 
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.buyer.entity.Buyer;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.cart.entity.Cart;
+import com.hhplus.hhplus_week3_4_5.ecommerce.domain.cart.exception.CartCustomException;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.cart.repository.CartRepository;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.ProductEnums;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.entity.Product;
@@ -118,7 +119,7 @@ public class CartServiceTest {
         when(cartRepository.findCartListByBuyerIdAndCartIdList(any(), any())).thenReturn(new ArrayList<>());
 
         // then
-        assertThrows(IllegalArgumentException.class, ()-> {
+        assertThrows(CartCustomException.class, ()-> {
             cartServiceImpl.delCart(buyerId, List.of(1L));
         });
         verify(cartRepository, never()).delete(any());

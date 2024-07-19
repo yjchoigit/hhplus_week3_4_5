@@ -3,6 +3,7 @@ package com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.entity;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.base.entity.CreateModifyDateTimeEntity;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.base.entity.converter.BooleanToCharConverter;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.ProductEnums;
+import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.exception.ProductCustomException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -83,7 +84,7 @@ public class ProductOption extends CreateModifyDateTimeEntity {
 
     public void validate() {
         if(!this.isUseYn()) {
-            throw new IllegalArgumentException("사용하지 않는 상품 옵션입니다.");
+            throw new ProductCustomException(ProductEnums.Error.UNUSABLE_PRODUCT_OPTION);
         }
     }
 
