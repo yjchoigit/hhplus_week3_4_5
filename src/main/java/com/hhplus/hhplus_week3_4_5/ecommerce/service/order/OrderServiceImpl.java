@@ -2,10 +2,10 @@ package com.hhplus.hhplus_week3_4_5.ecommerce.service.order;
 
 import com.hhplus.hhplus_week3_4_5.ecommerce.controller.order.dto.CreateOrderApiReqDto;
 import com.hhplus.hhplus_week3_4_5.ecommerce.controller.order.dto.FindOrderApiResDto;
-import com.hhplus.hhplus_week3_4_5.ecommerce.controller.product.dto.FindProductRankingApiResDto;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.OrderEnums;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.entity.Order;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.entity.OrderItem;
+import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.exception.OrderCustomException;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.repository.OrderItemRepository;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.repository.OrderRepository;
 import lombok.AllArgsConstructor;
@@ -59,12 +59,12 @@ public class OrderServiceImpl implements OrderService {
         // 주문 조회
         Order order = orderRepository.findByBuyerIdAndOrderId(buyerId, orderId);
         if(order == null) {
-            throw new IllegalArgumentException("주문 정보가 없습니다.");
+            throw new OrderCustomException(OrderEnums.Error.NO_ORDER);
         }
         // 주문 품목 조회
         List<OrderItem> orderItemList = orderItemRepository.findByOrderId(orderId);
         if(orderItemList.isEmpty()) {
-            throw new IllegalArgumentException("주문 정보가 없습니다.");
+            throw new OrderCustomException(OrderEnums.Error.NO_ORDER);
         }
 
         return FindOrderApiResDto.from(order, orderItemList.stream()

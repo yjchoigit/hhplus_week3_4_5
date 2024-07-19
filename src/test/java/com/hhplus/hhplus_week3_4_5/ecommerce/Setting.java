@@ -1,4 +1,4 @@
-package com.hhplus.hhplus_week3_4_5.ecommerce.contoller;
+package com.hhplus.hhplus_week3_4_5.ecommerce;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;

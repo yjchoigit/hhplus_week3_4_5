@@ -5,6 +5,7 @@ import com.hhplus.hhplus_week3_4_5.ecommerce.controller.order.dto.FindOrderApiRe
 import com.hhplus.hhplus_week3_4_5.ecommerce.infrastructure.apiClient.order.OrderCollectApiClient;
 import com.hhplus.hhplus_week3_4_5.ecommerce.infrastructure.apiClient.order.dto.SendOrderToCollectionDto;
 import com.hhplus.hhplus_week3_4_5.ecommerce.service.order.OrderService;
+import com.hhplus.hhplus_week3_4_5.ecommerce.service.order.OrderSheetService;
 import com.hhplus.hhplus_week3_4_5.ecommerce.service.point.PointService;
 import com.hhplus.hhplus_week3_4_5.ecommerce.service.product.ProductService;
 import com.hhplus.hhplus_week3_4_5.ecommerce.service.product.ProductStockService;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @AllArgsConstructor
 public class OrderPaymentFacade {
+    private OrderSheetService orderSheetService;
     private OrderService orderService;
     private PointService pointService;
     private ProductService productService;
@@ -37,6 +39,9 @@ public class OrderPaymentFacade {
 
         // 주문 데이터 수집 외부 데이터 플랫폼 전달
         sendOrderToCollection(new SendOrderToCollectionDto(orderInfo.orderNumber(), orderInfo.totalPrice(), orderInfo.createDatetime()));
+
+        // 주문서 삭제 처리
+        orderSheetService.completeOrderSheet(reqDto.orderSheetId());
 
         return orderInfo.orderId();
     }

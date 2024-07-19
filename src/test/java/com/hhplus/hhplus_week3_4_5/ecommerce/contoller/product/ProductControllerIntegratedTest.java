@@ -1,6 +1,6 @@
 package com.hhplus.hhplus_week3_4_5.ecommerce.contoller.product;
 
-import com.hhplus.hhplus_week3_4_5.ecommerce.contoller.Setting;
+import com.hhplus.hhplus_week3_4_5.ecommerce.Setting;
 import com.hhplus.hhplus_week3_4_5.ecommerce.controller.product.dto.FindProductRankingApiResDto;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.buyer.entity.Buyer;
 import com.hhplus.hhplus_week3_4_5.ecommerce.fixture.buyer.BuyerFixture;

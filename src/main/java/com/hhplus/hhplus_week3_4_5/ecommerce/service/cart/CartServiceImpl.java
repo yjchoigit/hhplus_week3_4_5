@@ -1,14 +1,13 @@
 package com.hhplus.hhplus_week3_4_5.ecommerce.service.cart;
 
-import com.hhplus.hhplus_week3_4_5.ecommerce.controller.cart.dto.AddCartApiReqDto;
-import com.hhplus.hhplus_week3_4_5.ecommerce.controller.cart.dto.GetCartApiResDto;
+import com.hhplus.hhplus_week3_4_5.ecommerce.domain.cart.CartEnums;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.cart.entity.Cart;
+import com.hhplus.hhplus_week3_4_5.ecommerce.domain.cart.exception.CartCustomException;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.cart.repository.CartRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -32,7 +31,8 @@ public class CartServiceImpl implements CartService {
         // 장바구니 존재 확인
         List<Cart> cartList = cartRepository.findCartListByBuyerIdAndCartIdList(buyerId, cartIdList);
         if(cartList.isEmpty()){
-            throw new IllegalArgumentException("장바구니 정보가 없습니다.");        }
+            throw new CartCustomException(CartEnums.Error.NO_CART);
+        }
         cartRepository.delete(cartIdList);
         return true;
     }

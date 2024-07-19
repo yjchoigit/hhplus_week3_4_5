@@ -2,6 +2,7 @@ package com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.entity;
 
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.base.entity.CreateModifyDateTimeEntity;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.ProductEnums;
+import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.exception.ProductCustomException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -71,11 +72,11 @@ public class ProductStock extends CreateModifyDateTimeEntity {
     public void validate(int buyCnt) {
         // 재고가 0일 때
         if(this.stock == 0){
-            throw new IllegalArgumentException("재고가 없습니다.");
+            throw new ProductCustomException(ProductEnums.Error.ZERO_PRODUCT_STOCK);
         }
         // 재고가 구매수량보다 적은 경우
         if(this.stock < buyCnt) {
-            throw new IllegalArgumentException("재고가 부족합니다.");
+            throw new ProductCustomException(ProductEnums.Error.OUT_OF_PRODUCT_STOCK);
         }
     }
 
