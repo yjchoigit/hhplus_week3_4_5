@@ -16,6 +16,8 @@ public record CreateOrderSheetApiReqDto(
     int allBuyCnt,
     @Schema(description = "총 상품 가격")
     int totalPrice,
+    @Schema(description = "장바구니 ID 리스트")
+    List<Long> cartIdList,
     @Schema(description = "주문 품목 리스트")
     List<CreateOrderItemSheetApiReqDto> orderItemList
 ) implements Serializable {

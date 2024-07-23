@@ -13,7 +13,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -25,14 +29,18 @@ public class OrderSheetServiceImpl implements OrderSheetService {
     @Transactional(rollbackFor = {Exception.class})
     public CreateOrderSheetApiResDto createOrderSheet(CreateOrderSheetApiReqDto reqDto) {
         // 기존의 주문서가 있는지 확인
+        List<String> cartIdList = reqDto.cartIdList().stream()
+                .sorted(Comparator.comparing(Long::doubleValue))
+                .map(Objects::toString)
+                .collect(Collectors.toCollection(ArrayList::new));
+
         OrderSheet existOrderSheetInfo = orderSheetRepository.findByBuyerId(reqDto.buyerId());
         
         // 기존의 주문서가 있을 때
         if(existOrderSheetInfo != null){
             if(existOrderSheetInfo.isExpired()) { // 주문서 만료기간이 지났을 때 -> 주문서 삭제 처리
                 orderSheetRepository.delete(existOrderSheetInfo);
-            } else {
-                // 만료기간이 지나지 않았으면 -> 기존의 주문서 반환
+            } else if(existOrderSheetInfo.getCartIdList().equals(cartIdList)){ // 만료기간이 지나지 않고 동일한 장바구니 id가 있으면 -> 기존의 주문서 반환
                 // 주문서 품목 조회
                 List<OrderItemSheet> orderItemSheetList = orderItemSheetRepository.findByOrderSheetId(existOrderSheetInfo.getOrderSheetId());
 
@@ -51,6 +59,7 @@ public class OrderSheetServiceImpl implements OrderSheetService {
                         .allBuyCnt(reqDto.allBuyCnt())
                         .totalPrice(reqDto.totalPrice())
                         .expireDatetime(LocalDateTime.now().plusHours(3))
+                        .cartIdList(cartIdList)
                 .build());
 
         // 주문서 품목 등록

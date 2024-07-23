@@ -62,7 +62,7 @@ class OrderSheetServiceTest {
                 .build();
 
         OrderSheet orderSheet = new OrderSheet(1L, reqDto.buyerId(), reqDto.buyerName(),
-                reqDto.allBuyCnt(), reqDto.totalPrice(), LocalDateTime.now().plusHours(3));
+                reqDto.allBuyCnt(), reqDto.totalPrice(), LocalDateTime.now().plusHours(3), List.of("1", "2", "3"));
 
         CreateOrderSheetApiReqDto.CreateOrderItemSheetApiReqDto dto = items.get(0);
         OrderItemSheet orderItemSheet = new OrderItemSheet(1L, orderSheet, dto.productId(), dto.productName(),

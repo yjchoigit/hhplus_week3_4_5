@@ -17,6 +17,7 @@ import com.hhplus.hhplus_week3_4_5.ecommerce.fixture.point.PointFixture;
 import com.hhplus.hhplus_week3_4_5.ecommerce.fixture.product.ProductFixture;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,14 +46,20 @@ class OrderControllerIntegratedTest extends Setting {
     @Autowired
     private JwtTokenTestUtil jwtTokenUtil;
 
+    private Buyer buyer;
+    private String token;
+
+    @BeforeEach
+    void setUp(){
+        buyer = buyerFixture.add_buyer();
+        pointFixture.add_point(buyer.getBuyerId(), 10000);
+        token = jwtTokenUtil.testGenerateToken(buyer.getBuyerId());
+    }
+
     @Test
     @DisplayName("주문서 생성 성공")
     void createOrderSheet_success(){
         // given
-        Buyer buyer = buyerFixture.add_buyer();
-        Point point = pointFixture.add_point(buyer.getBuyerId(), 10000);
-        String token = jwtTokenUtil.testGenerateToken(buyer.getBuyerId());
-
         Product product = productFixture.add_usable_product();
         List<ProductOption> productOptionList = productFixture.add_usable_product_option(product);
         for(ProductOption option : productOptionList){
@@ -74,6 +81,7 @@ class OrderControllerIntegratedTest extends Setting {
                 .allBuyCnt(2)
                 .totalPrice(2600)
                 .orderItemList(items)
+                .cartIdList(List.of(1L,2L,3L))
                 .build();
 
         // when
@@ -88,12 +96,7 @@ class OrderControllerIntegratedTest extends Setting {
     @DisplayName("주문 진행 성공")
     void createOrder_success(){
         // given
-        Buyer buyer = buyerFixture.add_buyer();
-        Point point = pointFixture.add_point(buyer.getBuyerId(), 10000);
-        String token = jwtTokenUtil.testGenerateToken(buyer.getBuyerId());
-
         OrderSheet orderSheet = orderSheetFixture.add_order_sheet(buyer, 10);
-
 
         List<CreateOrderApiReqDto.CreateOrderItemApiReqDto> items = List.of(CreateOrderApiReqDto.CreateOrderItemApiReqDto.builder()
                 .productId(1L)
@@ -124,10 +127,6 @@ class OrderControllerIntegratedTest extends Setting {
     @DisplayName("주문 진행 실패 - 사용하지 않는 상품 정보일 때")
     void createOrder_product_valid_fail(){
         // given
-        Buyer buyer = buyerFixture.add_buyer();
-        Point point = pointFixture.add_point(buyer.getBuyerId(), 10000);
-        String token = jwtTokenUtil.testGenerateToken(buyer.getBuyerId());
-
         OrderSheet orderSheet = orderSheetFixture.add_order_sheet(buyer, 10);
 
         List<CreateOrderApiReqDto.CreateOrderItemApiReqDto> items = List.of(CreateOrderApiReqDto.CreateOrderItemApiReqDto.builder()
@@ -158,10 +157,6 @@ class OrderControllerIntegratedTest extends Setting {
     @DisplayName("주문 진행 실패 - 재고가 부족할 때")
     void createOrder_stock_valid_fail(){
         // given
-        Buyer buyer = buyerFixture.add_buyer();
-        Point point = pointFixture.add_point(buyer.getBuyerId(), 10000);
-        String token = jwtTokenUtil.testGenerateToken(buyer.getBuyerId());
-
         OrderSheet orderSheet = orderSheetFixture.add_order_sheet(buyer, 10);
 
         List<CreateOrderApiReqDto.CreateOrderItemApiReqDto> items = List.of(CreateOrderApiReqDto.CreateOrderItemApiReqDto.builder()
@@ -192,10 +187,6 @@ class OrderControllerIntegratedTest extends Setting {
     @DisplayName("주문 진행 실패 - 잔액이 부족할 때")
     void createOrder_point_valid_fail(){
         // given
-        Buyer buyer = buyerFixture.add_buyer();
-        Point point = pointFixture.add_point(buyer.getBuyerId(), 100);
-        String token = jwtTokenUtil.testGenerateToken(buyer.getBuyerId());
-
         OrderSheet orderSheet = orderSheetFixture.add_order_sheet(buyer, 10);
 
         List<CreateOrderApiReqDto.CreateOrderItemApiReqDto> items = List.of(CreateOrderApiReqDto.CreateOrderItemApiReqDto.builder()

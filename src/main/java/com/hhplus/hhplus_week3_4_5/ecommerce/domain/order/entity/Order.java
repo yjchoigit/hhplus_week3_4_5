@@ -21,6 +21,10 @@ public class Order extends CreateModifyDateTimeEntity {
     private Long orderId;
 
     @Column(nullable = false)
+    @Comment("주문서 id")
+    private Long orderSheetId;
+
+    @Column(nullable = false)
     @Comment("주문 번호")
     private String orderNumber;
 
@@ -40,8 +44,9 @@ public class Order extends CreateModifyDateTimeEntity {
     @Comment("총 상품 가격")
     private int totalPrice;
 
-    public Order(Long orderId, String orderNumber, Long buyerId, String buyerName, int allBuyCnt, int totalPrice) {
+    public Order(Long orderId, Long orderSheetId, String orderNumber, Long buyerId, String buyerName, int allBuyCnt, int totalPrice) {
         this.orderId = orderId;
+        this.orderSheetId = orderSheetId;
         this.orderNumber = orderNumber;
         this.buyerId = buyerId;
         this.buyerName = buyerName;
@@ -50,7 +55,8 @@ public class Order extends CreateModifyDateTimeEntity {
     }
 
     @Builder
-    public Order(String orderNumber, Long buyerId, String buyerName, int allBuyCnt, int totalPrice) {
+    public Order(Long orderSheetId, String orderNumber, Long buyerId, String buyerName, int allBuyCnt, int totalPrice) {
+        this.orderSheetId = orderSheetId;
         this.orderNumber = orderNumber;
         this.buyerId = buyerId;
         this.buyerName = buyerName;

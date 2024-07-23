@@ -33,7 +33,7 @@ public class OrderSheetFixture {
     public OrderSheet add_order_sheet(Buyer buyer, int number){
 
         OrderSheet orderSheet = orderSheetRepository.save(new OrderSheet(buyer.getBuyerId(),
-                buyer.getName(), 1000 * number, number, LocalDateTime.now().plusHours(1)));
+                buyer.getName(), 1000 * number, number, LocalDateTime.now().plusHours(1), List.of(String.valueOf(number))));
 
         Product product = productFixture.add_usable_product();
         List<ProductOption> productOptionList = productFixture.add_usable_product_option(product);
