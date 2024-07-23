@@ -8,7 +8,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class ResponseDto<T> {
     private final BaseEnums.ResponseStatus status;
-    private final Error message;
+    private final Error error;
     private final T data;
 
     @Getter

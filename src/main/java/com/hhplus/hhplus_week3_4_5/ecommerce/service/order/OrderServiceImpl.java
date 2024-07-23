@@ -30,6 +30,7 @@ public class OrderServiceImpl implements OrderService {
     public Long createOrder(CreateOrderApiReqDto reqDto) {
         // 주문 등록
         Order order = orderRepository.save(Order.builder()
+                        .orderSheetId(reqDto.orderSheetId())
                         .orderNumber(generateOrderNumber())
                         .buyerId(reqDto.buyerId())
                         .buyerName(reqDto.buyerName())

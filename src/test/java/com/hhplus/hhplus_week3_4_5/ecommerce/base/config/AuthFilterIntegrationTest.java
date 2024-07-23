@@ -1,5 +1,7 @@
 package com.hhplus.hhplus_week3_4_5.ecommerce.base.config;
 
+import com.hhplus.hhplus_week3_4_5.ecommerce.base.config.jwt.JwtTokenTestUtil;
+import com.hhplus.hhplus_week3_4_5.ecommerce.base.config.jwt.JwtTokenUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +18,14 @@ class AuthFilterIntegrationTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private JwtTokenTestUtil jwtTokenUtil;
+
     @Test
     @DisplayName("Filter token 조회 성공")
     void authorization_success() throws Exception {
-        String authToken = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0VXNlciIsImlhdCI6MTcyMTMwODgxNywiZXhwIjoxNzIxMzEyNDE3fQ.QcL4AwybByTug5jzfO5HuK-HEPs5MD-_C5MAi1j8r1Y";
+        String token = jwtTokenUtil.testGenerateToken(1L);
+        String authToken = "Bearer " + token;
 
         mockMvc.perform(MockMvcRequestBuilders.get("/url")
                         .header("Authorization", authToken))

@@ -1,4 +1,9 @@
 package com.hhplus.hhplus_week3_4_5.ecommerce.base.config.filter;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureException;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,11 +14,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.Date;
-
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.SignatureException;
 
 @Slf4j
 @WebFilter("/*")
@@ -29,9 +29,20 @@ public class AuthFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-        log.info("---- AuthFilter >>> doFilter ----");
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
+
+        // 요청 URI 가져오기
+        String path = httpRequest.getRequestURI();
+
+        // 특정 경로 제외하기
+        if (path.startsWith("/swagger-ui") || path.startsWith("/v3/api-docs") || path.startsWith("/h2-console")) {
+            log.info("Skipping AuthFilter for: " + path);
+            chain.doFilter(request, response);
+            return;
+        }
+
+        log.info("---- AuthFilter >>> doFilter ----");
 
         // Check if authentication token (JWT) exists in request header
         String authHeader = httpRequest.getHeader("Authorization");

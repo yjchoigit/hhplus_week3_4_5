@@ -26,9 +26,9 @@ public class OrderFixture {
     @Autowired
     private ProductFixture productFixture;
 
-    public void add_order(Buyer buyer, int number){
+    public void add_order(Long orderSheetId, Buyer buyer, int number){
 
-        Order order = orderRepository.save(new Order("20240712000"+number, buyer.getBuyerId(),
+        Order order = orderRepository.save(new Order(orderSheetId, "20240712000"+number, buyer.getBuyerId(),
                 buyer.getName(), number, 1000 * number));
 
         Product product = productFixture.add_usable_product();

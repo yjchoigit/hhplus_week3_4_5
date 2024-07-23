@@ -8,6 +8,7 @@ import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.entity.Order;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.entity.OrderItem;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.entity.OrderItemSheet;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.entity.OrderSheet;
+import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.exception.OrderCustomException;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.repository.OrderItemRepository;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.repository.OrderRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -63,7 +64,7 @@ class OrderServiceTest {
                 .orderItemList(items)
                 .build();
 
-        Order order = new Order(1L, "20240712000000", reqDto.buyerId(), reqDto.buyerName(),
+        Order order = new Order(1L, 1L, "20240712000000", reqDto.buyerId(), reqDto.buyerName(),
                 reqDto.allBuyCnt(), reqDto.totalPrice());
 
         CreateOrderApiReqDto.CreateOrderItemApiReqDto dto = items.get(0);
@@ -85,7 +86,7 @@ class OrderServiceTest {
     void findOrder_success() {
         // given
         Long buyerId = 1L;
-        Order order = new Order(1L, "20240712000000", 1L, "홍길동",
+        Order order = new Order(1L, 1L,  "20240712000000", 1L, "홍길동",
                 10, 1000);
 
         List<OrderItem> items = List.of(new OrderItem(1L, order, 1L, "운동화",
@@ -107,7 +108,7 @@ class OrderServiceTest {
     void findOrder_no_info_fail() {
         // given
         Long buyerId = 1L;
-        Order order = new Order(1L, "20240712000000", 1L, "홍길동",
+        Order order = new Order(1L, 1L, "20240712000000", 1L, "홍길동",
                 10, 1000);
 
         // when
@@ -115,7 +116,7 @@ class OrderServiceTest {
         when(orderItemRepository.findByOrderId(anyLong())).thenReturn(new ArrayList<>());
 
         // then
-        assertThrows(IllegalArgumentException.class, ()-> {
+        assertThrows(OrderCustomException.class, ()-> {
             orderServiceImpl.findOrder(buyerId, 1L);
         });
     }
