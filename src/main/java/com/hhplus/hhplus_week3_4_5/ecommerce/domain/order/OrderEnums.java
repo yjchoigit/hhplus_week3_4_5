@@ -13,6 +13,12 @@ public class OrderEnums {
 
     @Getter
     @RequiredArgsConstructor
+    public enum PaymentStatus {
+        WAIT, PAY_COMPLETE, REFUND, FAIL
+    }
+
+    @Getter
+    @RequiredArgsConstructor
     public enum Error {
         NO_ORDER_SHEET("NO_ORDER_SHEET","주문서 정보가 없습니다."),
         NO_ORDER("NO_ORDER","주문 정보가 없습니다."),

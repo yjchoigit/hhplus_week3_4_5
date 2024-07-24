@@ -2,6 +2,8 @@ package com.hhplus.hhplus_week3_4_5.ecommerce.facade.order;
 
 import com.hhplus.hhplus_week3_4_5.ecommerce.controller.order.dto.CreateOrderApiReqDto;
 import com.hhplus.hhplus_week3_4_5.ecommerce.controller.order.dto.FindOrderApiResDto;
+import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.OrderEnums;
+import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.entity.OrderPayment;
 import com.hhplus.hhplus_week3_4_5.ecommerce.infrastructure.apiClient.order.OrderCollectApiClient;
 import com.hhplus.hhplus_week3_4_5.ecommerce.infrastructure.apiClient.order.dto.SendOrderToCollectionDto;
 import com.hhplus.hhplus_week3_4_5.ecommerce.service.order.OrderService;
@@ -38,7 +40,7 @@ public class OrderPaymentFacade {
         FindOrderApiResDto orderInfo = orderService.findOrder(reqDto.buyerId(), orderId);
 
         // 주문 데이터 수집 외부 데이터 플랫폼 전달
-        sendOrderToCollection(new SendOrderToCollectionDto(orderInfo.orderNumber(), orderInfo.totalPrice(), orderInfo.createDatetime()));
+//        sendOrderToCollection(new SendOrderToCollectionDto(orderInfo.orderNumber(), orderInfo.totalPrice(), orderInfo.createDatetime()));
 
         // 주문서 삭제 처리
         orderSheetService.completeOrderSheet(reqDto.orderSheetId());
@@ -79,5 +81,21 @@ public class OrderPaymentFacade {
     // 주문 데이터 수집 외부 데이터 플랫폼 전달
     private void sendOrderToCollection(SendOrderToCollectionDto sendDto){
         orderCollectApiClient.sendOrderToCollectionPlatform(sendDto);
+    }
+
+    public Long orderPayment(Long buyerId, Long orderId) {
+        // 주문 조회
+        FindOrderApiResDto orderInfo = orderService.findOrder(buyerId, orderId);
+
+        OrderPayment orderPayment = orderPaymentRepository.findByOrderId(orderId);
+        // 결제 대기 상태인 경우 -> 결제 처리
+        if(OrderEnums.PaymentStatus.WAIT.equals(orderPayment.getStatus())){
+            orderPaymentRepository.save(OrderPayment.builder()
+                    .order(order)
+                    .status(s)
+                    .build());
+        }
+
+        return 0;
     }
 }
