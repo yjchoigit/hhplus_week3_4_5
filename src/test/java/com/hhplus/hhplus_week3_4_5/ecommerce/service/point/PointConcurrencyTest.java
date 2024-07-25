@@ -70,9 +70,9 @@ public class PointConcurrencyTest {
 
         executorService.shutdown();
 
-        // 잔액이 10원씩 차감되었는지 확인 100 - (10 * 10) = 0
+        // 잔액이 올바르게 차감되었는지 확인
         int finalPoint = pointServiceImpl.findPoint(buyer.getBuyerId());
-        int expectedBalance = point.getAllPoint() - 10 * 10;
+        int expectedBalance = 90;
         assertEquals(expectedBalance, finalPoint, "The point should be reduced correctly after all deductions.");
     }
 

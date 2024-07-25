@@ -41,7 +41,7 @@ public class ProductStock extends CreateModifyDateTimeEntity {
     private int stock;
 
     @Version
-    private Long version; // 버전 필드 추가
+    private Long version;
 
     @Builder
     public ProductStock(Long productStockId, Product product, ProductOption productOption, ProductEnums.StockType type, int stock) {
