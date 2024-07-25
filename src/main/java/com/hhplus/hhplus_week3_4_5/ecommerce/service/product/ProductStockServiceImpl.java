@@ -5,7 +5,9 @@ import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.entity.ProductStock;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.exception.ProductCustomException;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.repository.ProductStockRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -37,6 +39,10 @@ public class ProductStockServiceImpl implements ProductStockService {
 
         // 상품 재고 차감 처리
         productStock.deduct(buyCnt);
+
+        // 재고 업데이트하면서 낙관적 락 사용
+        productStockRepository.save(productStock);
+
         return true;
     }
 

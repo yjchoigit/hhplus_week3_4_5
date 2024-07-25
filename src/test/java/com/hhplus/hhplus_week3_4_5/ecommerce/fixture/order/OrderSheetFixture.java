@@ -16,6 +16,7 @@ import com.hhplus.hhplus_week3_4_5.ecommerce.fixture.product.ProductFixture;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,6 +31,8 @@ public class OrderSheetFixture {
     @Autowired
     private ProductFixture productFixture;
 
+
+    @Transactional(rollbackFor = Exception.class)
     public OrderSheet add_order_sheet(Buyer buyer, int number){
 
         OrderSheet orderSheet = orderSheetRepository.save(new OrderSheet(buyer.getBuyerId(),

@@ -102,6 +102,7 @@ public class OrderSheetServiceImpl implements OrderSheetService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public void completeOrderSheet(Long orderSheetId) {
         OrderSheet orderSheet = orderSheetRepository.findByOrderSheetId(orderSheetId);
         if(orderSheet == null){

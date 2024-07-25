@@ -27,6 +27,9 @@ public class Point extends CreateModifyDateTimeEntity {
     @Comment("총 잔액")
     private int allPoint;
 
+    @Version
+    private Long version;
+
     public Point(Long pointId, Long buyerId, int allPoint) {
         this.pointId = pointId;
         this.buyerId = buyerId;

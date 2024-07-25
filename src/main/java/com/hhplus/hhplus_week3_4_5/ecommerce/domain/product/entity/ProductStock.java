@@ -40,6 +40,9 @@ public class ProductStock extends CreateModifyDateTimeEntity {
     @Comment("재고 수량")
     private int stock;
 
+    @Version
+    private Long version;
+
     @Builder
     public ProductStock(Long productStockId, Product product, ProductOption productOption, ProductEnums.StockType type, int stock) {
         this.productStockId = productStockId;

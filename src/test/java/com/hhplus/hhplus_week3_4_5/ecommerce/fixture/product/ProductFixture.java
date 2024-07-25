@@ -11,6 +11,7 @@ import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.repository.ProductSt
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -40,7 +41,9 @@ public class ProductFixture {
         return productOptionRepository.findByProductId(product.getProductId());
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public ProductStock add_product_stock(Product product, ProductOption productOption, int stock){
+
         return productStockRepository.save(new ProductStock(product, productOption, ProductEnums.StockType.OPTION, stock));
     }
 
