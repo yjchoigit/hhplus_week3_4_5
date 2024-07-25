@@ -26,7 +26,7 @@ public class OrderPaymentFacade {
     private OrderCollectApiClient orderCollectApiClient;
     
     // 주문 생성
-//    @Transactional(rollbackFor = {Exception.class})
+    @Transactional(rollbackFor = {Exception.class})
     public Long createOrder(CreateOrderApiReqDto reqDto){
         // 상품 프로세스 진행 (상품 valid)
         productProcess(reqDto);
