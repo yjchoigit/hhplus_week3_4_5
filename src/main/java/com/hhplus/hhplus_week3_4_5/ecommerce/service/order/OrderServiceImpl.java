@@ -5,8 +5,10 @@ import com.hhplus.hhplus_week3_4_5.ecommerce.controller.order.dto.FindOrderApiRe
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.OrderEnums;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.entity.Order;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.entity.OrderItem;
+import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.entity.OrderPayment;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.exception.OrderCustomException;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.repository.OrderItemRepository;
+import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.repository.OrderPaymentRepository;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.repository.OrderRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,7 @@ import java.util.List;
 public class OrderServiceImpl implements OrderService {
     private OrderRepository orderRepository;
     private OrderItemRepository orderItemRepository;
+    private OrderPaymentRepository orderPaymentRepository;
 
     @Override
     @Transactional(rollbackFor = {Exception.class})
@@ -48,9 +51,16 @@ public class OrderServiceImpl implements OrderService {
                             .productOptionName(dto.productOptionName())
                             .productPrice(dto.productPrice())
                             .buyCnt(dto.buyCnt())
-                            .status(OrderEnums.Status.DEPOSIT_COMPLETE)
+                            .status(OrderEnums.Status.WAIT)
                     .build());
         }
+        
+        // 주문 결제 등록 (상태 - 결제 대기)
+        orderPaymentRepository.save(OrderPayment.builder()
+                        .order(order)
+                        .paymentPrice(reqDto.totalPrice())
+                        .status(OrderEnums.PaymentStatus.WAIT)
+                .build());
 
         return order.getOrderId();
     }

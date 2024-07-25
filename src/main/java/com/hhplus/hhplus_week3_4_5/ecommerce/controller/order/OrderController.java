@@ -2,10 +2,7 @@ package com.hhplus.hhplus_week3_4_5.ecommerce.controller.order;
 
 import com.hhplus.hhplus_week3_4_5.ecommerce.base.exception.reponse.dto.ResponseDto;
 import com.hhplus.hhplus_week3_4_5.ecommerce.base.exception.reponse.util.ResponseUtil;
-import com.hhplus.hhplus_week3_4_5.ecommerce.controller.order.dto.CreateOrderApiReqDto;
-import com.hhplus.hhplus_week3_4_5.ecommerce.controller.order.dto.CreateOrderSheetApiReqDto;
-import com.hhplus.hhplus_week3_4_5.ecommerce.controller.order.dto.CreateOrderSheetApiResDto;
-import com.hhplus.hhplus_week3_4_5.ecommerce.controller.order.dto.FindOrderApiResDto;
+import com.hhplus.hhplus_week3_4_5.ecommerce.controller.order.dto.*;
 import com.hhplus.hhplus_week3_4_5.ecommerce.facade.order.OrderPaymentFacade;
 import com.hhplus.hhplus_week3_4_5.ecommerce.service.order.OrderService;
 import com.hhplus.hhplus_week3_4_5.ecommerce.service.order.OrderSheetService;
@@ -46,6 +43,17 @@ public class OrderController {
             return ResponseUtil.failure(orderId);
         }
         return ResponseUtil.success(orderId);
+    }
+
+    @Operation(summary = "주문 결제 진행")
+    @ApiResponse(responseCode = "200", description = "성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Long.class)))
+    @PostMapping(value = "/orders/payment")
+    public ResponseDto<Long> paymentOrder(@RequestBody @Valid PaymentOrderApiReqDto reqDto){
+        Long orderPaymentId = orderPaymentFacade.paymentOrder(reqDto.buyerId(), reqDto.orderId());
+        if(orderPaymentId == null){
+            return ResponseUtil.failure(orderPaymentId);
+        }
+        return ResponseUtil.success(orderPaymentId);
     }
 
     @Operation(summary = "주문 조회")

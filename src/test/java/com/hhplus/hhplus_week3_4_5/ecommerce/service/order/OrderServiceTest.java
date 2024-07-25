@@ -1,15 +1,14 @@
 package com.hhplus.hhplus_week3_4_5.ecommerce.service.order;
 
 import com.hhplus.hhplus_week3_4_5.ecommerce.controller.order.dto.CreateOrderApiReqDto;
-import com.hhplus.hhplus_week3_4_5.ecommerce.controller.order.dto.CreateOrderSheetApiReqDto;
 import com.hhplus.hhplus_week3_4_5.ecommerce.controller.order.dto.FindOrderApiResDto;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.OrderEnums;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.entity.Order;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.entity.OrderItem;
-import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.entity.OrderItemSheet;
-import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.entity.OrderSheet;
+import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.entity.OrderPayment;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.exception.OrderCustomException;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.repository.OrderItemRepository;
+import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.repository.OrderPaymentRepository;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.repository.OrderRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -40,6 +39,9 @@ class OrderServiceTest {
     @Mock
     private OrderItemRepository orderItemRepository;
 
+    @Mock
+    private OrderPaymentRepository orderPaymentRepository;
+
     @BeforeEach
     void setUp() {
     }
@@ -57,6 +59,7 @@ class OrderServiceTest {
                 .buyCnt(10)
                 .build());
         CreateOrderApiReqDto reqDto =  CreateOrderApiReqDto.builder()
+                .orderSheetId(1L)
                 .buyerId(1L)
                 .buyerName("홍길동")
                 .allBuyCnt(10)
@@ -69,11 +72,14 @@ class OrderServiceTest {
 
         CreateOrderApiReqDto.CreateOrderItemApiReqDto dto = items.get(0);
         OrderItem orderItem = new OrderItem(1L, order, dto.productId(), dto.productName(),
-                dto.productOptionId(), dto.productOptionName(), dto.productPrice(), dto.buyCnt(), OrderEnums.Status.DEPOSIT_COMPLETE);
+                dto.productOptionId(), dto.productOptionName(), dto.productPrice(), dto.buyCnt(), OrderEnums.Status.WAIT);
+
+        OrderPayment orderPayment = new OrderPayment(1L, order, reqDto.totalPrice(), OrderEnums.PaymentStatus.WAIT);
 
         // when
         when(orderRepository.save(any(Order.class))).thenReturn(order);
         when(orderItemRepository.save(any(OrderItem.class))).thenReturn(orderItem);
+        when(orderPaymentRepository.save(any(OrderPayment.class))).thenReturn(orderPayment);
 
         Long result = orderServiceImpl.createOrder(reqDto);
 
