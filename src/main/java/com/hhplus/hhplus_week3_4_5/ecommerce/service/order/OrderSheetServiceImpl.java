@@ -8,7 +8,9 @@ import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.entity.OrderSheet;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.exception.OrderCustomException;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.repository.OrderItemSheetRepository;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.repository.OrderSheetRepository;
+import jakarta.persistence.LockModeType;
 import lombok.AllArgsConstructor;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -102,6 +104,7 @@ public class OrderSheetServiceImpl implements OrderSheetService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public void completeOrderSheet(Long orderSheetId) {
         OrderSheet orderSheet = orderSheetRepository.findByOrderSheetId(orderSheetId);
         if(orderSheet == null){

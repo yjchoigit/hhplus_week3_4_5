@@ -7,8 +7,11 @@ import com.hhplus.hhplus_week3_4_5.ecommerce.controller.order.dto.CreateOrderApi
 import com.hhplus.hhplus_week3_4_5.ecommerce.controller.order.dto.CreateOrderSheetApiReqDto;
 import com.hhplus.hhplus_week3_4_5.ecommerce.controller.order.dto.PaymentOrderApiReqDto;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.buyer.entity.Buyer;
+import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.OrderEnums;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.entity.Order;
+import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.entity.OrderItemSheet;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.entity.OrderSheet;
+import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.repository.OrderItemSheetRepository;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.entity.Product;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.entity.ProductOption;
 import com.hhplus.hhplus_week3_4_5.ecommerce.fixture.buyer.BuyerFixture;
@@ -16,21 +19,29 @@ import com.hhplus.hhplus_week3_4_5.ecommerce.fixture.order.OrderFixture;
 import com.hhplus.hhplus_week3_4_5.ecommerce.fixture.order.OrderSheetFixture;
 import com.hhplus.hhplus_week3_4_5.ecommerce.fixture.point.PointFixture;
 import com.hhplus.hhplus_week3_4_5.ecommerce.fixture.product.ProductFixture;
+import com.hhplus.hhplus_week3_4_5.ecommerce.service.product.ProductStockConcurrencyTest;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class OrderControllerIntegratedTest extends Setting {
     private static final String PATH = "/orders";
+    private static final Logger log = LoggerFactory.getLogger(OrderControllerIntegratedTest.class);
 
     @Autowired
     private BuyerFixture buyerFixture;
@@ -46,6 +57,9 @@ class OrderControllerIntegratedTest extends Setting {
 
     @Autowired
     private OrderFixture orderFixture;
+
+    @Autowired
+    private OrderItemSheetRepository orderItemSheetRepository;
 
     @Autowired
     private JwtTokenTestUtil jwtTokenUtil;
@@ -252,4 +266,139 @@ class OrderControllerIntegratedTest extends Setting {
         // then
         assertEquals(response.jsonPath().getObject("status", String.class), BaseEnums.ResponseStatus.FAILURE.getCode());
     }
+
+    @Test
+    @DisplayName("주문 진행 동시성 테스트")
+    void createOrder_success_concurrency() throws InterruptedException {
+        // given
+        OrderSheet orderSheet = orderSheetFixture.add_order_sheet(buyer, 10);
+
+        Product product = productFixture.add_usable_product();
+        List<ProductOption> productOptionList = productFixture.add_usable_product_option(product);
+        for(ProductOption option : productOptionList){
+            productFixture.add_product_stock(product, option, 100);
+        }
+
+        for(ProductOption option : productOptionList){
+            orderItemSheetRepository.save(new OrderItemSheet(orderSheet, product.getProductId(), product.getName(),
+                    option.getProductOptionId(), option.optionStr(),
+                    1000, 10, OrderEnums.Status.WAIT));
+        }
+
+        List<CreateOrderApiReqDto.CreateOrderItemApiReqDto> items = List.of(CreateOrderApiReqDto.CreateOrderItemApiReqDto.builder()
+                .productId(1L)
+                .productName("운동화")
+                .productOptionId(1L)
+                .productOptionName("색깔/빨강")
+                .productPrice(1300)
+                .buyCnt(2)
+                .build());
+        CreateOrderApiReqDto reqDto =  CreateOrderApiReqDto.builder()
+                .orderSheetId(orderSheet.getOrderSheetId())
+                .buyerId(1L)
+                .buyerName("홍길동")
+                .allBuyCnt(2)
+                .totalPrice(2600)
+                .orderItemList(items)
+                .build();
+
+        // CountDownLatch
+        CountDownLatch latch = new CountDownLatch(10);
+
+        // 스레드 10개 설정
+        ExecutorService executorService = Executors.newFixedThreadPool(10);
+
+        // Callable task
+        Callable<Void> task = () -> {
+            try {
+                // 주문 생성 요청
+                ExtractableResponse<Response> response = post(PATH, reqDto, token);
+                // 검증
+                assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+                assertEquals(response.jsonPath().getObject("data", Long.class), 1L);
+            } catch (Exception e) {
+                log.error("Exception occurred: ", e);
+            } finally {
+                latch.countDown();
+            }
+            return null;
+        };
+
+        // 10개 task 전송
+        List<Future<Void>> futures = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            futures.add(executorService.submit(task));
+        }
+
+        // task 기다리기
+        latch.await();
+
+        executorService.shutdown();
+    }
+
+    @Test
+    @DisplayName("주문 결제 동시성 테스트")
+    void paymentOrder_concurrency_single_success() throws InterruptedException {
+        // given
+        OrderSheet orderSheet = orderSheetFixture.add_order_sheet(buyer, 10);
+        Product product = productFixture.add_usable_product();
+        List<ProductOption> productOptionList = productFixture.add_usable_product_option(product);
+        for (ProductOption option : productOptionList) {
+            productFixture.add_product_stock(product, option, 100);
+        }
+
+        Order order = orderFixture.add_order_wait(orderSheet.getOrderSheetId(), buyer, 10);
+
+        PaymentOrderApiReqDto reqDto = new PaymentOrderApiReqDto(buyer.getBuyerId(), order.getOrderId());
+
+        CountDownLatch latch = new CountDownLatch(10);
+
+        ExecutorService executorService = Executors.newFixedThreadPool(10);
+
+        AtomicBoolean paymentSuccessful = new AtomicBoolean(false);
+
+        Object lock = new Object();
+
+        // Callable task
+        Callable<Void> task = () -> {
+            try {
+                log.info("Task start!");
+                try {
+                    // Attempt payment
+                    ExtractableResponse<Response> response = post(PATH + "/payment", reqDto, token);
+
+                    // Check if the response indicates success
+                    if (response.statusCode() == HttpStatus.OK.value()) {
+                        String status = response.jsonPath().getObject("status", String.class);
+                        if (BaseEnums.ResponseStatus.SUCCESS.getCode().equals(status)) {
+                            synchronized (lock) {
+                                if (!paymentSuccessful.get()) {
+                                    log.info("Payment successful!");
+                                    paymentSuccessful.set(true);
+                                }
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    log.error("Exception occurred: ", e);
+                }
+            } finally {
+                latch.countDown();
+            }
+            return null;
+        };
+
+        // Submit tasks
+        List<Future<Void>> futures = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            futures.add(executorService.submit(task));
+        }
+
+        latch.await();
+
+        executorService.shutdown();
+
+        assertTrue(paymentSuccessful.get(), "Payment should have succeeded at least once.");
+    }
+
 }

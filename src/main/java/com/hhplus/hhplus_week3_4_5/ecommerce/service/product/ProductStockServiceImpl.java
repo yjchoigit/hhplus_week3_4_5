@@ -6,6 +6,7 @@ import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.exception.ProductCus
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.repository.ProductStockRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -15,6 +16,7 @@ public class ProductStockServiceImpl implements ProductStockService {
     private ProductStockRepository productStockRepository;
 
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public ProductStock findProductStockByProductIdAndProductOptionId(Long productId, Long productOptionId) {
         ProductStock productStock = productStockRepository.findProductStockByProductIdAndProductOptionId(productId, productOptionId);
         if(productStock == null) {
