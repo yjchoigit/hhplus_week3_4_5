@@ -1,17 +1,18 @@
 package com.hhplus.hhplus_week3_4_5.ecommerce.contoller.order;
 
-import com.fasterxml.jackson.databind.ser.Serializers;
 import com.hhplus.hhplus_week3_4_5.ecommerce.Setting;
 import com.hhplus.hhplus_week3_4_5.ecommerce.base.config.jwt.JwtTokenTestUtil;
 import com.hhplus.hhplus_week3_4_5.ecommerce.base.exception.reponse.BaseEnums;
 import com.hhplus.hhplus_week3_4_5.ecommerce.controller.order.dto.CreateOrderApiReqDto;
 import com.hhplus.hhplus_week3_4_5.ecommerce.controller.order.dto.CreateOrderSheetApiReqDto;
+import com.hhplus.hhplus_week3_4_5.ecommerce.controller.order.dto.PaymentOrderApiReqDto;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.buyer.entity.Buyer;
+import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.entity.Order;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.entity.OrderSheet;
-import com.hhplus.hhplus_week3_4_5.ecommerce.domain.point.entity.Point;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.entity.Product;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.entity.ProductOption;
 import com.hhplus.hhplus_week3_4_5.ecommerce.fixture.buyer.BuyerFixture;
+import com.hhplus.hhplus_week3_4_5.ecommerce.fixture.order.OrderFixture;
 import com.hhplus.hhplus_week3_4_5.ecommerce.fixture.order.OrderSheetFixture;
 import com.hhplus.hhplus_week3_4_5.ecommerce.fixture.point.PointFixture;
 import com.hhplus.hhplus_week3_4_5.ecommerce.fixture.product.ProductFixture;
@@ -44,6 +45,9 @@ class OrderControllerIntegratedTest extends Setting {
     private OrderSheetFixture orderSheetFixture;
 
     @Autowired
+    private OrderFixture orderFixture;
+
+    @Autowired
     private JwtTokenTestUtil jwtTokenUtil;
 
     private Buyer buyer;
@@ -52,7 +56,6 @@ class OrderControllerIntegratedTest extends Setting {
     @BeforeEach
     void setUp(){
         buyer = buyerFixture.add_buyer();
-        pointFixture.add_point(buyer.getBuyerId(), 10000);
         token = jwtTokenUtil.testGenerateToken(buyer.getBuyerId());
     }
 
@@ -97,7 +100,6 @@ class OrderControllerIntegratedTest extends Setting {
     void createOrder_success(){
         // given
         OrderSheet orderSheet = orderSheetFixture.add_order_sheet(buyer, 10);
-
         List<CreateOrderApiReqDto.CreateOrderItemApiReqDto> items = List.of(CreateOrderApiReqDto.CreateOrderItemApiReqDto.builder()
                 .productId(1L)
                 .productName("운동화")
@@ -183,34 +185,71 @@ class OrderControllerIntegratedTest extends Setting {
         assertEquals(response.jsonPath().getObject("status", String.class), BaseEnums.ResponseStatus.FAILURE.getCode());
     }
 
+
     @Test
-    @DisplayName("주문 진행 실패 - 잔액이 부족할 때")
-    void createOrder_point_valid_fail(){
+    @DisplayName("주문 결제 진행 성공")
+    void paymentOrder_success(){
         // given
         OrderSheet orderSheet = orderSheetFixture.add_order_sheet(buyer, 10);
+        Product product = productFixture.add_usable_product();
+        List<ProductOption> productOptionList = productFixture.add_usable_product_option(product);
+        for(ProductOption option : productOptionList){
+            productFixture.add_product_stock(product, option, 100);
+        }
 
-        List<CreateOrderApiReqDto.CreateOrderItemApiReqDto> items = List.of(CreateOrderApiReqDto.CreateOrderItemApiReqDto.builder()
-                .productId(1L)
-                .productName("운동화")
-                .productOptionId(1L)
-                .productOptionName("색깔/빨강")
-                .productPrice(1300)
-                .buyCnt(2)
-                .build());
-        CreateOrderApiReqDto reqDto =  CreateOrderApiReqDto.builder()
-                .orderSheetId(orderSheet.getOrderSheetId())
-                .buyerId(1L)
-                .buyerName("홍길동")
-                .allBuyCnt(2)
-                .totalPrice(2600)
-                .orderItemList(items)
-                .build();
+        Order order = orderFixture.add_order_wait(orderSheet.getOrderSheetId(), buyer, 10);
+
+        PaymentOrderApiReqDto reqDto = new PaymentOrderApiReqDto(buyer.getBuyerId(), order.getOrderId());
 
         // when
-        ExtractableResponse<Response> response = post(PATH, reqDto, token);
+        ExtractableResponse<Response> response = post(PATH + "/payment", reqDto, token);
+
+        // then
+        assertEquals(response.jsonPath().getObject("status", String.class), BaseEnums.ResponseStatus.SUCCESS.getCode());
+    }
+
+    @Test
+    @DisplayName("주문 결제 진행 실패 - 이미 결제 완료된 주문")
+    void paymentOrder_status_fail(){
+        // given
+        OrderSheet orderSheet = orderSheetFixture.add_order_sheet(buyer, 10);
+        Product product = productFixture.add_usable_product();
+        List<ProductOption> productOptionList = productFixture.add_usable_product_option(product);
+        for(ProductOption option : productOptionList){
+            productFixture.add_product_stock(product, option, 100);
+        }
+
+        Order order = orderFixture.add_order_pay_complete(orderSheet.getOrderSheetId(), buyer, 10);
+
+        PaymentOrderApiReqDto reqDto = new PaymentOrderApiReqDto(buyer.getBuyerId(), order.getOrderId());
+
+        // when
+        ExtractableResponse<Response> response = post(PATH + "/payment", reqDto, token);
 
         // then
         assertEquals(response.jsonPath().getObject("status", String.class), BaseEnums.ResponseStatus.FAILURE.getCode());
     }
 
+    @Test
+    @DisplayName("주문 결제 진행 실패 - 잔액이 부족할 때")
+    void paymentOrder_point_valid_fail(){
+        // given
+        pointFixture.add_point(buyer.getBuyerId(), 10);
+        OrderSheet orderSheet = orderSheetFixture.add_order_sheet(buyer, 10);
+        Product product = productFixture.add_usable_product();
+        List<ProductOption> productOptionList = productFixture.add_usable_product_option(product);
+        for(ProductOption option : productOptionList){
+            productFixture.add_product_stock(product, option, 100);
+        }
+
+        Order order = orderFixture.add_order_pay_complete(orderSheet.getOrderSheetId(), buyer, 10);
+
+        PaymentOrderApiReqDto reqDto = new PaymentOrderApiReqDto(buyer.getBuyerId(), order.getOrderId());
+
+        // when
+        ExtractableResponse<Response> response = post(PATH + "/payment", reqDto, token);
+
+        // then
+        assertEquals(response.jsonPath().getObject("status", String.class), BaseEnums.ResponseStatus.FAILURE.getCode());
+    }
 }

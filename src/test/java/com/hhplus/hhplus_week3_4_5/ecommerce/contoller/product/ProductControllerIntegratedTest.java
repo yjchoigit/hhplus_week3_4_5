@@ -7,7 +7,6 @@ import com.hhplus.hhplus_week3_4_5.ecommerce.base.exception.reponse.dto.Response
 import com.hhplus.hhplus_week3_4_5.ecommerce.controller.product.dto.FindProductApiResDto;
 import com.hhplus.hhplus_week3_4_5.ecommerce.controller.product.dto.FindProductRankingApiResDto;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.buyer.entity.Buyer;
-import com.hhplus.hhplus_week3_4_5.ecommerce.domain.point.entity.Point;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.entity.Product;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.entity.ProductOption;
 import com.hhplus.hhplus_week3_4_5.ecommerce.fixture.buyer.BuyerFixture;
@@ -106,13 +105,13 @@ public class ProductControllerIntegratedTest extends Setting {
     @DisplayName("상위 상품 조회 성공")
     void findProductRanking_success(){
         // given
-        orderFixture.add_order(1L, buyer, 10);
-        orderFixture.add_order(2L, buyer, 20);
-        orderFixture.add_order(3L, buyer, 30);
-        orderFixture.add_order(4L, buyer, 40);
-        orderFixture.add_order(5L, buyer, 50);
-        orderFixture.add_order(6L, buyer, 60);
-        orderFixture.add_order(7L, buyer, 70);
+        orderFixture.add_order_pay_complete(1L, buyer, 10);
+        orderFixture.add_order_pay_complete(2L, buyer, 20);
+        orderFixture.add_order_pay_complete(3L, buyer, 30);
+        orderFixture.add_order_pay_complete(4L, buyer, 40);
+        orderFixture.add_order_pay_complete(5L, buyer, 50);
+        orderFixture.add_order_pay_complete(6L, buyer, 60);
+        orderFixture.add_order_pay_complete(7L, buyer, 70);
 
         // when
         ExtractableResponse<Response> response = get(PATH +"/ranking", token);
