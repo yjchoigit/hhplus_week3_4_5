@@ -19,7 +19,7 @@ import com.hhplus.hhplus_week3_4_5.ecommerce.fixture.order.OrderFixture;
 import com.hhplus.hhplus_week3_4_5.ecommerce.fixture.order.OrderSheetFixture;
 import com.hhplus.hhplus_week3_4_5.ecommerce.fixture.point.PointFixture;
 import com.hhplus.hhplus_week3_4_5.ecommerce.fixture.product.ProductFixture;
-import com.hhplus.hhplus_week3_4_5.ecommerce.service.product.ProductStockCurrencyTest;
+import com.hhplus.hhplus_week3_4_5.ecommerce.service.product.ProductStockConcurrencyTest;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,7 +41,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class OrderControllerIntegratedTest extends Setting {
     private static final String PATH = "/orders";
-    private static final Logger log = LoggerFactory.getLogger(ProductStockCurrencyTest.class);
+    private static final Logger log = LoggerFactory.getLogger(OrderControllerIntegratedTest.class);
 
     @Autowired
     private BuyerFixture buyerFixture;

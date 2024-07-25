@@ -19,8 +19,8 @@ import org.slf4j.LoggerFactory;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
-public class ProductStockCurrencyTest {
-    private static final Logger log = LoggerFactory.getLogger(ProductStockCurrencyTest.class);
+public class ProductStockConcurrencyTest {
+    private static final Logger log = LoggerFactory.getLogger(ProductStockConcurrencyTest.class);
 
     @Autowired
     private ProductFixture productFixture;

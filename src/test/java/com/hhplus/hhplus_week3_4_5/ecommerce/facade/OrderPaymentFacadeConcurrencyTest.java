@@ -1,26 +1,20 @@
 package com.hhplus.hhplus_week3_4_5.ecommerce.facade;
 
 import com.hhplus.hhplus_week3_4_5.ecommerce.controller.order.dto.CreateOrderApiReqDto;
-import com.hhplus.hhplus_week3_4_5.ecommerce.controller.order.dto.CreateOrderSheetApiReqDto;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.buyer.entity.Buyer;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.OrderEnums;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.entity.Order;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.entity.OrderItemSheet;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.entity.OrderSheet;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.repository.OrderItemSheetRepository;
-import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.repository.OrderRepository;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.entity.Product;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.entity.ProductOption;
-import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.entity.ProductStock;
-import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.repository.ProductStockRepository;
-import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.repository.ProductStockRepositoryImpl;
 import com.hhplus.hhplus_week3_4_5.ecommerce.facade.order.OrderPaymentFacade;
 import com.hhplus.hhplus_week3_4_5.ecommerce.fixture.buyer.BuyerFixture;
 import com.hhplus.hhplus_week3_4_5.ecommerce.fixture.order.OrderFixture;
 import com.hhplus.hhplus_week3_4_5.ecommerce.fixture.order.OrderSheetFixture;
 import com.hhplus.hhplus_week3_4_5.ecommerce.fixture.point.PointFixture;
 import com.hhplus.hhplus_week3_4_5.ecommerce.fixture.product.ProductFixture;
-import com.hhplus.hhplus_week3_4_5.ecommerce.service.product.ProductStockCurrencyTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -37,8 +31,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
-public class OrderPaymentFacadeCurrencyTest {
-    private static final Logger log = LoggerFactory.getLogger(ProductStockCurrencyTest.class);
+public class OrderPaymentFacadeConcurrencyTest {
+    private static final Logger log = LoggerFactory.getLogger(OrderPaymentFacadeConcurrencyTest.class);
 
     @Autowired
     private BuyerFixture buyerFixture;

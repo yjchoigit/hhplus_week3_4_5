@@ -4,7 +4,7 @@ import com.hhplus.hhplus_week3_4_5.ecommerce.domain.buyer.entity.Buyer;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.point.entity.Point;
 import com.hhplus.hhplus_week3_4_5.ecommerce.fixture.buyer.BuyerFixture;
 import com.hhplus.hhplus_week3_4_5.ecommerce.fixture.point.PointFixture;
-import com.hhplus.hhplus_week3_4_5.ecommerce.service.product.ProductStockCurrencyTest;
+import com.hhplus.hhplus_week3_4_5.ecommerce.service.product.ProductStockConcurrencyTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -19,8 +19,8 @@ import java.util.concurrent.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
-public class PointCurrencyTest {
-    private static final Logger log = LoggerFactory.getLogger(ProductStockCurrencyTest.class);
+public class PointConcurrencyTest {
+    private static final Logger log = LoggerFactory.getLogger(PointConcurrencyTest.class);
 
     @Autowired
     private PointServiceImpl pointServiceImpl;
