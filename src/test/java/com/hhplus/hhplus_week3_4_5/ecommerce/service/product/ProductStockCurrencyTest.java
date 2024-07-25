@@ -30,7 +30,7 @@ public class ProductStockCurrencyTest {
 
     @Test
     @DisplayName("재고 차감 동시성 테스트 성공 - 스레드 (10)")
-    void test1() throws InterruptedException {
+    void deductProductStock_currency_success() throws InterruptedException {
         // given
         // 상품 재고 100개 세팅
         Product product = productFixture.add_usable_product();
@@ -76,7 +76,7 @@ public class ProductStockCurrencyTest {
 
     @Test
     @DisplayName("재고 차감 동시성 테스트 실패 - 스레드 (10)")
-    void test2() throws InterruptedException {
+    void deductProductStock_currency_fail() throws InterruptedException {
         // given
         // 상품 재고 100개 세팅
         Product product = productFixture.add_usable_product();

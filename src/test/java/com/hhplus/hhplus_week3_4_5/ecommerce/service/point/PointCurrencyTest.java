@@ -33,7 +33,7 @@ public class PointCurrencyTest {
 
     @Test
     @DisplayName("잔액 사용 동시서 테스트 성공 - 스레드 (10)")
-    void testConcurrentUsePoint() throws InterruptedException {
+    void usePoint_currency_success() throws InterruptedException {
         // given
         // 잔액 100 세팅
         Buyer buyer = buyerFixture.add_buyer();

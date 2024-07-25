@@ -16,6 +16,8 @@ import com.hhplus.hhplus_week3_4_5.ecommerce.fixture.product.ProductFixture;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,22 +32,11 @@ public class OrderSheetFixture {
     @Autowired
     private ProductFixture productFixture;
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public OrderSheet add_order_sheet(Buyer buyer, int number){
 
         OrderSheet orderSheet = orderSheetRepository.save(new OrderSheet(buyer.getBuyerId(),
                 buyer.getName(), 1000 * number, number, LocalDateTime.now().plusHours(1), List.of(String.valueOf(number))));
-
-        Product product = productFixture.add_usable_product();
-        List<ProductOption> productOptionList = productFixture.add_usable_product_option(product);
-        for(ProductOption option : productOptionList){
-            productFixture.add_product_stock(product, option, 100);
-        }
-
-        for(ProductOption option : productOptionList){
-            orderItemSheetRepository.save(new OrderItemSheet(orderSheet, product.getProductId(), product.getName(),
-                    option.getProductOptionId(), option.optionStr(),
-                    1000, number, OrderEnums.Status.WAIT));
-        }
 
         return orderSheet;
     }

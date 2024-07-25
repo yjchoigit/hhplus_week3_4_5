@@ -29,6 +29,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public Product findProductByProductId(Long productId) {
         Product product = productRepository.findByProductId(productId);
         if(product == null){

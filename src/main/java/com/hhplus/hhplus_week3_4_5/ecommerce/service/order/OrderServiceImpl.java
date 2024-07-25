@@ -66,6 +66,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public FindOrderApiResDto findOrder(Long buyerId, Long orderId) {
         // 주문 조회
         Order order = orderRepository.findByBuyerIdAndOrderId(buyerId, orderId);
