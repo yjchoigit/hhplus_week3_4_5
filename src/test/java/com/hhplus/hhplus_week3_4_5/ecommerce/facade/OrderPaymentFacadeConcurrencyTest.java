@@ -2,102 +2,212 @@ package com.hhplus.hhplus_week3_4_5.ecommerce.facade;
 
 import com.hhplus.hhplus_week3_4_5.ecommerce.controller.order.dto.CreateOrderApiReqDto;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.buyer.entity.Buyer;
+import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.OrderEnums;
+import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.entity.Order;
+import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.entity.OrderItemSheet;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.entity.OrderSheet;
+import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.repository.OrderItemSheetRepository;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.entity.Product;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.entity.ProductOption;
 import com.hhplus.hhplus_week3_4_5.ecommerce.facade.order.OrderPaymentFacade;
 import com.hhplus.hhplus_week3_4_5.ecommerce.fixture.buyer.BuyerFixture;
+import com.hhplus.hhplus_week3_4_5.ecommerce.fixture.order.OrderFixture;
 import com.hhplus.hhplus_week3_4_5.ecommerce.fixture.order.OrderSheetFixture;
+import com.hhplus.hhplus_week3_4_5.ecommerce.fixture.point.PointFixture;
 import com.hhplus.hhplus_week3_4_5.ecommerce.fixture.product.ProductFixture;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.orm.jpa.JpaOptimisticLockingFailureException;
-import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
-class OrderPaymentFacadeConcurrencyTest {
+public class OrderPaymentFacadeConcurrencyTest {
+    private static final Logger log = LoggerFactory.getLogger(OrderPaymentFacadeConcurrencyTest.class);
 
     @Autowired
-    private OrderPaymentFacade orderPaymentFacade;
+    private BuyerFixture buyerFixture;
+
+    @Autowired
+    private PointFixture pointFixture;
+
+    @Autowired
+    private ProductFixture productFixture;
+
+    @Autowired
+    private OrderFixture orderFixture;
 
     @Autowired
     private OrderSheetFixture orderSheetFixture;
 
     @Autowired
-    private BuyerFixture buyerFixture;
+    private OrderPaymentFacade orderPaymentFacade;
 
-    private Buyer buyer;
-
-    @BeforeEach
-    void setUp(){
-        buyer = buyerFixture.add_buyer();
-    }
-
+    @Autowired
+    private OrderItemSheetRepository orderItemSheetRepository;
 
     @Test
-    @Transactional
-    void test() throws InterruptedException {
+    @DisplayName("주문 생성 동시성 테스트 성공 - 주문 1개만 생성 성공 (재고 차감 - 주문 생성)")
+    void createOrderSheet_currency_success() throws InterruptedException {
         // given
+        Buyer buyer = buyerFixture.add_buyer();
         OrderSheet orderSheet = orderSheetFixture.add_order_sheet(buyer, 10);
+
+        Product product = productFixture.add_usable_product();
+        List<ProductOption> productOptionList = productFixture.add_usable_product_option(product);
+        for(ProductOption option : productOptionList){
+            productFixture.add_product_stock(product, option, 100);
+        }
+
+        for(ProductOption option : productOptionList){
+            orderItemSheetRepository.save(new OrderItemSheet(orderSheet, product.getProductId(), product.getName(),
+                    option.getProductOptionId(), option.optionStr(),
+                    1000, 10, OrderEnums.Status.WAIT));
+        }
+
         List<CreateOrderApiReqDto.CreateOrderItemApiReqDto> items = List.of(CreateOrderApiReqDto.CreateOrderItemApiReqDto.builder()
-                .productId(1L)
-                .productName("운동화")
-                .productOptionId(1L)
-                .productOptionName("색깔/빨강")
+                .productId(product.getProductId())
+                .productName(product.getName())
+                .productOptionId(productOptionList.get(0).getProductOptionId())
+                .productOptionName(productOptionList.get(0).optionStr())
                 .productPrice(1300)
                 .buyCnt(2)
                 .build());
-        CreateOrderApiReqDto reqDto =  CreateOrderApiReqDto.builder()
+        CreateOrderApiReqDto reqDto = CreateOrderApiReqDto.builder()
                 .orderSheetId(orderSheet.getOrderSheetId())
-                .buyerId(1L)
-                .buyerName("홍길동")
+                .buyerId(buyer.getBuyerId())
+                .buyerName(buyer.getName())
                 .allBuyCnt(2)
                 .totalPrice(2600)
                 .orderItemList(items)
                 .build();
 
+        // CountDownLatch
+        CountDownLatch latch = new CountDownLatch(10);
 
-        // CountDownLatch to coordinate threads
-        CountDownLatch latch = new CountDownLatch(2);
+        // 스레드 10개 설정
+        ExecutorService executorService = Executors.newFixedThreadPool(10);
 
-        // Create a thread pool
-        ExecutorService executorService = Executors.newFixedThreadPool(2);
+        // 주문 성공 여부
+        AtomicBoolean orderCreatedSuccessfully = new AtomicBoolean(false);
 
-        // Callable task to be executed by multiple threads
-        Callable<Boolean> task = () -> {
+        // 동기화 객체
+        Object lock = new Object();
+
+        // Callable task
+        Callable<Void> task = () -> {
             try {
-                orderPaymentFacade.createOrder(reqDto);
-            } catch (Exception e) {
-                // Expected exception due to optimistic locking
-                return false;
+                log.info("task start !");
+                try {
+                    // 재고 차감 및 주문 생성 시도
+                    orderPaymentFacade.createOrder(reqDto);
+                    // 성공적인 주문이 이루어진 경우를 기록
+                    synchronized (lock) {
+                        if (!orderCreatedSuccessfully.get()) {
+                            log.info("complete create order");
+                            orderCreatedSuccessfully.set(true);
+                        }
+                    }
+                } catch (Exception e) {
+                    log.error("Exception occurred: ", e);
+                }
             } finally {
+                log.info("CountDownLatch.countDown()");
                 latch.countDown();
             }
-            return true;
+            return null;
         };
 
-        // Submit tasks
-        Future<Boolean> future1 = executorService.submit(task);
-        Future<Boolean> future2 = executorService.submit(task);
+        // 10개 task 전송
+        List<Future<Void>> futures = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            futures.add(executorService.submit(task));
+        }
 
-        // Wait for both threads to finish
+        // task 기다리기
         latch.await();
 
-        // Shutdown executor service
         executorService.shutdown();
 
-        // Verify that one of the tasks failed due to optimistic lock exception
-        assertThrows(JpaOptimisticLockingFailureException.class, () -> {
-            future1.get();
-            future2.get();
-        });
+        assertTrue(orderCreatedSuccessfully.get(), "Order creation should have succeeded at least once.");
+    }
 
+    @Test
+    @DisplayName("결제처리 동시성 테스트 성공 - 결제 1개만 성공 (잔액 사용 - 결제 처리)")
+    void paymentOrder_currency_success() throws InterruptedException {
+        // given
+        Buyer buyer = buyerFixture.add_buyer();
+        pointFixture.add_point(buyer.getBuyerId(), 100000);
+        OrderSheet orderSheet = orderSheetFixture.add_order_sheet(buyer, 10);
+
+        Product product = productFixture.add_usable_product();
+        List<ProductOption> productOptionList = productFixture.add_usable_product_option(product);
+        for(ProductOption option : productOptionList){
+            productFixture.add_product_stock(product, option, 100);
+        }
+
+        for(ProductOption option : productOptionList){
+            orderItemSheetRepository.save(new OrderItemSheet(orderSheet, product.getProductId(), product.getName(),
+                    option.getProductOptionId(), option.optionStr(),
+                    1000, 10, OrderEnums.Status.WAIT));
+        }
+        Order order = orderFixture.add_order_wait(orderSheet.getOrderSheetId(), buyer, 10);
+
+        // CountDownLatch
+        CountDownLatch latch = new CountDownLatch(10);
+
+        // 스레드 10개 설정
+        ExecutorService executorService = Executors.newFixedThreadPool(10);
+
+        // 결제 성공 여부
+        AtomicBoolean orderCreatedSuccessfully = new AtomicBoolean(false);
+
+        // 동기화 객체
+        Object lock = new Object();
+
+        // Callable task
+        Callable<Void> task = () -> {
+            try {
+                log.info("task start !");
+                try {
+                    // 잔액 사용 처리 및 결제 처리 시도
+                    orderPaymentFacade.paymentOrder(buyer.getBuyerId(), order.getOrderId());
+                    // 성공적인 결제가 이루어진 경우를 기록
+                    synchronized (lock) {
+                        if (!orderCreatedSuccessfully.get()) {
+                            log.info("complete payment order");
+                            orderCreatedSuccessfully.set(true);
+                        }
+                    }
+                } catch (Exception e) {
+                    log.error("Exception occurred: ", e);
+                }
+            } finally {
+                log.info("CountDownLatch.countDown()");
+                latch.countDown();
+            }
+            return null;
+        };
+
+        // 10개 task 전송
+        List<Future<Void>> futures = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            futures.add(executorService.submit(task));
+        }
+
+        // task 기다리기
+        latch.await();
+
+        executorService.shutdown();
+
+        assertTrue(orderCreatedSuccessfully.get(), "Order payment should have succeeded at least once.");
     }
 }

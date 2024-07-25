@@ -1,4 +1,4 @@
-package com.hhplus.hhplus_week3_4_5.ecommerce.contoller.product;
+package com.hhplus.hhplus_week3_4_5.ecommerce.service.product;
 
 
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.entity.Product;
@@ -6,7 +6,6 @@ import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.entity.ProductOption
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.entity.ProductStock;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.repository.ProductStockRepository;
 import com.hhplus.hhplus_week3_4_5.ecommerce.fixture.product.ProductFixture;
-import com.hhplus.hhplus_week3_4_5.ecommerce.service.product.ProductStockServiceImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
