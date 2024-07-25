@@ -5,7 +5,9 @@ import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.entity.ProductStock;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.exception.ProductCustomException;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.repository.ProductStockRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -37,7 +39,35 @@ public class ProductStockServiceImpl implements ProductStockService {
 
         // 상품 재고 차감 처리
         productStock.deduct(buyCnt);
+
+        // 재고 업데이트하면서 낙관적 락 사용
+        productStockRepository.save(productStock);
+
         return true;
+    }
+
+
+    @Transactional
+    public void deductProductStock1(Long productId, Long productOptionId, int buyCnt) {
+        boolean success = false;
+        int retryCount = 0;
+        while (!success && retryCount < 3) { // Retry up to 3 times
+            try {
+                ProductStock productStock = productStockRepository.findProductStockByProductIdAndProductOptionId(productId, productOptionId);
+                if (productStock == null || productStock.getStock() < buyCnt) {
+                    throw new ProductCustomException(ProductEnums.Error.NO_PRODUCT_STOCK);
+                }
+                productStock.deduct(buyCnt);
+                productStockRepository.save(productStock);
+                success = true; // Successfully deducted
+            } catch (ObjectOptimisticLockingFailureException e) {
+                // Handle optimistic locking exception and retry
+                retryCount++;
+                if (retryCount >= 3) {
+                    throw e; // Throw exception if retry limit exceeded
+                }
+            }
+        }
     }
 
 }
