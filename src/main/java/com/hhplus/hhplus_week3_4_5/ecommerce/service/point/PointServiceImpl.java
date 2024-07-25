@@ -23,6 +23,7 @@ public class PointServiceImpl implements PointService {
 
     // 잔액 조회
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public int findPoint(Long buyerId){
         // 회원 id로 잔액 정보 조회
         Point pointInfo = pointRepository.findByBuyerId(buyerId);
