@@ -2,12 +2,8 @@ package com.hhplus.hhplus_week3_4_5.ecommerce.controller.order;
 
 import com.hhplus.hhplus_week3_4_5.ecommerce.base.exception.reponse.dto.ResponseDto;
 import com.hhplus.hhplus_week3_4_5.ecommerce.base.exception.reponse.util.ResponseUtil;
-import com.hhplus.hhplus_week3_4_5.ecommerce.controller.order.dto.CreateOrderApiReqDto;
-import com.hhplus.hhplus_week3_4_5.ecommerce.controller.order.dto.CreateOrderSheetApiReqDto;
-import com.hhplus.hhplus_week3_4_5.ecommerce.controller.order.dto.CreateOrderSheetApiResDto;
-import com.hhplus.hhplus_week3_4_5.ecommerce.controller.order.dto.FindOrderApiResDto;
+import com.hhplus.hhplus_week3_4_5.ecommerce.controller.order.dto.*;
 import com.hhplus.hhplus_week3_4_5.ecommerce.facade.order.OrderPaymentFacade;
-import com.hhplus.hhplus_week3_4_5.ecommerce.service.order.OrderPaymentService;
 import com.hhplus.hhplus_week3_4_5.ecommerce.service.order.OrderService;
 import com.hhplus.hhplus_week3_4_5.ecommerce.service.order.OrderSheetService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,7 +26,6 @@ public class OrderController {
     private final OrderPaymentFacade orderPaymentFacade;
     private final OrderSheetService orderSheetService;
     private final OrderService orderService;
-    private final OrderPaymentService orderPaymentService;
 
     @Operation(summary = "주문서 생성")
     @ApiResponse(responseCode = "200", description = "성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = CreateOrderSheetApiResDto.class)))
@@ -52,10 +47,9 @@ public class OrderController {
 
     @Operation(summary = "주문 결제 진행")
     @ApiResponse(responseCode = "200", description = "성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Long.class)))
-    @PostMapping(value = "/orders/{buyerId}")
-    public ResponseDto<Long> orderPayment(@PathVariable(name = "buyerId") @Schema(description = "회원 ID") @NotNull Long buyerId,
-                                          @RequestParam(name = "orderId") @Schema(description = "주문 ID") @NotNull Long orderId){
-        Long orderPaymentId = orderPaymentService.orderPayment(buyerId, orderId);
+    @PostMapping(value = "/orders/payment")
+    public ResponseDto<Long> paymentOrder(@RequestBody @Valid PaymentOrderApiReqDto reqDto){
+        Long orderPaymentId = orderPaymentFacade.paymentOrder(reqDto.buyerId(), reqDto.orderId());
         if(orderPaymentId == null){
             return ResponseUtil.failure(orderPaymentId);
         }

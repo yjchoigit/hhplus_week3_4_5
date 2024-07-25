@@ -76,6 +76,11 @@ public class OrderItem extends CreateModifyDateTimeEntity {
         this.status = status;
     }
 
+    // 입금 완료 상태로 변경
+    public void depositComplete(){
+        this.status = OrderEnums.Status.DEPOSIT_COMPLETE;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

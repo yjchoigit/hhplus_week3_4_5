@@ -2,10 +2,9 @@ package com.hhplus.hhplus_week3_4_5.ecommerce.facade.order;
 
 import com.hhplus.hhplus_week3_4_5.ecommerce.controller.order.dto.CreateOrderApiReqDto;
 import com.hhplus.hhplus_week3_4_5.ecommerce.controller.order.dto.FindOrderApiResDto;
-import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.OrderEnums;
-import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.entity.OrderPayment;
 import com.hhplus.hhplus_week3_4_5.ecommerce.infrastructure.apiClient.order.OrderCollectApiClient;
 import com.hhplus.hhplus_week3_4_5.ecommerce.infrastructure.apiClient.order.dto.SendOrderToCollectionDto;
+import com.hhplus.hhplus_week3_4_5.ecommerce.service.order.OrderPaymentService;
 import com.hhplus.hhplus_week3_4_5.ecommerce.service.order.OrderService;
 import com.hhplus.hhplus_week3_4_5.ecommerce.service.order.OrderSheetService;
 import com.hhplus.hhplus_week3_4_5.ecommerce.service.point.PointService;
@@ -23,24 +22,21 @@ public class OrderPaymentFacade {
     private PointService pointService;
     private ProductService productService;
     private ProductStockService productStockService;
+    private OrderPaymentService orderPaymentService;
     private OrderCollectApiClient orderCollectApiClient;
-
+    
+    // 주문 생성
     @Transactional(rollbackFor = {Exception.class})
     public Long createOrder(CreateOrderApiReqDto reqDto){
         // 상품 프로세스 진행 (상품 valid)
         productProcess(reqDto);
         // 재고 프로세스 진행 (재고 valid, 재고 차감처리)
         stockProcess(reqDto);
-        // 잔액 프로세스 진행 (잔액 valid, 잔액 사용처리)
-        pointProcess(reqDto);
 
         // 주문 생성 진행
         Long orderId = orderService.createOrder(reqDto);
         // 주문 정보 조회
         FindOrderApiResDto orderInfo = orderService.findOrder(reqDto.buyerId(), orderId);
-
-        // 주문 데이터 수집 외부 데이터 플랫폼 전달
-//        sendOrderToCollection(new SendOrderToCollectionDto(orderInfo.orderNumber(), orderInfo.totalPrice(), orderInfo.createDatetime()));
 
         // 주문서 삭제 처리
         orderSheetService.completeOrderSheet(reqDto.orderSheetId());
@@ -73,29 +69,25 @@ public class OrderPaymentFacade {
         }
     }
 
-    private void pointProcess(CreateOrderApiReqDto reqDto) {
-        // 잔액 사용처리
-        pointService.usePoint(reqDto.buyerId(), reqDto.totalPrice());
+
+    // 결제 처리
+    @Transactional(rollbackFor = {Exception.class})
+    public Long paymentOrder(Long buyerId, Long orderId) {
+        // 주문 정보 조회
+        FindOrderApiResDto orderInfo = orderService.findOrder(buyerId, orderId);
+        // 잔액 사용처리 (잔액 valid, 잔액 사용처리)
+        pointService.usePoint(buyerId, orderInfo.totalPrice());
+        // 결제 처리 -> orderPaymentId 반환
+        Long orderPaymentId = orderPaymentService.paymentOrder(buyerId, orderId);
+
+        // 주문 데이터 수집 외부 데이터 플랫폼 전달
+        sendOrderToCollection(new SendOrderToCollectionDto(orderInfo.orderNumber(), orderInfo.totalPrice(), orderInfo.createDatetime()));
+
+        return orderPaymentId;
     }
 
     // 주문 데이터 수집 외부 데이터 플랫폼 전달
     private void sendOrderToCollection(SendOrderToCollectionDto sendDto){
         orderCollectApiClient.sendOrderToCollectionPlatform(sendDto);
-    }
-
-    public Long orderPayment(Long buyerId, Long orderId) {
-        // 주문 조회
-        FindOrderApiResDto orderInfo = orderService.findOrder(buyerId, orderId);
-
-        OrderPayment orderPayment = orderPaymentRepository.findByOrderId(orderId);
-        // 결제 대기 상태인 경우 -> 결제 처리
-        if(OrderEnums.PaymentStatus.WAIT.equals(orderPayment.getStatus())){
-            orderPaymentRepository.save(OrderPayment.builder()
-                    .order(order)
-                    .status(s)
-                    .build());
-        }
-
-        return 0;
     }
 }
