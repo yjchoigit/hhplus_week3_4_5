@@ -6,6 +6,8 @@ spring:
     url: jdbc:mysql://localhost:3308/demoProject
     username: root
     password: test123
+#    hikari:
+#      transaction-isolation: SERIALIZABLE
 
   jpa:
     database-platform: org.hibernate.dialect.MySQL8Dialect
