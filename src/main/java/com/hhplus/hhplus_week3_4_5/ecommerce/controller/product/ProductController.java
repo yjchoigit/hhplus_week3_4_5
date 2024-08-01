@@ -1,8 +1,10 @@
 package com.hhplus.hhplus_week3_4_5.ecommerce.controller.product;
 
+import com.hhplus.hhplus_week3_4_5.ecommerce.base.config.cache.CacheConstants;
 import com.hhplus.hhplus_week3_4_5.ecommerce.base.exception.reponse.dto.ResponseDto;
 import com.hhplus.hhplus_week3_4_5.ecommerce.base.exception.reponse.util.ResponseUtil;
 import com.hhplus.hhplus_week3_4_5.ecommerce.controller.product.dto.*;
+import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.ProductEnums;
 import com.hhplus.hhplus_week3_4_5.ecommerce.facade.product.ProductOrderFacade;
 import com.hhplus.hhplus_week3_4_5.ecommerce.facade.product.ProductStockFacade;
 import com.hhplus.hhplus_week3_4_5.ecommerce.service.product.ProductService;
@@ -15,6 +17,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -51,43 +54,42 @@ public class ProductController {
     @ApiResponse(responseCode = "200", description = "성공", content = {@Content(
             mediaType = "application/json",
             array = @ArraySchema(schema = @Schema(implementation = FindProductRankingApiResDto.class))
-    )})    @GetMapping(value = "/products/ranking")
-    public ResponseDto<List<FindProductRankingApiResDto>> findProductRanking() {
-        return ResponseUtil.success(productOrderFacade.findProductRanking());
+    )})    @GetMapping(value = "/products/ranking/{rankingType}")
+    public ResponseDto<List<FindProductRankingApiResDto>> findProductRanking(@PathVariable(name = "rankingType") @Schema(description = "기간 타입") ProductEnums.Ranking rankingType) {
+        return ResponseUtil.success(productOrderFacade.findProductRanking(rankingType));
     }
-
 
     @Operation(summary = "상품 등록")
     @ApiResponse(responseCode = "200", description = "성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Long.class)))
     @PostMapping(value = "/products")
     public ResponseDto<Long> addProduct(@RequestBody @Valid AddProductApiReqDto reqDto) {
-        Long productId = productService.addProduct(reqDto);
-        if(productId == null) {
-            ResponseUtil.failure(productId);
+        Long result = productService.addProduct(reqDto);
+        if(result == null) {
+            ResponseUtil.failure(result);
         }
-        return ResponseUtil.success(productId);
+        return ResponseUtil.success(result);
     }
 
-    // TODO 상품 수정 API
     @Operation(summary = "상품 수정")
     @ApiResponse(responseCode = "200", description = "성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Boolean.class)))
     @PatchMapping(value = "/products/{productId}")
-    public boolean putProduct(@PathVariable(name = "productId") @Schema(description = "상품 ID") @NotNull Long productId,
+    public ResponseDto<Long> putProduct(@PathVariable(name = "productId") @Schema(description = "상품 ID") @NotNull Long productId,
                               @RequestBody @Valid PutProductApiReqDto reqDto) {
-        return true;
+        Long result = productService.putProduct(productId, reqDto);
+        if(result == null) {
+            ResponseUtil.failure(result);
+        }
+        return ResponseUtil.success(result);
     }
 
-    // TODO 상품 삭제 API
     @Operation(summary = "상품 삭제")
     @ApiResponse(responseCode = "200", description = "성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Boolean.class)))
     @DeleteMapping(value = "/products/{productId}")
-    public boolean deleteProduct(@PathVariable(name = "productId") @Schema(description = "상품 ID") @NotNull Long productId) {
-        return true;
+    public ResponseDto<Void> delProduct(@PathVariable(name = "productId") @Schema(description = "상품 ID") @NotNull Long productId) {
+        boolean successYn = productService.delProduct(productId);
+        if(!successYn){
+            return ResponseUtil.failure();
+        }
+        return ResponseUtil.success();
     }
-
-    // 상품 옵션 추가 API
-
-    // 상품 옵션 수정 API
-    
-    // 상품 옵션 삭제 API
 }

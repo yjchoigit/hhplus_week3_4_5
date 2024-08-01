@@ -10,14 +10,19 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
+import org.hibernate.annotations.DynamicUpdate;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Builder
-public class Product extends CreateModifyDateTimeEntity {
+@DynamicUpdate
+public class Product extends CreateModifyDateTimeEntity implements Serializable {
+    private static final long serialVersionUID = 1L; // 직렬화 버전 관리용
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Comment("상품 id")
@@ -83,5 +88,15 @@ public class Product extends CreateModifyDateTimeEntity {
         if(!this.isUseYn()) {
             throw new ProductCustomException(ProductEnums.Error.UNUSABLE_PRODUCT);
         }
+    }
+
+    public void update(Product updateData) {
+        this.name = updateData.getName();
+        this.price = updateData.getPrice();
+        this.useYn = updateData.isUseYn();
+    }
+
+    public void delete() {
+        this.delYn = false;
     }
 }
