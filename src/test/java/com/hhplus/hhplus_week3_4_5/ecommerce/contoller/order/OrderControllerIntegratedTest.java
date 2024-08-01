@@ -19,7 +19,6 @@ import com.hhplus.hhplus_week3_4_5.ecommerce.fixture.order.OrderFixture;
 import com.hhplus.hhplus_week3_4_5.ecommerce.fixture.order.OrderSheetFixture;
 import com.hhplus.hhplus_week3_4_5.ecommerce.fixture.point.PointFixture;
 import com.hhplus.hhplus_week3_4_5.ecommerce.fixture.product.ProductFixture;
-import com.hhplus.hhplus_week3_4_5.ecommerce.service.product.ProductStockConcurrencyTest;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,7 +32,7 @@ import org.springframework.http.HttpStatus;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -308,16 +307,26 @@ class OrderControllerIntegratedTest extends Setting {
         // 스레드 10개 설정
         ExecutorService executorService = Executors.newFixedThreadPool(10);
 
+        AtomicInteger successfulLockCount = new AtomicInteger(0);
+
         // Callable task
         Callable<Void> task = () -> {
             try {
-                // 주문 생성 요청
-                ExtractableResponse<Response> response = post(PATH, reqDto, token);
-                // 검증
-                assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-                assertEquals(response.jsonPath().getObject("data", Long.class), 1L);
-            } catch (Exception e) {
-                log.error("Exception occurred: ", e);
+                log.info("Task start!");
+                try {
+                    // Attempt payment
+                    ExtractableResponse<Response> response = post(PATH, reqDto, token);
+
+                    // Check if the response indicates success
+                    if (response.statusCode() == HttpStatus.OK.value()) {
+                        String status = response.jsonPath().getObject("status", String.class);
+                        if (BaseEnums.ResponseStatus.SUCCESS.getCode().equals(status)) {
+                            successfulLockCount.incrementAndGet(); // 락 획득 성공 시 카운트 증가
+                        }
+                    }
+                } catch (Exception e) {
+                    log.error("Exception occurred: ", e);
+                }
             } finally {
                 latch.countDown();
             }
@@ -334,12 +343,15 @@ class OrderControllerIntegratedTest extends Setting {
         latch.await();
 
         executorService.shutdown();
+        int finalSuccessfulLockCount = successfulLockCount.get();
+        assertTrue(finalSuccessfulLockCount == 1, "Order should have succeeded at least once.");
     }
 
     @Test
     @DisplayName("주문 결제 동시성 테스트")
     void paymentOrder_concurrency_single_success() throws InterruptedException {
         // given
+        pointFixture.add_point(buyer.getBuyerId(), 100000);
         OrderSheet orderSheet = orderSheetFixture.add_order_sheet(buyer, 10);
         Product product = productFixture.add_usable_product();
         List<ProductOption> productOptionList = productFixture.add_usable_product_option(product);
@@ -355,9 +367,7 @@ class OrderControllerIntegratedTest extends Setting {
 
         ExecutorService executorService = Executors.newFixedThreadPool(10);
 
-        AtomicBoolean paymentSuccessful = new AtomicBoolean(false);
-
-        Object lock = new Object();
+        AtomicInteger successfulLockCount = new AtomicInteger(0);
 
         // Callable task
         Callable<Void> task = () -> {
@@ -371,12 +381,7 @@ class OrderControllerIntegratedTest extends Setting {
                     if (response.statusCode() == HttpStatus.OK.value()) {
                         String status = response.jsonPath().getObject("status", String.class);
                         if (BaseEnums.ResponseStatus.SUCCESS.getCode().equals(status)) {
-                            synchronized (lock) {
-                                if (!paymentSuccessful.get()) {
-                                    log.info("Payment successful!");
-                                    paymentSuccessful.set(true);
-                                }
-                            }
+                            successfulLockCount.incrementAndGet(); // 락 획득 성공 시 카운트 증가
                         }
                     }
                 } catch (Exception e) {
@@ -398,7 +403,8 @@ class OrderControllerIntegratedTest extends Setting {
 
         executorService.shutdown();
 
-        assertTrue(paymentSuccessful.get(), "Payment should have succeeded at least once.");
+        int finalSuccessfulLockCount = successfulLockCount.get();
+        assertTrue(finalSuccessfulLockCount == 1, "Payment should have succeeded at least once.");
     }
 
 }

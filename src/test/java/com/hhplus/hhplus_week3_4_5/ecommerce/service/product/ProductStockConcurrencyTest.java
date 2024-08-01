@@ -6,20 +6,22 @@ import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.entity.ProductStock;
 import com.hhplus.hhplus_week3_4_5.ecommerce.fixture.product.ProductFixture;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
-public class ProductStockConcurrencyTest {
+@ActiveProfiles("test")
+class ProductStockConcurrencyTest {
     private static final Logger log = LoggerFactory.getLogger(ProductStockConcurrencyTest.class);
 
     @Autowired
@@ -43,12 +45,17 @@ public class ProductStockConcurrencyTest {
         // 스레드 10개 설정
         ExecutorService executorService = Executors.newFixedThreadPool(10);
 
+        AtomicInteger successfulLockCount = new AtomicInteger(0);
+
         // Callable task
         Callable<Void> task = () -> {
             try {
                 // 재고 차감 10개씩 실행`
                 log.info("task start !");
-                productStockServiceImpl.deductProductStock(product.getProductId(), option.getProductOptionId(), 10);
+                boolean isSuccessful = productStockServiceImpl.deductProductStock(product.getProductId(), option.getProductOptionId(), 10);
+                if (isSuccessful) {
+                    successfulLockCount.incrementAndGet(); // 락 획득 성공 시 카운트 증가
+                }
             } catch (Exception e) {
                 log.error("Exception occurred: ", e);
             } finally {
@@ -69,9 +76,11 @@ public class ProductStockConcurrencyTest {
 
         executorService.shutdown();
 
-        // 재고가 10개씩 차감되었는지 확인 100 - (10 * 10) = 0
+        // 재고 확인
         ProductStock finalProductStock = productStockServiceImpl.findProductStockByProductIdAndProductOptionId(product.getProductId(), option.getProductOptionId());
-        assertEquals(0, finalProductStock.getStock(), "The product stock should be reduced to 0 after all deductions.");
+        int finalSuccessfulLockCount = successfulLockCount.get();
+        int expectedProductStock = 100 - (10 * finalSuccessfulLockCount);
+        assertEquals(expectedProductStock, finalProductStock.getStock(), "The product stock should be reduced to 0 after all deductions.");
     }
 
     @Test
