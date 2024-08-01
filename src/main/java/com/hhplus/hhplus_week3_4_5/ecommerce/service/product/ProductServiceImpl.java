@@ -10,6 +10,7 @@ import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.exception.ProductCus
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.repository.ProductOptionRepository;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.repository.ProductRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -66,6 +67,8 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @CacheEvict(value = CacheConstants.ProductGroup.FIND_PRODUCT_LIST, allEntries = true)
+    @Transactional(rollbackFor = {Exception.class})
     public Long addProduct(AddProductApiReqDto reqDto) {
         // 상품 등록
         Product product = productRepository.save(Product.builder()
