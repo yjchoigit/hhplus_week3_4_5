@@ -97,6 +97,6 @@ public class Product extends CreateModifyDateTimeEntity implements Serializable 
     }
 
     public void delete() {
-        this.delYn = false;
+        this.delYn = true;
     }
 }
