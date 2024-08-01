@@ -87,7 +87,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    @Cacheable(value = CacheConstants.ProductGroup.FIND_PRODUCT_RANKING, key = "#rankingType.name")
+    @Cacheable(value = CacheConstants.ProductGroup.FIND_PRODUCT_RANKING, key = "#rankingType.name()")
     public List<Object[]> findTopProductsByBuyCnt(ProductEnums.Ranking rankingType) {
         LocalDateTime endDatetime = LocalDateTime.now();
         LocalDateTime startDatetime = getStartDatetime(rankingType, endDatetime);
