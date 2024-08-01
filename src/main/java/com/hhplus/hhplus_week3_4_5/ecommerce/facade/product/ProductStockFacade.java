@@ -16,7 +16,6 @@ import java.util.List;
 
 @Component
 @AllArgsConstructor
-@Transactional(rollbackFor = {Exception.class}, readOnly = true)
 public class ProductStockFacade {
     private final ProductService productService;
     private final ProductStockService productStockService;

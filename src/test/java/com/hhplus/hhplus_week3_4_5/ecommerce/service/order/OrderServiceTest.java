@@ -10,6 +10,7 @@ import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.exception.OrderCustomE
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.repository.OrderItemRepository;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.repository.OrderPaymentRepository;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.order.repository.OrderRepository;
+import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.ProductEnums;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -131,8 +132,7 @@ class OrderServiceTest {
     @DisplayName("가장 많이 팔린 상위 5개 상품 정보 조회 성공")
     void findTopProductsByBuyCnt_success() {
         // given
-        LocalDateTime startDatetime = LocalDateTime.now().minusDays(3);
-        LocalDateTime endDatetime = LocalDateTime.now();
+        ProductEnums.Ranking rankingType = ProductEnums.Ranking.THREE_DAY;
 
         List<Object[]> list = new ArrayList<>();
         list.add(new Object[]{1L, 100});
@@ -142,9 +142,9 @@ class OrderServiceTest {
         list.add(new Object[]{5L, 60});
 
         // when
-        when(orderItemRepository.findTopProductsByBuyCnt(startDatetime, endDatetime)).thenReturn(list);
+        when(orderItemRepository.findTopProductsByBuyCnt(LocalDateTime.now().minusDays(3), LocalDateTime.now())).thenReturn(list);
 
-        List<Object[]> result = orderServiceImpl.findTopProductsByBuyCnt(startDatetime, endDatetime);
+        List<Object[]> result = orderServiceImpl.findTopProductsByBuyCnt(rankingType);
 
         // then
         assertEquals(list.size(), result.size());

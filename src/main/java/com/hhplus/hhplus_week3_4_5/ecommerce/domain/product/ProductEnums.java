@@ -19,7 +19,7 @@ public class ProductEnums {
     @Getter
     @RequiredArgsConstructor
     public enum Ranking {
-        POPULAR, RECENT, HIGH, LOW
+        THREE_DAY, ONE_WEEK, ONE_MONTH
     }
 
     @Getter
