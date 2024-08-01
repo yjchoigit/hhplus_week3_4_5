@@ -12,6 +12,7 @@ import java.util.UUID;
 @Slf4j
 public class LogInterceptor implements HandlerInterceptor {
     public static final String LOG_ID = "logId";
+    private static final String START_TIME = "startTime";
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -20,6 +21,10 @@ public class LogInterceptor implements HandlerInterceptor {
         String uuid = UUID.randomUUID().toString();
 
         request.setAttribute(LOG_ID, uuid);
+
+        // 시작시간 구하기
+        long startTime = System.currentTimeMillis();
+        request.setAttribute(START_TIME, startTime);
 
         //@RequestMapping: HandlerMethod
         //정적 리소스: ResourceHttpRequestHandler
@@ -40,7 +45,13 @@ public class LogInterceptor implements HandlerInterceptor {
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
         String requestURI = request.getRequestURI();
         String logId = (String) request.getAttribute(LOG_ID);
-        log.info("RESPONSE [{}][{}][{}]", logId, requestURI, handler);
+
+        // 종료시간 구하기
+        long startTime = (Long) request.getAttribute(START_TIME);
+        long endTime = System.currentTimeMillis();
+        long duration = endTime - startTime;
+
+        log.info("RESPONSE [{}][{}][{}][{}ms]", logId, requestURI, handler, duration);
         if (ex != null) {
             log.error("afterCompletion error!!", ex);
         }
