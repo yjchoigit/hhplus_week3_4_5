@@ -34,7 +34,8 @@ public class ProductController {
     @ApiResponse(responseCode = "200", description = "성공", content = {@Content(
             mediaType = "application/json",
             array = @ArraySchema(schema = @Schema(implementation = FindProductListApiResDto.class))
-    )})@GetMapping(value = "/products")
+    )})
+    @GetMapping(value = "/products")
     public ResponseDto<List<FindProductListApiResDto>> findProductList() {
         return ResponseUtil.success(productService.findProductList());
     }

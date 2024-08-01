@@ -1,5 +1,6 @@
 package com.hhplus.hhplus_week3_4_5.ecommerce.service.product;
 
+import com.hhplus.hhplus_week3_4_5.ecommerce.base.config.cache.CacheConstants;
 import com.hhplus.hhplus_week3_4_5.ecommerce.controller.product.dto.AddProductApiReqDto;
 import com.hhplus.hhplus_week3_4_5.ecommerce.controller.product.dto.FindProductListApiResDto;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.ProductEnums;
@@ -9,6 +10,7 @@ import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.exception.ProductCus
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.repository.ProductOptionRepository;
 import com.hhplus.hhplus_week3_4_5.ecommerce.domain.product.repository.ProductRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +25,7 @@ public class ProductServiceImpl implements ProductService {
     private ProductOptionRepository productOptionRepository;
 
     @Override
+    @Cacheable(value = CacheConstants.ProductGroup.FIND_PRODUCT_LIST, unless = "#result.isEmpty()")
     public List<FindProductListApiResDto> findProductList() {
         List<Product> list = productRepository.findProductList();
         return list.stream().map(FindProductListApiResDto::from).toList();
