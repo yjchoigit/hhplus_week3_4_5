@@ -90,8 +90,9 @@ public class OrderServiceImpl implements OrderService {
     @Cacheable(value = CacheConstants.ProductGroup.FIND_PRODUCT_RANKING, key = "#rankingType.name()")
     public List<Object[]> findTopProductsByBuyCnt(ProductEnums.Ranking rankingType) {
         LocalDateTime endDatetime = LocalDateTime.now();
+        // 랭킹타입 별 시작일자 구하기
         LocalDateTime startDatetime = getStartDatetime(rankingType, endDatetime);
-        // 주문 품목 내역에서 startDatetime, endDatetime 기반 가장 많이 팔린 상위 5개 상품 정보
+        // 주문 품목 내역에서 startDatetime, endDatetime 기반 가장 많이 팔린 상위 5개 상품 정보 조회
         List<Object[]> top5ProductList = orderItemRepository.findTopProductsByBuyCnt(startDatetime, endDatetime);
 
         if(top5ProductList.isEmpty()) {
