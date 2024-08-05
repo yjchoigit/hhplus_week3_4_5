@@ -13,8 +13,6 @@ services:
       - "name=redis"
       - "mode=standalone"
     restart: always
-    networks:
-      - mynetwork
 
   mysql_container:
     container_name: mysql_test
@@ -28,27 +26,11 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
     restart: always
-    networks:
-      - mynetwork
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
       interval: 10s
       timeout: 5s
       retries: 3
 
-  app:
-    image: your_application_image
-    container_name: your_app
-    depends_on:
-      - redis_container
-      - mysql_container
-    ports:
-      - "8080:8080"
-    networks:
-      - mynetwork
-
 volumes:
   mysql_data:
-
-networks:
-  mynetwork:

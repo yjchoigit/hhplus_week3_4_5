@@ -1,9 +1,10 @@
 spring:
   application:
-    name: week-03
+    name: ecommerce
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3308/demoProject
+#    url: jdbc:mysql://mysql_test:3306/demoProject
     username: root
     password: test123
 
@@ -35,7 +36,7 @@ jwt:
 #    h2: debug
 
 springdoc:
-  packages-to-scan: com.hhplus.hhplus_week3_4_5.ecommerce.controller
+  packages-to-scan: com.hhplus.ecommerce.controller
   default-consumes-media-type: application/json;charset=UTF-8
   default-produces-media-type: application/json;charset=UTF-8
   swagger-ui:
