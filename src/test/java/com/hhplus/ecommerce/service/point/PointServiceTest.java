@@ -48,8 +48,8 @@ class PointServiceTest {
         when(pointRepository.findByBuyerId(buyerId)).thenReturn(Optional.ofNullable(point));
 
         // then
-        int result = pointServiceImpl.findPoint(buyerId);
-        assertEquals(result, 1000);
+        Point result = pointServiceImpl.findPoint(buyerId);
+        assertEquals(result.getAllPoint(), 1000);
     }
 
     @Test
@@ -77,9 +77,9 @@ class PointServiceTest {
         when(pointRepository.findByBuyerId(buyerId)).thenReturn(Optional.ofNullable(point));
 
         // then
-        boolean result = pointServiceImpl.chargePoint(buyerId, 100);
+        Point result = pointServiceImpl.chargePoint(buyerId, 100);
 
-        assertTrue(result);
+        assertNotNull(result);
         verify(pointHistoryRepository).save(any(PointHistory.class));
     }
 
@@ -108,9 +108,9 @@ class PointServiceTest {
         when(pointRepository.findByBuyerId(buyerId)).thenReturn(Optional.ofNullable(point));
 
         // then
-        boolean result = pointServiceImpl.usePoint(buyerId, 100);
+        Point result = pointServiceImpl.usePoint(buyerId, 100);
 
-        assertTrue(result);
+        assertNotNull(result);
         verify(pointHistoryRepository).save(any(PointHistory.class));
     }
 }

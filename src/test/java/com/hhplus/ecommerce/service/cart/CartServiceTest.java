@@ -102,9 +102,8 @@ public class CartServiceTest {
         when(cartRepository.findCartListByBuyerIdAndCartIdList(any(), any())).thenReturn(List.of(cart));
 
         // then
-        boolean result = cartServiceImpl.delCart(buyerId, List.of(1L));
+        cartServiceImpl.delCart(buyerId, List.of(1L));
 
-        assertTrue(result);
         verify(cartRepository).delete(any());
     }
 

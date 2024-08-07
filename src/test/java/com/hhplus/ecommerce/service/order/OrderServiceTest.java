@@ -1,16 +1,16 @@
 package com.hhplus.ecommerce.service.order;
 
 import com.hhplus.ecommerce.controller.order.dto.CreateOrderApiReqDto;
-import com.hhplus.ecommerce.controller.order.dto.FindOrderApiResDto;
 import com.hhplus.ecommerce.domain.order.OrderEnums;
 import com.hhplus.ecommerce.domain.order.entity.Order;
 import com.hhplus.ecommerce.domain.order.entity.OrderItem;
-import com.hhplus.ecommerce.domain.order.entity.OrderPayment;
+import com.hhplus.ecommerce.domain.payment.entity.Payment;
 import com.hhplus.ecommerce.domain.order.exception.OrderCustomException;
 import com.hhplus.ecommerce.domain.order.repository.OrderItemRepository;
-import com.hhplus.ecommerce.domain.order.repository.OrderPaymentRepository;
+import com.hhplus.ecommerce.domain.payment.repository.PaymentRepository;
 import com.hhplus.ecommerce.domain.order.repository.OrderRepository;
 import com.hhplus.ecommerce.domain.product.ProductEnums;
+import com.hhplus.ecommerce.service.order.dto.FindOrderResDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -41,7 +41,7 @@ class OrderServiceTest {
     private OrderItemRepository orderItemRepository;
 
     @Mock
-    private OrderPaymentRepository orderPaymentRepository;
+    private PaymentRepository paymentRepository;
 
     @BeforeEach
     void setUp() {
@@ -75,14 +75,14 @@ class OrderServiceTest {
         OrderItem orderItem = new OrderItem(1L, order, dto.productId(), dto.productName(),
                 dto.productOptionId(), dto.productOptionName(), dto.productPrice(), dto.buyCnt(), OrderEnums.Status.WAIT);
 
-        OrderPayment orderPayment = new OrderPayment(1L, order, reqDto.totalPrice(), OrderEnums.PaymentStatus.WAIT);
+        Payment payment = new Payment(1L, order, reqDto.totalPrice(), OrderEnums.PaymentStatus.WAIT);
 
         // when
         when(orderRepository.save(any(Order.class))).thenReturn(order);
         when(orderItemRepository.save(any(OrderItem.class))).thenReturn(orderItem);
-        when(orderPaymentRepository.save(any(OrderPayment.class))).thenReturn(orderPayment);
+        when(paymentRepository.save(any(Payment.class))).thenReturn(payment);
 
-        Long result = orderServiceImpl.createOrder(reqDto);
+        Order result = orderServiceImpl.createOrder(reqDto);
 
         // then
         assertNotNull(result);
@@ -103,7 +103,7 @@ class OrderServiceTest {
         when(orderRepository.findByBuyerIdAndOrderId(anyLong(), anyLong())).thenReturn(order);
         when(orderItemRepository.findByOrderId(anyLong())).thenReturn(items);
 
-        FindOrderApiResDto result = orderServiceImpl.findOrder(buyerId, 1L);
+        FindOrderResDto result = orderServiceImpl.findOrder(buyerId, 1L);
 
         // then
         assertNotNull(result);

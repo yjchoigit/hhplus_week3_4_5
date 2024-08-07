@@ -1,17 +1,20 @@
 package com.hhplus.ecommerce.service.point;
 
-import com.hhplus.ecommerce.controller.point.dto.FindPointHistoryApiResDto;
+import com.hhplus.ecommerce.domain.point.entity.Point;
+import com.hhplus.ecommerce.domain.point.entity.PointHistory;
 
 import java.util.List;
 
 public interface PointService {
-
     // 잔액 조회
-    int findPoint(Long buyerId);
+    Point findPoint(Long buyerId);
 
     // 잔액 충전
-    boolean chargePoint(Long buyerId, int point);
-
-    boolean usePoint(Long buyerId, int point);
-    List<FindPointHistoryApiResDto> findPointHistoryList(Long buyerId);
+    Point chargePoint(Long buyerId, int point);
+    
+    // 잔액 사용
+    Point usePoint(Long buyerId, int point);
+    
+    // 잔액 내역 조회
+    List<PointHistory> findPointHistoryList(Long buyerId);
 }

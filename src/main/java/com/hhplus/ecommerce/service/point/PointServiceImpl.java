@@ -32,19 +32,17 @@ public class PointServiceImpl implements PointService {
     // 잔액 조회
     @Override
     @Transactional(rollbackFor = {Exception.class})
-    public int findPoint(Long buyerId){
+    public Point findPoint(Long buyerId){
         // 회원 id로 잔액 정보 조회
-        Point pointInfo = pointRepository.findByBuyerId(buyerId)
-                .orElseThrow(() -> new PointCustomException(PointEnums.Error.NO_POINT));
-
         // 총 포인트 반환
-        return pointInfo.getAllPoint();
+        return pointRepository.findByBuyerId(buyerId)
+                .orElseThrow(() -> new PointCustomException(PointEnums.Error.NO_POINT));
     }
 
     // 잔액 충전
     @Override
     @Transactional(rollbackFor = {Exception.class})
-    public boolean chargePoint(Long buyerId, int point){
+    public Point chargePoint(Long buyerId, int point){
         // buyerId 기준으로 Lock 객체를 가져옴
         RLock rLock = redissonClient.getLock(RedisEnums.LockName.CHARGE_POINT.changeLockName(buyerId));
         boolean isLocked = false;
@@ -66,7 +64,7 @@ public class PointServiceImpl implements PointService {
             pointInfo.charge(point);
             // 잔액 충전 내역 저장
             pointHistoryRepository.save(new PointHistory(pointInfo, PointEnums.Type.CHARGE, point));
-            return true;
+            return pointInfo;
 
         } catch (InterruptedException e) {
             throw new RedisCustomException(RedisEnums.Error.LOCK_INTERRUPTED_ERROR);
@@ -88,7 +86,7 @@ public class PointServiceImpl implements PointService {
     // 잔액 사용
     @Override
     @Transactional(rollbackFor = {Exception.class})
-    public boolean usePoint(Long buyerId, int point) {
+    public Point usePoint(Long buyerId, int point) {
         // buyerId 기준으로 Lock 객체를 가져옴
         RLock rLock = redissonClient.getLock(RedisEnums.LockName.USE_POINT.changeLockName(buyerId));
         boolean isLocked = false;
@@ -110,7 +108,7 @@ public class PointServiceImpl implements PointService {
             pointInfo.use(point);
             // 잔액 사용 내역 저장
             pointHistoryRepository.save(new PointHistory(pointInfo, PointEnums.Type.DEDUCT, point));
-            return true;
+            return pointInfo;
 
         } catch (InterruptedException e) {
             throw new RedisCustomException(RedisEnums.Error.LOCK_INTERRUPTED_ERROR);
@@ -130,7 +128,7 @@ public class PointServiceImpl implements PointService {
     }
 
     @Override
-    public List<FindPointHistoryApiResDto> findPointHistoryList(Long buyerId) {
+    public List<PointHistory> findPointHistoryList(Long buyerId) {
         // 회원 id로 잔액 정보 조회
         Point pointInfo = pointRepository.findByBuyerId(buyerId)
                 .orElseThrow(() -> new PointCustomException(PointEnums.Error.NO_POINT));
@@ -139,6 +137,6 @@ public class PointServiceImpl implements PointService {
         if(pointHistoryList.isEmpty()){
             return new ArrayList<>();
         }
-        return pointHistoryList.stream().map(FindPointHistoryApiResDto::from).toList();
+        return pointHistoryList;
     }
 }

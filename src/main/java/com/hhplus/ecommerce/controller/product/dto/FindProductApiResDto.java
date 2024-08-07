@@ -4,6 +4,7 @@ import com.hhplus.ecommerce.domain.product.ProductEnums;
 import com.hhplus.ecommerce.domain.product.entity.Product;
 import com.hhplus.ecommerce.domain.product.entity.ProductOption;
 import com.hhplus.ecommerce.domain.product.entity.ProductStock;
+import com.hhplus.ecommerce.facade.product.dto.FindProductResDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.io.Serializable;
@@ -25,6 +26,11 @@ public record FindProductApiResDto(
 
 ) implements Serializable {
 
+    public static FindProductApiResDto from(FindProductResDto resDto) {
+        return new FindProductApiResDto(resDto.productId(), resDto.name(), resDto.type(),
+                resDto.price(), resDto.totalStock(), resDto.optionList().stream().map(FindProductOptionApiResDto::from).toList());
+    }
+
     public record FindProductOptionApiResDto(
             @Schema(description = "상품 옵션 ID")
             Long productOptionId,
@@ -39,21 +45,9 @@ public record FindProductApiResDto(
             @Schema(description = "상품 재고")
             int stock
     ) implements Serializable {
-        public static FindProductOptionApiResDto fromOptions(ProductOption productOption, ProductStock productStock){
-            return new FindProductOptionApiResDto(productOption.getProductOptionId(), productOption.getType(), productOption.getOptionName(),
-                    productOption.getOptionValue(), productOption.getPrice(), productStock.getStock());
+        public static FindProductOptionApiResDto from(FindProductResDto.FindProductOptionResDto resDto){
+            return new FindProductOptionApiResDto(resDto.productOptionId(), resDto.optionType(), resDto.name(),
+                    resDto.value(), resDto.price(), resDto.stock());
         }
-    }
-
-    public static FindProductApiResDto fromSingleProduct(Product product, ProductStock productStock){
-        return new FindProductApiResDto(product.getProductId(), product.getName(), product.getType(), product.getPrice(),
-                productStock.getStock(), null);
-    }
-
-    public static FindProductApiResDto fromOptionProduct(Product product, List<FindProductOptionApiResDto> optionList){
-        int totalStock = optionList.stream().mapToInt(FindProductOptionApiResDto::stock).sum();
-
-        return new FindProductApiResDto(product.getProductId(), product.getName(), product.getType(), product.getPrice(),
-                totalStock, optionList);
     }
 }

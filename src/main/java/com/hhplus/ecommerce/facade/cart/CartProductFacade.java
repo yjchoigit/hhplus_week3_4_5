@@ -1,10 +1,11 @@
 package com.hhplus.ecommerce.facade.cart;
 
 import com.hhplus.ecommerce.controller.cart.dto.AddCartApiReqDto;
-import com.hhplus.ecommerce.controller.cart.dto.GetCartApiResDto;
+import com.hhplus.ecommerce.controller.cart.dto.FindCartApiResDto;
 import com.hhplus.ecommerce.domain.cart.entity.Cart;
 import com.hhplus.ecommerce.domain.product.entity.Product;
 import com.hhplus.ecommerce.domain.product.entity.ProductOption;
+import com.hhplus.ecommerce.facade.cart.dto.FindCartResDto;
 import com.hhplus.ecommerce.service.cart.CartService;
 import com.hhplus.ecommerce.service.product.ProductService;
 import lombok.AllArgsConstructor;
@@ -21,8 +22,8 @@ public class CartProductFacade {
     private final CartService cartService;
     private final ProductService productService;
 
-    public List<GetCartApiResDto> findCartList(Long buyerId) {
-        List<GetCartApiResDto> result = new ArrayList<>();
+    public List<FindCartResDto> findCartList(Long buyerId) {
+        List<FindCartResDto> result = new ArrayList<>();
 
         // 장바구니 목록 조회
         List<Cart> cartList = cartService.findCartList(buyerId);
@@ -41,15 +42,15 @@ public class CartProductFacade {
             // 상품 옵션 id 존재 시 상품 옵션 정보 조회
             if(productOptionId != null){
                 ProductOption productOption = productService.findProductOptionByProductIdAndProductOptionId(productId, productOptionId);
-                result.add(GetCartApiResDto.from(cart, product, productOption));
+                result.add(FindCartResDto.from(cart, product, productOption));
             }
-            result.add(GetCartApiResDto.from(cart, product, null));
+            result.add(FindCartResDto.from(cart, product, null));
         }
         return result;
     }
 
     @Transactional(rollbackFor = {Exception.class})
-    public Long addCart(Long buyerId, AddCartApiReqDto reqDto){
+    public Cart addCart(Long buyerId, AddCartApiReqDto reqDto){
         // 상품 정보 조회
         productService.findProductByProductId(reqDto.productId());
 
@@ -58,12 +59,11 @@ public class CartProductFacade {
             productService.findProductOptionByProductIdAndProductOptionId(reqDto.productId(), reqDto.productOptionId());
         }
 
-        Cart cart = cartService.addCart(Cart.builder()
+        return cartService.addCart(Cart.builder()
                 .buyerId(buyerId)
                 .productId(reqDto.productId())
                 .productOptionId(reqDto.productOptionId())
                 .buyCnt(reqDto.buyCnt())
                 .build());
-        return cart.getCartId();
     }
 }

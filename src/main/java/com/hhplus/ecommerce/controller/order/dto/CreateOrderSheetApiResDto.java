@@ -2,6 +2,7 @@ package com.hhplus.ecommerce.controller.order.dto;
 
 import com.hhplus.ecommerce.domain.order.entity.OrderItemSheet;
 import com.hhplus.ecommerce.domain.order.entity.OrderSheet;
+import com.hhplus.ecommerce.service.order.dto.CreateOrderSheetResDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.io.Serializable;
@@ -22,9 +23,9 @@ public record CreateOrderSheetApiResDto(
     List<CreateOrderItemSheetApiResDto> orderItemList
 ) implements Serializable {
 
-    public static CreateOrderSheetApiResDto from(OrderSheet orderSheet, List<CreateOrderItemSheetApiResDto> orderItemList){
-        return new CreateOrderSheetApiResDto(orderSheet.getOrderSheetId(), orderSheet.getBuyerId(), orderSheet.getBuyerName(),
-                orderSheet.getAllBuyCnt(), orderSheet.getTotalPrice(), orderItemList);
+    public static CreateOrderSheetApiResDto from(CreateOrderSheetResDto resDto){
+        return new CreateOrderSheetApiResDto(resDto.orderSheetId(), resDto.buyerId(), resDto.buyerName(),
+                resDto.allBuyCnt(), resDto.totalPrice(), resDto.orderItemList().stream().map(CreateOrderItemSheetApiResDto::from).toList());
     }
 
     public record CreateOrderItemSheetApiResDto(
@@ -44,10 +45,10 @@ public record CreateOrderSheetApiResDto(
             int buyCnt
     ) implements Serializable {
 
-        public static CreateOrderItemSheetApiResDto from(OrderItemSheet orderItemSheet){
-            return new CreateOrderItemSheetApiResDto(orderItemSheet.getOrderItemSheetId(), orderItemSheet.getProductId(),
-                    orderItemSheet.getProductName(), orderItemSheet.getProductOptionId(), orderItemSheet.getProductOptionName(),
-                    orderItemSheet.getProductPrice(), orderItemSheet.getBuyCnt());
+        public static CreateOrderItemSheetApiResDto from(CreateOrderSheetResDto.CreateOrderItemSheetResDto itemSheetResDto){
+            return new CreateOrderItemSheetApiResDto(itemSheetResDto.orderSheetItemId(), itemSheetResDto.productId(),
+                    itemSheetResDto.productName(), itemSheetResDto.productOptionId(), itemSheetResDto.productOptionName(),
+                    itemSheetResDto.productPrice(), itemSheetResDto.buyCnt());
         }
     }
 

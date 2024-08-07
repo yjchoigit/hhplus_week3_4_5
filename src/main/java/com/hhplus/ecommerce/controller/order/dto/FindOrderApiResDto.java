@@ -1,7 +1,6 @@
 package com.hhplus.ecommerce.controller.order.dto;
 
-import com.hhplus.ecommerce.domain.order.entity.Order;
-import com.hhplus.ecommerce.domain.order.entity.OrderItem;
+import com.hhplus.ecommerce.service.order.dto.FindOrderResDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.io.Serializable;
@@ -40,16 +39,16 @@ public record FindOrderApiResDto(
             @Schema(description = "구매 수량")
             int buyCnt
             ) implements Serializable {
-        public static FindOrderItemApiResDto from(OrderItem orderItem){
-            return new FindOrderItemApiResDto(orderItem.getOrderItemId(), orderItem.getProductId(), orderItem.getProductName(),
-                    orderItem.getProductOptionId(), orderItem.getProductOptionName(), orderItem.getProductPrice(), orderItem.getBuyCnt());
+        public static FindOrderItemApiResDto from(FindOrderResDto.FindOrderItemDto orderItemDto){
+            return new FindOrderItemApiResDto(orderItemDto.orderItemId(), orderItemDto.productId(), orderItemDto.productName(),
+                    orderItemDto.productOptionId(), orderItemDto.productOptionName(), orderItemDto.productPrice(), orderItemDto.buyCnt());
         }
     }
 
-    public static FindOrderApiResDto from(Order order, List<FindOrderItemApiResDto> orderItemList){
-        return new FindOrderApiResDto(order.getOrderId(), order.getOrderNumber(), order.getAllBuyCnt(),
-                order.getTotalPrice(), order.getCreateDatetime(), orderItemList);
+    public static FindOrderApiResDto from(FindOrderResDto orderDto){
+        return new FindOrderApiResDto(orderDto.orderId(), orderDto.orderNumber(), orderDto.allBuyCnt(),
+                orderDto.totalPrice(), orderDto.createDatetime(),
+                orderDto.orderItemList().stream().map(FindOrderItemApiResDto::from).toList());
     }
-
 
 }

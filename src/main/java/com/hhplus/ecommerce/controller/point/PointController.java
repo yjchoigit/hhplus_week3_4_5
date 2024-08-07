@@ -3,6 +3,8 @@ package com.hhplus.ecommerce.controller.point;
 import com.hhplus.ecommerce.base.exception.reponse.dto.ResponseDto;
 import com.hhplus.ecommerce.base.exception.reponse.util.ResponseUtil;
 import com.hhplus.ecommerce.controller.point.dto.FindPointHistoryApiResDto;
+import com.hhplus.ecommerce.domain.point.entity.Point;
+import com.hhplus.ecommerce.domain.point.entity.PointHistory;
 import com.hhplus.ecommerce.service.point.PointService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -29,7 +31,7 @@ public class PointController {
     @ApiResponse(responseCode = "200", description = "성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Integer.class)))
     @GetMapping(value = "/points/{buyerId}")
     public ResponseDto<Integer> findPoint(@PathVariable(name = "buyerId") @Schema(description = "회원 ID") @NotNull Long buyerId) {
-        return ResponseUtil.success(pointService.findPoint(buyerId));
+        return ResponseUtil.success(pointService.findPoint(buyerId).getAllPoint());
     }
 
     @Operation(summary = "잔액 충전")
@@ -37,8 +39,8 @@ public class PointController {
     @PostMapping(value = "/points/{buyerId}")
     public ResponseDto<Void> chargePoint(@PathVariable(name = "buyerId") @Schema(description = "회원 ID") @NotNull Long buyerId,
                                @RequestParam(name = "point") @Schema(description = "충전할 포인트") int point) {
-        boolean successYn = pointService.chargePoint(buyerId, point);
-        if(!successYn){
+        Point chargePoint = pointService.chargePoint(buyerId, point);
+        if(chargePoint == null){
             return ResponseUtil.failure();
         }
         return ResponseUtil.success();
@@ -51,6 +53,7 @@ public class PointController {
     )})
     @GetMapping(value = "/points/history/{buyerId}")
     public ResponseDto<List<FindPointHistoryApiResDto>> findPointHistoryList(@PathVariable(name = "buyerId") @Schema(description = "회원 ID") @NotNull Long buyerId) {
-        return ResponseUtil.success(pointService.findPointHistoryList(buyerId));
+        List<PointHistory> pointHistoryList = pointService.findPointHistoryList(buyerId);
+        return ResponseUtil.success(pointHistoryList.stream().map(FindPointHistoryApiResDto::from).toList());
     }
 }
