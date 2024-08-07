@@ -32,8 +32,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @ActiveProfiles("test")
-class OrderPaymentFacadeConcurrencyTest {
-    private static final Logger log = LoggerFactory.getLogger(OrderPaymentFacadeConcurrencyTest.class);
+class PaymentFacadeConcurrencyTest {
+    private static final Logger log = LoggerFactory.getLogger(PaymentFacadeConcurrencyTest.class);
 
     @Autowired
     private BuyerFixture buyerFixture;
@@ -181,7 +181,7 @@ class OrderPaymentFacadeConcurrencyTest {
                 log.info("task start !");
                 try {
                     // 잔액 사용 처리 및 결제 처리 시도
-                    orderPaymentFacade.paymentOrder(buyer.getBuyerId(), order.getOrderId());
+                    orderPaymentFacade.pay(buyer.getBuyerId(), order.getOrderId());
                     // 성공적인 결제가 이루어진 경우를 기록
                     synchronized (lock) {
                         if (!orderCreatedSuccessfully.get()) {

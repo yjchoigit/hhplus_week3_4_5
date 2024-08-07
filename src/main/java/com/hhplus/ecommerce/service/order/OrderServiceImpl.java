@@ -2,16 +2,16 @@ package com.hhplus.ecommerce.service.order;
 
 import com.hhplus.ecommerce.base.config.cache.CacheConstants;
 import com.hhplus.ecommerce.controller.order.dto.CreateOrderApiReqDto;
-import com.hhplus.ecommerce.controller.order.dto.FindOrderApiResDto;
 import com.hhplus.ecommerce.domain.order.OrderEnums;
 import com.hhplus.ecommerce.domain.order.entity.Order;
 import com.hhplus.ecommerce.domain.order.entity.OrderItem;
-import com.hhplus.ecommerce.domain.order.entity.OrderPayment;
+import com.hhplus.ecommerce.domain.payment.entity.Payment;
 import com.hhplus.ecommerce.domain.order.exception.OrderCustomException;
 import com.hhplus.ecommerce.domain.order.repository.OrderItemRepository;
-import com.hhplus.ecommerce.domain.order.repository.OrderPaymentRepository;
+import com.hhplus.ecommerce.domain.payment.repository.PaymentRepository;
 import com.hhplus.ecommerce.domain.order.repository.OrderRepository;
 import com.hhplus.ecommerce.domain.product.ProductEnums;
+import com.hhplus.ecommerce.service.order.dto.FindOrderResDto;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -29,11 +29,11 @@ import java.util.List;
 public class OrderServiceImpl implements OrderService {
     private OrderRepository orderRepository;
     private OrderItemRepository orderItemRepository;
-    private OrderPaymentRepository orderPaymentRepository;
+    private PaymentRepository paymentRepository;
 
     @Override
     @Transactional(rollbackFor = {Exception.class})
-    public Long createOrder(CreateOrderApiReqDto reqDto) {
+    public Order createOrder(CreateOrderApiReqDto reqDto) {
         // 주문 등록
         Order order = orderRepository.save(Order.builder()
                         .orderSheetId(reqDto.orderSheetId())
@@ -59,18 +59,18 @@ public class OrderServiceImpl implements OrderService {
         }
         
         // 주문 결제 등록 (상태 - 결제 대기)
-        orderPaymentRepository.save(OrderPayment.builder()
+        paymentRepository.save(Payment.builder()
                         .order(order)
                         .paymentPrice(reqDto.totalPrice())
                         .status(OrderEnums.PaymentStatus.WAIT)
                 .build());
 
-        return order.getOrderId();
+        return order;
     }
 
     @Override
     @Transactional(rollbackFor = {Exception.class})
-    public FindOrderApiResDto findOrder(Long buyerId, Long orderId) {
+    public FindOrderResDto findOrder(Long buyerId, Long orderId) {
         // 주문 조회
         Order order = orderRepository.findByBuyerIdAndOrderId(buyerId, orderId);
         if(order == null) {
@@ -82,8 +82,8 @@ public class OrderServiceImpl implements OrderService {
             throw new OrderCustomException(OrderEnums.Error.NO_ORDER);
         }
 
-        return FindOrderApiResDto.from(order, orderItemList.stream()
-                .map(FindOrderApiResDto.FindOrderItemApiResDto::from).toList());
+        return FindOrderResDto.from(order, orderItemList.stream()
+                .map(FindOrderResDto.FindOrderItemDto::from).toList());
     }
 
     @Override

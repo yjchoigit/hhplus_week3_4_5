@@ -27,13 +27,12 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public boolean delCart(Long buyerId, List<Long> cartIdList) {
+    public void delCart(Long buyerId, List<Long> cartIdList) {
         // 장바구니 존재 확인
         List<Cart> cartList = cartRepository.findCartListByBuyerIdAndCartIdList(buyerId, cartIdList);
         if(cartList.isEmpty()){
             throw new CartCustomException(CartEnums.Error.NO_CART);
         }
         cartRepository.delete(cartIdList);
-        return true;
     }
 }

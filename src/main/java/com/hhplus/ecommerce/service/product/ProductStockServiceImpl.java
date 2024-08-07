@@ -36,7 +36,7 @@ public class ProductStockServiceImpl implements ProductStockService {
 
     @Override
     @Transactional(rollbackFor = {Exception.class})
-    public boolean deductProductStock(Long productId, Long productOptionId, int buyCnt) {
+    public ProductStock deductProductStock(Long productId, Long productOptionId, int buyCnt) {
         // productId, productOptionId 기준으로 Lock 객체를 가져옴
         RLock rLock = redissonClient.getLock(RedisEnums.LockName.DEDUCT_PRODUCT.changeLockName(productId, productOptionId));
         boolean isLocked = false;
@@ -61,8 +61,8 @@ public class ProductStockServiceImpl implements ProductStockService {
 
             // 상품 재고 차감 처리
             productStock.deduct(buyCnt);
-            return true;
 
+            return productStock;
         } catch (InterruptedException e) {
             throw new RedisCustomException(RedisEnums.Error.LOCK_INTERRUPTED_ERROR);
         } finally {

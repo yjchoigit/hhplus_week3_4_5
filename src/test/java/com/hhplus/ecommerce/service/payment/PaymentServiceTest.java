@@ -1,13 +1,13 @@
-package com.hhplus.ecommerce.service.order;
+package com.hhplus.ecommerce.service.payment;
 
 import com.hhplus.ecommerce.controller.order.dto.CreateOrderApiReqDto;
 import com.hhplus.ecommerce.domain.order.OrderEnums;
 import com.hhplus.ecommerce.domain.order.entity.Order;
 import com.hhplus.ecommerce.domain.order.entity.OrderItem;
-import com.hhplus.ecommerce.domain.order.entity.OrderPayment;
+import com.hhplus.ecommerce.domain.payment.entity.Payment;
 import com.hhplus.ecommerce.domain.order.exception.OrderCustomException;
 import com.hhplus.ecommerce.domain.order.repository.OrderItemRepository;
-import com.hhplus.ecommerce.domain.order.repository.OrderPaymentRepository;
+import com.hhplus.ecommerce.domain.payment.repository.PaymentRepository;
 import com.hhplus.ecommerce.domain.order.repository.OrderRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -24,10 +24,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class OrderPaymentServiceTest {
+class PaymentServiceTest {
 
     @InjectMocks
-    OrderPaymentServiceImpl orderPaymentServiceImpl;
+    PaymentServiceImpl orderPaymentServiceImpl;
 
     @Mock
     private OrderRepository orderRepository;
@@ -36,7 +36,7 @@ class OrderPaymentServiceTest {
     private OrderItemRepository orderItemRepository;
 
     @Mock
-    private OrderPaymentRepository orderPaymentRepository;
+    private PaymentRepository paymentRepository;
 
     @BeforeEach
     void setUp() {
@@ -44,7 +44,7 @@ class OrderPaymentServiceTest {
 
     @Test
     @DisplayName("주문 결제 처리 성공")
-    void paymentOrder_success(){
+    void pay_success(){
         // given
         List<CreateOrderApiReqDto.CreateOrderItemApiReqDto> items = List.of(CreateOrderApiReqDto.CreateOrderItemApiReqDto.builder()
                 .productId(1L)
@@ -70,14 +70,14 @@ class OrderPaymentServiceTest {
         OrderItem orderItem = new OrderItem(1L, order, dto.productId(), dto.productName(),
                 dto.productOptionId(), dto.productOptionName(), dto.productPrice(), dto.buyCnt(), OrderEnums.Status.WAIT);
 
-        OrderPayment orderPayment = new OrderPayment(1L, order, reqDto.totalPrice(), OrderEnums.PaymentStatus.WAIT);
+        Payment payment = new Payment(1L, order, reqDto.totalPrice(), OrderEnums.PaymentStatus.WAIT);
 
         // when
         when(orderRepository.findByBuyerIdAndOrderId(1L, 1L)).thenReturn(order);
         when(orderItemRepository.findByOrderId(1L)).thenReturn(List.of(orderItem));
-        when(orderPaymentRepository.findByOrderId(1L)).thenReturn(orderPayment);
+        when(paymentRepository.findByOrderId(1L)).thenReturn(payment);
 
-        Long result = orderPaymentServiceImpl.paymentOrder(1L, 1L);
+        Payment result = orderPaymentServiceImpl.pay(1L, 1L);
 
         // then
         assertNotNull(result);
@@ -86,7 +86,7 @@ class OrderPaymentServiceTest {
 
     @Test
     @DisplayName("주문 결제 처리 실패 - 주문 정보가 없을 때")
-    void paymentOrder_no_order_info_fail(){
+    void pay_info_fail(){
         // given
         List<CreateOrderApiReqDto.CreateOrderItemApiReqDto> items = List.of(CreateOrderApiReqDto.CreateOrderItemApiReqDto.builder()
                 .productId(1L)
@@ -110,13 +110,13 @@ class OrderPaymentServiceTest {
 
         // then
         assertThrows(OrderCustomException.class, ()-> {
-            orderPaymentServiceImpl.paymentOrder(1L, 1L);
+            orderPaymentServiceImpl.pay(1L, 1L);
         });
     }
 
     @Test
     @DisplayName("주문 결제 처리 실패 - 이미 결제가 완료된 주문일 때")
-    void paymentOrder_already_pay_complete_fail(){
+    void pay_already_pay_complete_fail(){
         // given
         List<CreateOrderApiReqDto.CreateOrderItemApiReqDto> items = List.of(CreateOrderApiReqDto.CreateOrderItemApiReqDto.builder()
                 .productId(1L)
@@ -142,16 +142,16 @@ class OrderPaymentServiceTest {
         OrderItem orderItem = new OrderItem(1L, order, dto.productId(), dto.productName(),
                 dto.productOptionId(), dto.productOptionName(), dto.productPrice(), dto.buyCnt(), OrderEnums.Status.DEPOSIT_COMPLETE);
 
-        OrderPayment orderPayment = new OrderPayment(1L, order, reqDto.totalPrice(), OrderEnums.PaymentStatus.PAY_COMPLETE);
+        Payment payment = new Payment(1L, order, reqDto.totalPrice(), OrderEnums.PaymentStatus.PAY_COMPLETE);
 
         // when
         when(orderRepository.findByBuyerIdAndOrderId(1L, 1L)).thenReturn(order);
         when(orderItemRepository.findByOrderId(1L)).thenReturn(List.of(orderItem));
-        when(orderPaymentRepository.findByOrderId(1L)).thenReturn(orderPayment);
+        when(paymentRepository.findByOrderId(1L)).thenReturn(payment);
 
         // then
         assertThrows(OrderCustomException.class, ()-> {
-            orderPaymentServiceImpl.paymentOrder(1L, 1L);
+            orderPaymentServiceImpl.pay(1L, 1L);
         });
     }
 }

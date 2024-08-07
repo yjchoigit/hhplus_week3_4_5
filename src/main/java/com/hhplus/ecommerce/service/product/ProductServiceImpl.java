@@ -10,6 +10,8 @@ import com.hhplus.ecommerce.domain.product.entity.ProductOption;
 import com.hhplus.ecommerce.domain.product.exception.ProductCustomException;
 import com.hhplus.ecommerce.domain.product.repository.ProductOptionRepository;
 import com.hhplus.ecommerce.domain.product.repository.ProductRepository;
+import com.hhplus.ecommerce.service.product.dto.AddProductReqDto;
+import com.hhplus.ecommerce.service.product.dto.PutProductReqDto;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -29,9 +31,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Cacheable(value = CacheConstants.ProductGroup.FIND_PRODUCT_LIST, unless = "#result.isEmpty()")
-    public List<FindProductListApiResDto> findProductList() {
-        List<Product> list = productRepository.findProductList();
-        return list.stream().map(FindProductListApiResDto::from).toList();
+    public List<Product> findProductList() {
+        return productRepository.findProductList();
     }
 
     @Override
@@ -72,7 +73,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @CacheEvict(value = CacheConstants.ProductGroup.FIND_PRODUCT_LIST, allEntries = true)
     @Transactional(rollbackFor = {Exception.class})
-    public Long addProduct(AddProductApiReqDto reqDto) {
+    public Product addProduct(AddProductReqDto reqDto) {
         // 상품 등록
         Product product = productRepository.save(Product.builder()
                         .name(reqDto.name())
@@ -82,7 +83,7 @@ public class ProductServiceImpl implements ProductService {
                         .delYn(false)
                 .build());
         // 상품 옵션 등록
-        for(AddProductApiReqDto.AddProductOptionApiReqDto dto : reqDto.optionList()){
+        for(AddProductReqDto.AddProductOptionReqDto dto : reqDto.optionList()){
             productOptionRepository.save(ProductOption.builder()
                             .product(product)
                             .type(dto.optionType())
@@ -92,7 +93,7 @@ public class ProductServiceImpl implements ProductService {
                             .useYn(dto.useYn())
                     .build());
         }
-        return product.getProductId();
+        return product;
     }
 
     @Override
@@ -101,7 +102,7 @@ public class ProductServiceImpl implements ProductService {
             @CacheEvict(value = CacheConstants.ProductGroup.FIND_PRODUCT, key = "#productId")
     })
     @Transactional(rollbackFor = {Exception.class})
-    public Long putProduct(Long productId, PutProductApiReqDto reqDto) {
+    public Product putProduct(Long productId, PutProductReqDto reqDto) {
         // 상품 조회
         Product product = productRepository.findByProductId(productId);
         if(product == null){
@@ -115,7 +116,7 @@ public class ProductServiceImpl implements ProductService {
                 .useYn(reqDto.useYn())
                 .build());
 
-        return product.getProductId();
+        return product;
     }
 
     @Override
@@ -124,7 +125,7 @@ public class ProductServiceImpl implements ProductService {
             @CacheEvict(value = CacheConstants.ProductGroup.FIND_PRODUCT, key = "#productId")
     })
     @Transactional(rollbackFor = {Exception.class})
-    public boolean delProduct(Long productId) {
+    public void delProduct(Long productId) {
         // 상품 조회
         Product product = productRepository.findByProductId(productId);
         if(product == null){
@@ -133,9 +134,6 @@ public class ProductServiceImpl implements ProductService {
         
         // 상품 정보 삭제처리 (삭제여부 - N 처리)
         product.delete();
-
-        return true;
     }
-
 
 }

@@ -101,8 +101,8 @@ class ProductStockServiceTest {
         when(productStockRepository.findProductStockByProductIdAndProductOptionId(productId, productOptionId)).thenReturn(productStock);
 
         // then
-        boolean result = productStockServiceImpl.deductProductStock(productId, productOptionId, 10);
-        assertTrue(result);
+        ProductStock result = productStockServiceImpl.deductProductStock(productId, productOptionId, 10);
+        assertNotNull(result);
     }
 
     @Test

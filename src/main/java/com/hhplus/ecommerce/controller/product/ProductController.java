@@ -4,8 +4,11 @@ import com.hhplus.ecommerce.base.exception.reponse.dto.ResponseDto;
 import com.hhplus.ecommerce.base.exception.reponse.util.ResponseUtil;
 import com.hhplus.ecommerce.controller.product.dto.*;
 import com.hhplus.ecommerce.domain.product.ProductEnums;
+import com.hhplus.ecommerce.domain.product.entity.Product;
 import com.hhplus.ecommerce.facade.product.ProductOrderFacade;
 import com.hhplus.ecommerce.facade.product.ProductStockFacade;
+import com.hhplus.ecommerce.facade.product.dto.FindProductRankingResDto;
+import com.hhplus.ecommerce.facade.product.dto.FindProductResDto;
 import com.hhplus.ecommerce.service.product.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -38,14 +41,16 @@ public class ProductController {
     )})
     @GetMapping(value = "/products")
     public ResponseDto<List<FindProductListApiResDto>> findProductList() {
-        return ResponseUtil.success(productService.findProductList());
+        List<Product> productList = productService.findProductList();
+        return ResponseUtil.success(productList.stream().map(FindProductListApiResDto::from).toList());
     }
 
     @Operation(summary = "상품 상세 조회")
     @ApiResponse(responseCode = "200", description = "성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = FindProductApiResDto.class)))
     @GetMapping(value = "/products/{productId}")
     public ResponseDto<FindProductApiResDto> findProduct(@PathVariable(name = "productId") @Schema(description = "상품 ID") @NotNull Long productId) {
-        return ResponseUtil.success(productStockFacade.findProduct(productId));
+        FindProductResDto findProductResDto = productStockFacade.findProduct(productId);
+        return ResponseUtil.success(FindProductApiResDto.from(findProductResDto));
     }
 
     @Operation(summary = "상위 상품 조회")
@@ -54,18 +59,19 @@ public class ProductController {
             array = @ArraySchema(schema = @Schema(implementation = FindProductRankingApiResDto.class))
     )})    @GetMapping(value = "/products/ranking/{rankingType}")
     public ResponseDto<List<FindProductRankingApiResDto>> findProductRanking(@PathVariable(name = "rankingType") @Schema(description = "기간 타입") ProductEnums.Ranking rankingType) {
-        return ResponseUtil.success(productOrderFacade.findProductRanking(rankingType));
+        List<FindProductRankingResDto> productRankingList = productOrderFacade.findProductRanking(rankingType);
+        return ResponseUtil.success(productRankingList.stream().map(FindProductRankingApiResDto::from).toList());
     }
 
     @Operation(summary = "상품 등록")
     @ApiResponse(responseCode = "200", description = "성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Long.class)))
     @PostMapping(value = "/products")
     public ResponseDto<Long> addProduct(@RequestBody @Valid AddProductApiReqDto reqDto) {
-        Long result = productService.addProduct(reqDto);
-        if(result == null) {
-            ResponseUtil.failure(result);
+        Product product = productService.addProduct(reqDto.request());
+        if(product == null) {
+            return ResponseUtil.failure();
         }
-        return ResponseUtil.success(result);
+        return ResponseUtil.success(product.getProductId());
     }
 
     @Operation(summary = "상품 수정")
@@ -73,21 +79,18 @@ public class ProductController {
     @PatchMapping(value = "/products/{productId}")
     public ResponseDto<Long> putProduct(@PathVariable(name = "productId") @Schema(description = "상품 ID") @NotNull Long productId,
                               @RequestBody @Valid PutProductApiReqDto reqDto) {
-        Long result = productService.putProduct(productId, reqDto);
-        if(result == null) {
-            ResponseUtil.failure(result);
+        Product product = productService.putProduct(productId, reqDto.request());
+        if(product == null) {
+            return ResponseUtil.failure();
         }
-        return ResponseUtil.success(result);
+        return ResponseUtil.success(product.getProductId());
     }
 
     @Operation(summary = "상품 삭제")
     @ApiResponse(responseCode = "200", description = "성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Boolean.class)))
     @DeleteMapping(value = "/products/{productId}")
     public ResponseDto<Void> delProduct(@PathVariable(name = "productId") @Schema(description = "상품 ID") @NotNull Long productId) {
-        boolean successYn = productService.delProduct(productId);
-        if(!successYn){
-            return ResponseUtil.failure();
-        }
+        productService.delProduct(productId);
         return ResponseUtil.success();
     }
 }

@@ -7,6 +7,7 @@ import com.hhplus.ecommerce.domain.order.entity.OrderItemSheet;
 import com.hhplus.ecommerce.domain.order.entity.OrderSheet;
 import com.hhplus.ecommerce.domain.order.repository.OrderItemSheetRepository;
 import com.hhplus.ecommerce.domain.order.repository.OrderSheetRepository;
+import com.hhplus.ecommerce.service.order.dto.CreateOrderSheetResDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -74,7 +75,7 @@ class OrderSheetServiceTest {
         when(orderSheetRepository.findByOrderSheetId(anyLong())).thenReturn(orderSheet);
         when(orderItemSheetRepository.findByOrderSheetId(anyLong())).thenReturn(List.of(orderItemSheet));
 
-        CreateOrderSheetApiResDto result = orderSheetServiceImpl.createOrderSheet(reqDto);
+        CreateOrderSheetResDto result = orderSheetServiceImpl.createOrderSheet(reqDto.request());
 
         // then
         assertNotNull(result);

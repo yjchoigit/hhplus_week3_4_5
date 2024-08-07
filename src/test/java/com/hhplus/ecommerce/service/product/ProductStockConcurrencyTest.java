@@ -52,8 +52,8 @@ class ProductStockConcurrencyTest {
             try {
                 // 재고 차감 10개씩 실행`
                 log.info("task start !");
-                boolean isSuccessful = productStockServiceImpl.deductProductStock(product.getProductId(), option.getProductOptionId(), 10);
-                if (isSuccessful) {
+                ProductStock productStock = productStockServiceImpl.deductProductStock(product.getProductId(), option.getProductOptionId(), 10);
+                if (productStock != null) {
                     successfulLockCount.incrementAndGet(); // 락 획득 성공 시 카운트 증가
                 }
             } catch (Exception e) {

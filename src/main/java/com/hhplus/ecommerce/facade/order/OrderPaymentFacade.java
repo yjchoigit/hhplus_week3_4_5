@@ -3,12 +3,14 @@ package com.hhplus.ecommerce.facade.order;
 import com.hhplus.ecommerce.base.config.redis.RedisCustomException;
 import com.hhplus.ecommerce.base.config.redis.RedisEnums;
 import com.hhplus.ecommerce.controller.order.dto.CreateOrderApiReqDto;
-import com.hhplus.ecommerce.controller.order.dto.FindOrderApiResDto;
+import com.hhplus.ecommerce.domain.order.entity.Order;
+import com.hhplus.ecommerce.domain.payment.entity.Payment;
 import com.hhplus.ecommerce.infrastructure.apiClient.order.OrderCollectApiClient;
 import com.hhplus.ecommerce.infrastructure.apiClient.order.dto.SendOrderToCollectionDto;
-import com.hhplus.ecommerce.service.order.OrderPaymentService;
+import com.hhplus.ecommerce.service.payment.PaymentService;
 import com.hhplus.ecommerce.service.order.OrderService;
 import com.hhplus.ecommerce.service.order.OrderSheetService;
+import com.hhplus.ecommerce.service.order.dto.FindOrderResDto;
 import com.hhplus.ecommerce.service.point.PointService;
 import com.hhplus.ecommerce.service.product.ProductService;
 import com.hhplus.ecommerce.service.product.ProductStockService;
@@ -17,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.concurrent.TimeUnit;
 
@@ -29,7 +32,7 @@ public class OrderPaymentFacade {
     private PointService pointService;
     private ProductService productService;
     private ProductStockService productStockService;
-    private OrderPaymentService orderPaymentService;
+    private PaymentService orderPaymentService;
     private OrderCollectApiClient orderCollectApiClient;
     private RedissonClient redissonClient;
 
@@ -49,20 +52,8 @@ public class OrderPaymentFacade {
                 throw new RedisCustomException(RedisEnums.Error.LOCK_NOT_ACQUIRE);
             }
 
-            // 상품 프로세스 진행 (상품 valid)
-            productProcess(reqDto);
-            // 재고 프로세스 진행 (재고 valid, 재고 차감처리)
-            stockProcess(reqDto);
-
-            // 주문 생성 진행
-            Long orderId = orderService.createOrder(reqDto);
-            // 주문 정보 조회
-            FindOrderApiResDto orderInfo = orderService.findOrder(reqDto.buyerId(), orderId);
-
-            // 주문서 삭제 처리
-            orderSheetService.completeOrderSheet(reqDto.orderSheetId());
-
-            return orderInfo.orderId();
+            // 트랜잭션 내에서 실행할 메서드 호출
+            return createOrderProcess(reqDto);
         } catch (InterruptedException e) {
             throw new RedisCustomException(RedisEnums.Error.LOCK_INTERRUPTED_ERROR);
         } finally {
@@ -78,6 +69,24 @@ public class OrderPaymentFacade {
                 }
             }
         }
+    }
+
+    @Transactional(rollbackFor = {Exception.class})
+    public Long createOrderProcess(CreateOrderApiReqDto reqDto) {
+        // 상품 프로세스 진행 (상품 valid)
+        productProcess(reqDto);
+        // 재고 프로세스 진행 (재고 valid, 재고 차감처리)
+        stockProcess(reqDto);
+
+        // 주문 생성 진행
+        Order order = orderService.createOrder(reqDto);
+        // 주문 정보 조회
+        FindOrderResDto orderDto = orderService.findOrder(reqDto.buyerId(), order.getOrderId());
+
+        // 주문서 삭제 처리
+        orderSheetService.delOrderSheet(reqDto.orderSheetId());
+
+        return orderDto.orderId();
     }
 
     private void productProcess(CreateOrderApiReqDto reqDto){
@@ -107,7 +116,7 @@ public class OrderPaymentFacade {
 
 
     // 결제 처리
-    public Long paymentOrder(Long buyerId, Long orderId) {
+    public Long pay(Long buyerId, Long orderId) {
         // 주문 id 기준으로 Lock 객체를 가져옴
         RLock rLock = redissonClient.getLock(RedisEnums.LockName.PAYMENT_ORDER.changeLockName(orderId));
         boolean isLocked = false;
@@ -123,16 +132,10 @@ public class OrderPaymentFacade {
             }
 
             // 주문 정보 조회
-            FindOrderApiResDto orderInfo = orderService.findOrder(buyerId, orderId);
-            // 잔액 사용처리 (잔액 valid, 잔액 사용처리)
-            pointService.usePoint(buyerId, orderInfo.totalPrice());
-            // 결제 처리 -> orderPaymentId 반환
-            Long orderPaymentId = orderPaymentService.paymentOrder(buyerId, orderId);
+            FindOrderResDto orderDto = orderService.findOrder(buyerId, orderId);
 
-            // 주문 데이터 수집 외부 데이터 플랫폼 전달
-            sendOrderToCollection(new SendOrderToCollectionDto(orderInfo.orderNumber(), orderInfo.totalPrice(), orderInfo.createDatetime()));
-
-            return orderPaymentId;
+            // 트랜잭션 내의 비즈니스 로직 수행
+            return payProcess(buyerId, orderDto);
 
         } catch (InterruptedException e) {
             throw new RedisCustomException(RedisEnums.Error.LOCK_INTERRUPTED_ERROR);
@@ -149,6 +152,19 @@ public class OrderPaymentFacade {
                 }
             }
         }
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public Long payProcess(Long buyerId, FindOrderResDto orderDto){
+        // 잔액 사용처리 (잔액 valid, 잔액 사용처리)
+        pointService.usePoint(buyerId, orderDto.totalPrice());
+        // 결제 처리 -> orderPaymentId 반환
+        Payment payment = orderPaymentService.pay(buyerId, orderDto.orderId());
+
+        // 주문 데이터 수집 외부 데이터 플랫폼 전달
+        sendOrderToCollection(new SendOrderToCollectionDto(orderDto.orderNumber(), orderDto.totalPrice(), orderDto.createDatetime()));
+
+        return payment.getPaymentId();
     }
 
     // 주문 데이터 수집 외부 데이터 플랫폼 전달

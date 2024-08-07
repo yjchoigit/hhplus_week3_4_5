@@ -1,7 +1,8 @@
-package com.hhplus.ecommerce.domain.order.entity;
+package com.hhplus.ecommerce.domain.payment.entity;
 
 import com.hhplus.ecommerce.domain.base.entity.CreateModifyDateTimeEntity;
 import com.hhplus.ecommerce.domain.order.OrderEnums;
+import com.hhplus.ecommerce.domain.order.entity.Order;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -14,11 +15,11 @@ import java.util.Objects;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class OrderPayment extends CreateModifyDateTimeEntity {
+public class Payment extends CreateModifyDateTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Comment("주문 결제 id")
-    private Long orderPaymentId;
+    private Long paymentId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
@@ -34,15 +35,15 @@ public class OrderPayment extends CreateModifyDateTimeEntity {
     @Comment("결제 상태 Enum")
     private OrderEnums.PaymentStatus status;
 
-    public OrderPayment(Long orderPaymentId, Order order, int paymentPrice, OrderEnums.PaymentStatus status) {
-        this.orderPaymentId = orderPaymentId;
+    public Payment(Long paymentId, Order order, int paymentPrice, OrderEnums.PaymentStatus status) {
+        this.paymentId = paymentId;
         this.order = order;
         this.paymentPrice = paymentPrice;
         this.status = status;
     }
 
     @Builder
-    public OrderPayment(Order order, int paymentPrice, OrderEnums.PaymentStatus status) {
+    public Payment(Order order, int paymentPrice, OrderEnums.PaymentStatus status) {
         this.order = order;
         this.paymentPrice = paymentPrice;
         this.status = status;
@@ -57,12 +58,12 @@ public class OrderPayment extends CreateModifyDateTimeEntity {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        OrderPayment that = (OrderPayment) o;
-        return Objects.equals(getOrderPaymentId(), that.getOrderPaymentId());
+        Payment that = (Payment) o;
+        return Objects.equals(getPaymentId(), that.getPaymentId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(getOrderPaymentId());
+        return Objects.hashCode(getPaymentId());
     }
 }

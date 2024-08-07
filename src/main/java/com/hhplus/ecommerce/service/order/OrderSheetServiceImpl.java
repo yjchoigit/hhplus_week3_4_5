@@ -8,6 +8,8 @@ import com.hhplus.ecommerce.domain.order.entity.OrderSheet;
 import com.hhplus.ecommerce.domain.order.exception.OrderCustomException;
 import com.hhplus.ecommerce.domain.order.repository.OrderItemSheetRepository;
 import com.hhplus.ecommerce.domain.order.repository.OrderSheetRepository;
+import com.hhplus.ecommerce.service.order.dto.CreateOrderSheetReqDto;
+import com.hhplus.ecommerce.service.order.dto.CreateOrderSheetResDto;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +29,7 @@ public class OrderSheetServiceImpl implements OrderSheetService {
 
     @Override
     @Transactional(rollbackFor = {Exception.class})
-    public CreateOrderSheetApiResDto createOrderSheet(CreateOrderSheetApiReqDto reqDto) {
+    public CreateOrderSheetResDto createOrderSheet(CreateOrderSheetReqDto reqDto) {
         // 기존의 주문서가 있는지 확인
         List<String> cartIdList = reqDto.cartIdList().stream()
                 .sorted(Comparator.comparing(Long::doubleValue))
@@ -44,11 +46,11 @@ public class OrderSheetServiceImpl implements OrderSheetService {
                 // 주문서 품목 조회
                 List<OrderItemSheet> orderItemSheetList = orderItemSheetRepository.findByOrderSheetId(existOrderSheetInfo.getOrderSheetId());
 
-                List<CreateOrderSheetApiResDto.CreateOrderItemSheetApiResDto> list = orderItemSheetList.stream()
-                        .map(CreateOrderSheetApiResDto.CreateOrderItemSheetApiResDto::from)
+                List<CreateOrderSheetResDto.CreateOrderItemSheetResDto> list = orderItemSheetList.stream()
+                        .map(CreateOrderSheetResDto.CreateOrderItemSheetResDto::from)
                         .toList();
 
-                return CreateOrderSheetApiResDto.from(existOrderSheetInfo, list);
+                return CreateOrderSheetResDto.from(existOrderSheetInfo, list);
             }
         }
 
@@ -63,7 +65,7 @@ public class OrderSheetServiceImpl implements OrderSheetService {
                 .build());
 
         // 주문서 품목 등록
-        for(CreateOrderSheetApiReqDto.CreateOrderItemSheetApiReqDto dto : reqDto.orderItemList()) {
+        for(CreateOrderSheetReqDto.CreateOrderItemSheetReqDto dto : reqDto.orderItemList()) {
             orderItemSheetRepository.save(OrderItemSheet.builder()
                             .orderSheet(orderSheet)
                             .productId(dto.productId())
@@ -85,11 +87,11 @@ public class OrderSheetServiceImpl implements OrderSheetService {
         // 주문서 품목 조회
         List<OrderItemSheet> orderItemSheetList = orderItemSheetRepository.findByOrderSheetId(orderSheetInfo.getOrderSheetId());
 
-        List<CreateOrderSheetApiResDto.CreateOrderItemSheetApiResDto> list = orderItemSheetList.stream()
-                        .map(CreateOrderSheetApiResDto.CreateOrderItemSheetApiResDto::from)
+        List<CreateOrderSheetResDto.CreateOrderItemSheetResDto> list = orderItemSheetList.stream()
+                        .map(CreateOrderSheetResDto.CreateOrderItemSheetResDto::from)
                                 .toList();
 
-        return CreateOrderSheetApiResDto.from(orderSheetInfo, list);
+        return CreateOrderSheetResDto.from(orderSheetInfo, list);
     }
 
     @Override
@@ -103,7 +105,7 @@ public class OrderSheetServiceImpl implements OrderSheetService {
 
     @Override
     @Transactional(rollbackFor = {Exception.class})
-    public void completeOrderSheet(Long orderSheetId) {
+    public void delOrderSheet(Long orderSheetId) {
         OrderSheet orderSheet = orderSheetRepository.findByOrderSheetId(orderSheetId);
         if(orderSheet == null){
             throw new OrderCustomException(OrderEnums.Error.NO_ORDER_SHEET);

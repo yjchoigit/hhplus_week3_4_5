@@ -6,6 +6,7 @@ import com.hhplus.ecommerce.controller.order.dto.*;
 import com.hhplus.ecommerce.facade.order.OrderPaymentFacade;
 import com.hhplus.ecommerce.service.order.OrderService;
 import com.hhplus.ecommerce.service.order.OrderSheetService;
+import com.hhplus.ecommerce.service.order.dto.CreateOrderSheetResDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -31,7 +32,8 @@ public class OrderController {
     @ApiResponse(responseCode = "200", description = "성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = CreateOrderSheetApiResDto.class)))
     @PostMapping(value = "/orders/sheet")
     public ResponseDto<CreateOrderSheetApiResDto> createOrderSheet(@RequestBody @Valid CreateOrderSheetApiReqDto reqDto){
-        return ResponseUtil.success(orderSheetService.createOrderSheet(reqDto));
+        CreateOrderSheetResDto resDto = orderSheetService.createOrderSheet(reqDto.request());
+        return ResponseUtil.success(CreateOrderSheetApiResDto.from(resDto));
     }
 
     @Operation(summary = "주문 진행")
@@ -40,7 +42,7 @@ public class OrderController {
     public ResponseDto<Long> createOrder(@RequestBody @Valid CreateOrderApiReqDto reqDto){
         Long orderId = orderPaymentFacade.createOrder(reqDto);
         if(orderId == null){
-            return ResponseUtil.failure(orderId);
+            return ResponseUtil.failure();
         }
         return ResponseUtil.success(orderId);
     }
@@ -49,9 +51,9 @@ public class OrderController {
     @ApiResponse(responseCode = "200", description = "성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Long.class)))
     @PostMapping(value = "/orders/payment")
     public ResponseDto<Long> paymentOrder(@RequestBody @Valid PaymentOrderApiReqDto reqDto){
-        Long orderPaymentId = orderPaymentFacade.paymentOrder(reqDto.buyerId(), reqDto.orderId());
+        Long orderPaymentId = orderPaymentFacade.pay(reqDto.buyerId(), reqDto.orderId());
         if(orderPaymentId == null){
-            return ResponseUtil.failure(orderPaymentId);
+            return ResponseUtil.failure();
         }
         return ResponseUtil.success(orderPaymentId);
     }
@@ -61,6 +63,6 @@ public class OrderController {
     @GetMapping(value = "/orders/{buyerId}")
     public ResponseDto<FindOrderApiResDto> findOrder(@PathVariable(name = "buyerId") @Schema(description = "회원 ID") @NotNull Long buyerId,
                                                      @RequestParam(name = "orderId") @Schema(description = "주문 ID") @NotNull Long orderId){
-        return ResponseUtil.success(orderService.findOrder(buyerId, orderId));
+        return ResponseUtil.success(FindOrderApiResDto.from(orderService.findOrder(buyerId, orderId)));
     }
 }

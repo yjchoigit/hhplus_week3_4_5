@@ -54,8 +54,8 @@ class PointConcurrencyTest {
             try {
                 log.info("Task start!");
                 // 잔액 사용 10원씩 실행
-                boolean isSuccessful = pointServiceImpl.usePoint(buyer.getBuyerId(), 10);
-                if (isSuccessful) {
+                Point usePoint = pointServiceImpl.usePoint(buyer.getBuyerId(), 10);
+                if (usePoint != null) {
                     successfulLockCount.incrementAndGet(); // 락 획득 성공 시 카운트 증가
                 }
             } catch (Exception e) {
@@ -79,10 +79,10 @@ class PointConcurrencyTest {
         executorService.shutdown();
 
         // 잔액 확인
-        int finalPoint = pointServiceImpl.findPoint(buyer.getBuyerId());
+        Point finalPoint = pointServiceImpl.findPoint(buyer.getBuyerId());
         int finalSuccessfulLockCount = successfulLockCount.get();
         int expectedBalance = point.getAllPoint() - (10 * finalSuccessfulLockCount);
-        assertEquals(expectedBalance, finalPoint, "The point should be reduced correctly after all deductions.");
+        assertEquals(expectedBalance, finalPoint.getAllPoint(), "The point should be reduced correctly after all deductions.");
     }
 
     @Test
@@ -106,8 +106,8 @@ class PointConcurrencyTest {
             try {
                 log.info("Task start!");
                 // 잔액 사용 10원씩 실행
-                boolean isSuccessful = pointServiceImpl.chargePoint(buyer.getBuyerId(), 10);
-                if (isSuccessful) {
+                Point chargePoint = pointServiceImpl.chargePoint(buyer.getBuyerId(), 10);
+                if (chargePoint != null) {
                     successfulLockCount.incrementAndGet(); // 락 획득 성공 시 카운트 증가
                 }
             } catch (Exception e) {
@@ -131,9 +131,9 @@ class PointConcurrencyTest {
         executorService.shutdown();
 
         // 잔액 확인
-        int finalPoint = pointServiceImpl.findPoint(buyer.getBuyerId());
+        Point finalPoint = pointServiceImpl.findPoint(buyer.getBuyerId());
         int finalSuccessfulLockCount = successfulLockCount.get();
         int expectedBalance = point.getAllPoint() + (10 * finalSuccessfulLockCount);
-        assertEquals(expectedBalance, finalPoint, "The point should be reduced correctly after all deductions.");
+        assertEquals(expectedBalance, finalPoint.getAllPoint(), "The point should be reduced correctly after all deductions.");
     }
 }

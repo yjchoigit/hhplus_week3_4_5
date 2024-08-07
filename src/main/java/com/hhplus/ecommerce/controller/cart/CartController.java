@@ -3,8 +3,10 @@ package com.hhplus.ecommerce.controller.cart;
 import com.hhplus.ecommerce.base.exception.reponse.dto.ResponseDto;
 import com.hhplus.ecommerce.base.exception.reponse.util.ResponseUtil;
 import com.hhplus.ecommerce.controller.cart.dto.AddCartApiReqDto;
-import com.hhplus.ecommerce.controller.cart.dto.GetCartApiResDto;
+import com.hhplus.ecommerce.controller.cart.dto.FindCartApiResDto;
+import com.hhplus.ecommerce.domain.cart.entity.Cart;
 import com.hhplus.ecommerce.facade.cart.CartProductFacade;
+import com.hhplus.ecommerce.facade.cart.dto.FindCartResDto;
 import com.hhplus.ecommerce.service.cart.CartService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -31,11 +33,12 @@ public class CartController {
     @Operation(summary = "장바구니 목록 조회")
     @ApiResponse(responseCode = "200", description = "성공", content = {@Content(
             mediaType = "application/json",
-            array = @ArraySchema(schema = @Schema(implementation = GetCartApiResDto.class))
+            array = @ArraySchema(schema = @Schema(implementation = FindCartApiResDto.class))
     )})
     @GetMapping(value = "/carts/{buyerId}")
-    public ResponseDto<List<GetCartApiResDto>> findCartList(@PathVariable(name = "buyerId") @Schema(description = "회원 ID") @NotNull Long buyerId){
-        return ResponseUtil.success(cartProductFacade.findCartList(buyerId));
+    public ResponseDto<List<FindCartApiResDto>> findCartList(@PathVariable(name = "buyerId") @Schema(description = "회원 ID") @NotNull Long buyerId){
+        List<FindCartResDto> cartList = cartProductFacade.findCartList(buyerId);
+        return ResponseUtil.success(cartList.stream().map(FindCartApiResDto::from).toList());
     }
 
     @Operation(summary = "장바구니 추가")
@@ -43,11 +46,11 @@ public class CartController {
     @PostMapping(value = "/carts/{buyerId}")
     public ResponseDto<Long> addCart(@PathVariable(name = "buyerId") @Schema(description = "회원 ID") @NotNull Long buyerId,
                         @RequestBody @Valid AddCartApiReqDto reqDto){
-        Long cartId = cartProductFacade.addCart(buyerId, reqDto);
-        if(cartId == null) {
+        Cart cart = cartProductFacade.addCart(buyerId, reqDto);
+        if(cart == null) {
             return ResponseUtil.failure();
         }
-        return ResponseUtil.success(cartId);
+        return ResponseUtil.success(cart.getCartId());
     }
 
     @Operation(summary = "장바구니 삭제")
@@ -55,10 +58,7 @@ public class CartController {
     @DeleteMapping(value = "/carts/{buyerId}")
     public ResponseDto<Void> delCart(@PathVariable(name = "buyerId") @Schema(description = "회원 ID") @NotNull Long buyerId,
                            @RequestParam(name = "cartIdList") @Schema(description = "장바구니 ID 리스트") @NotNull List<Long> cartIdList){
-        boolean successYn = cartService.delCart(buyerId, cartIdList);
-        if(!successYn){
-            return ResponseUtil.failure();
-        }
+        cartService.delCart(buyerId, cartIdList);
         return ResponseUtil.success();
     }
 }

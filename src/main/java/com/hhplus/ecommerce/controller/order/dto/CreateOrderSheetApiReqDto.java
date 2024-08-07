@@ -1,5 +1,6 @@
 package com.hhplus.ecommerce.controller.order.dto;
 
+import com.hhplus.ecommerce.service.order.dto.CreateOrderSheetReqDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
@@ -38,5 +39,27 @@ public record CreateOrderSheetApiReqDto(
             int buyCnt
     ) implements Serializable {
 
+        public CreateOrderSheetReqDto.CreateOrderItemSheetReqDto request(){
+            return CreateOrderSheetReqDto.CreateOrderItemSheetReqDto.builder()
+                    .productId(productId)
+                    .productName(productName)
+                    .productOptionId(productOptionId)
+                    .productOptionName(productOptionName)
+                    .productPrice(productPrice)
+                    .buyCnt(buyCnt)
+                    .build();
+        }
+
+    }
+
+    public CreateOrderSheetReqDto request() {
+        return CreateOrderSheetReqDto.builder()
+                .buyerId(buyerId)
+                .buyerName(buyerName)
+                .allBuyCnt(allBuyCnt)
+                .totalPrice(totalPrice)
+                .cartIdList(cartIdList)
+                .orderItemList(orderItemList.stream().map(CreateOrderItemSheetApiReqDto::request).toList())
+                .build();
     }
 }

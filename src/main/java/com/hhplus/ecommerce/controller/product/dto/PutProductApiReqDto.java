@@ -1,5 +1,6 @@
 package com.hhplus.ecommerce.controller.product.dto;
 
+import com.hhplus.ecommerce.service.product.dto.PutProductReqDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.io.Serializable;
@@ -13,4 +14,7 @@ public record PutProductApiReqDto(
         boolean useYn
 ) implements Serializable {
 
+        public PutProductReqDto request() {
+                return new PutProductReqDto(name, price, useYn);
+        }
 }
