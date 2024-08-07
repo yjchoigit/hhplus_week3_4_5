@@ -1,28 +1,28 @@
 spring:
   application:
-    name: week-03
+    name: ecommerce
   datasource:
-    driver-class-name: org.h2.Driver
-    url: 'jdbc:h2:mem:test'  # In-Memory Mode
-    # url: 'jdbc:h2:~/test'  # Embedded Mode
-    username: test
-    password: test1234
-
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3308/ecommerce
+#    url: jdbc:mysql://mysql_test:3306/ecommerce
+    username: root
+    password: test123
 
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
+    database-platform: org.hibernate.dialect.MySQL8Dialect
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.H2Dialect
+        dialect: org.hibernate.dialect.MySQL8Dialect
         use_new_id_generator_mappings: true
         format_sql: true
         show_sql: true
+
+jwt:
+  secret: your_strong_secret_key_which_is_32_bytes_long
+  expiration: 3600000 # 만료 시간 (밀리초 단위)
+
 # JPA 및 H2 데이터베이스 로그 출력
 #logging:
 #  level:
@@ -34,6 +34,17 @@ spring:
 #      zaxxer:
 #        hikari: debug
 #    h2: debug
+
+springdoc:
+  packages-to-scan: com.hhplus.ecommerce.controller
+  default-consumes-media-type: application/json;charset=UTF-8
+  default-produces-media-type: application/json;charset=UTF-8
+  swagger-ui:
+    path: /
+    disable-swagger-default-url: true
+    display-request-duration: true
+    operations-sorter: alpha
+
 
 server:
   port: 8080
