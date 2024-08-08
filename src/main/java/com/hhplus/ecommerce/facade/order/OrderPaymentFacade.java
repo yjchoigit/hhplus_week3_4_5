@@ -139,7 +139,6 @@ public class OrderPaymentFacade {
             FindOrderResDto orderDto = orderService.findOrder(buyerId, orderId);
 
             // 트랜잭션 내의 비즈니스 로직 수행
-//            payProcess(buyerId, orderDto);
             payTransactionSagaManager.payProcess(buyerId, orderId);
 
         } catch (InterruptedException e) {
