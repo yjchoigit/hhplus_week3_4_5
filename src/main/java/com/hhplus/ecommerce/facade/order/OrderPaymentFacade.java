@@ -4,9 +4,9 @@ import com.hhplus.ecommerce.base.config.redis.RedisCustomException;
 import com.hhplus.ecommerce.base.config.redis.RedisEnums;
 import com.hhplus.ecommerce.controller.order.dto.CreateOrderApiReqDto;
 import com.hhplus.ecommerce.domain.order.entity.Order;
+import com.hhplus.ecommerce.domain.order.event.OrderEventPublish;
+import com.hhplus.ecommerce.domain.order.event.dto.OrderPaymentCompleteEvent;
 import com.hhplus.ecommerce.domain.payment.entity.Payment;
-import com.hhplus.ecommerce.infrastructure.apiClient.order.OrderCollectApiClient;
-import com.hhplus.ecommerce.infrastructure.apiClient.order.dto.SendOrderToCollectionDto;
 import com.hhplus.ecommerce.service.payment.PaymentService;
 import com.hhplus.ecommerce.service.order.OrderService;
 import com.hhplus.ecommerce.service.order.OrderSheetService;
@@ -33,7 +33,7 @@ public class OrderPaymentFacade {
     private ProductService productService;
     private ProductStockService productStockService;
     private PaymentService orderPaymentService;
-    private OrderCollectApiClient orderCollectApiClient;
+    private OrderEventPublish orderEventPublish;
     private RedissonClient redissonClient;
 
     // 주문 생성
@@ -157,18 +157,13 @@ public class OrderPaymentFacade {
     @Transactional(rollbackFor = Exception.class)
     public Long payProcess(Long buyerId, FindOrderResDto orderDto){
         // 잔액 사용처리 (잔액 valid, 잔액 사용처리)
-        pointService.usePoint(buyerId, orderDto.totalPrice());
+//        pointService.usePoint(buyerId, orderDto.totalPrice());
         // 결제 처리 -> orderPaymentId 반환
         Payment payment = orderPaymentService.pay(buyerId, orderDto.orderId());
 
-        // 주문 데이터 수집 외부 데이터 플랫폼 전달
-        sendOrderToCollection(new SendOrderToCollectionDto(orderDto.orderNumber(), orderDto.totalPrice(), orderDto.createDatetime()));
+        // 주문결제 완료 이벤트 발행 (잔액 사용처리, 주문데이터 외부 플랫폼 전달)
+        orderEventPublish.orderPaymentComplete(new OrderPaymentCompleteEvent(buyerId, payment));
 
         return payment.getPaymentId();
-    }
-
-    // 주문 데이터 수집 외부 데이터 플랫폼 전달
-    private void sendOrderToCollection(SendOrderToCollectionDto sendDto){
-        orderCollectApiClient.sendOrderToCollectionPlatform(sendDto);
     }
 }
