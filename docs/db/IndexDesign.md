@@ -104,14 +104,15 @@ call insert_product_options();
 ----
 - 실행시간 측정
 ```mysql
-  SET @start = NOW();
+   set profiling=1;
+  SET PROFILING_HISTORY_SIZE=30;
   SELECT * FROM product p
                   INNER JOIN product_option po ON p.product_id = po.product_id
   WHERE p.del_yn = 'N' AND p.use_yn = 'Y';
-  SET @end = NOW();
-  SELECT TIMEDIFF(@end, @start) AS execution_time;
+  show profiles; 
 ```
-
+- 해당 쿼리가 적용된 duration을 확인했다.
+- **as-is** 실행시간 : 0.0023395초
 ---
 - **Index - 1**
 ```mysql
@@ -124,6 +125,7 @@ call insert_product_options();
 - rows (스캔할 예상 행 수)
   - product : '1'
   - product_option : '97015' > 예상 행 수가 감소했다
+- 실행시간 측정 : 0.0021635초
 ----
 - **Index - 2**
 ```mysql
@@ -147,6 +149,7 @@ call insert_product_options();
     - ecommerce.po.product_id - 조인에서 product_option.product_id와 product.product_id 참조
   - product_option
     - const, const : 인덱스 조건이 상수값 -> 인덱스 검색이 더 빨라짐
+- 실행시간 측정 : 0.004123초
 *****
 상위 상품 조회
 --------
@@ -280,17 +283,20 @@ CALL insert_order_items(150000);
 ----
 - 실행시간 측정
 ```mysql
-  SET @start = NOW();
+  set profiling=1;
+  SET PROFILING_HISTORY_SIZE=30;
+  
   SELECT oi.product_id, SUM(oi.buy_cnt) AS total_buy_cnt
-        FROM order_item oi
-               INNER JOIN `order` o on oi.order_id = o.order_id
-        WHERE oi.create_datetime BETWEEN '2024-08-07 00:00:00' AND '2024-08-09 23:59:59'
-        GROUP BY oi.product_id
-        ORDER BY total_buy_cnt DESC;
-  SET @end = NOW();
-  SELECT TIMEDIFF(@end, @start) AS execution_time;
+  FROM order_item oi
+         INNER JOIN `order` o on oi.order_id = o.order_id
+  WHERE oi.create_datetime BETWEEN '2024-08-07 00:00:00' AND '2024-08-09 23:59:59'
+  GROUP BY oi.product_id
+  ORDER BY total_buy_cnt DESC;
+  
+  show profiles ;
 ```
-
+- 해당 쿼리가 적용된 duration을 확인했다.
+- **as-is** 실행시간 : 0.0142225초
 ---
 - **Index - 1**
 ```mysql
@@ -309,6 +315,7 @@ CALL insert_order_items(150000);
     - '1'
 - Using where; Using temporary; Using filesort
   - 인덱스를 추가해도 여전히 테이블 스캔 수행 => 추가적인 인덱스 최적화 필요
+- 실행시간 : 0.011931초
 ----
 - **Index - 2**
 ```mysql
@@ -320,5 +327,6 @@ CREATE INDEX idx_datetime_product_buycnt ON order_item (create_datetime, product
 - 쿼리에서 create_datetime, product_id, 그리고 buy_cnt가 모두 필요하므로 복합 인덱스를 사용하는 것이 좋다
 - Using index condition 및 Using index 추가 > 인덱스만 사용하여 쿼리 처리
 - Using temporary 및 Using filesort는 여전히 발생 
-  - 복합 인덱스 추가 시 해당 성능이 개선될 것 같다는 예상과 달리 복합 인덱스를 추가하기 전과 동일한 성능을 보임
+  - 복합 인덱스 추가 시 해당 성능이 개선될 것 같다는 예상과 달리 복합 인덱스를 추가하기 전과 비슷한 성능을 보임
     - 쿼리 자체의 리팩토링이 필요할 수도 있다는 생각이 들었다.
+- 실행시간 : 0.0117975초
